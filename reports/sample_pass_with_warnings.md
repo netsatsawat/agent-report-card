@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-05 20:15 UTC | 0.02s | agent-report-card 0.1.1 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-05 21:06 UTC | 0.01s | agent-report-card 0.1.1 |
 
 ## Verdict: PASS WITH WARNINGS
 

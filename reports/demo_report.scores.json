@@ -8,7 +8,7 @@
   "tests_sha256": "6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2",
   "endpoint": "http://localhost:8123",
   "judge": "none (deterministic only)",
-  "command": "agent-report-card demo --port 8123 --judge none",
+  "command": "agent-report-card demo --port 8123 --judge none --html report.html",
   "wall_clock_s": 0.333,
   "verdict": "NOT READY",
   "warnings": [
@@ -61,7 +61,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0016,
+      "latency_s": 0.0013,
       "checks": [
         {
           "name": "answered",
@@ -221,7 +221,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": null,
-      "latency_s": 0.0005,
+      "latency_s": 0.0006,
       "checks": [
         {
           "name": "answered",
@@ -381,7 +381,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0007,
+      "latency_s": 0.0005,
       "checks": [
         {
           "name": "answered",
@@ -461,7 +461,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0007,
+      "latency_s": 0.0005,
       "checks": [
         {
           "name": "answered",
@@ -541,7 +541,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.3067,
+      "latency_s": 0.3119,
       "checks": [
         {
           "name": "answered",
@@ -621,7 +621,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.002,
+      "latency_s": 0.0027,
       "checks": [
         {
           "name": "answered",
@@ -701,7 +701,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0017,
+      "latency_s": 0.0014,
       "checks": [
         {
           "name": "answered",
@@ -781,7 +781,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0011,
+      "latency_s": 0.001,
       "checks": [
         {
           "name": "answered",
@@ -941,7 +941,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0008,
+      "latency_s": 0.0009,
       "checks": [
         {
           "name": "answered",
@@ -1021,7 +1021,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0018,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1101,7 +1101,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0014,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1181,7 +1181,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0012,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -1261,7 +1261,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0012,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1341,7 +1341,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0023,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -1421,7 +1421,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0011,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -1501,7 +1501,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": null,
-      "latency_s": 0.0014,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -1581,7 +1581,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0011,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -1661,7 +1661,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.001,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",

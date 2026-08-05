@@ -34,7 +34,8 @@ DEMO_SUITE_TEXT = (resources.files("agent_report_card") / "_data" /
 PORT = 8123
 
 
-def generate(suite_path, judge_spec, out_name, command, expect_exit):
+def generate(suite_path, judge_spec, out_name, command, expect_exit,
+             html=False):
     try:
         server = demo_bot.serve(port=PORT, background=True)
     except OSError:
@@ -46,10 +47,12 @@ def generate(suite_path, judge_spec, out_name, command, expect_exit):
         endpoint = f"http://localhost:{PORT}"
         out = REPO / "reports" / out_name
         scores = REPO / "reports" / (out.stem + ".scores.json")
+        html_path = str(out.with_suffix(".html")) if html else None
         with contextlib.redirect_stdout(buffer):
             code = run_pipeline(load_suite(str(suite_path)), endpoint,
                                 judge_spec, str(out), str(scores),
-                                30.0, 120.0, None, None, True, command)
+                                30.0, 120.0, None, None, True, command,
+                                html_path=html_path)
     finally:
         server.shutdown()
     # normalize the machine-specific repo prefix out of the committed log:
@@ -71,7 +74,8 @@ if __name__ == "__main__":
     demo_suite.write_text(DEMO_SUITE_TEXT, encoding="utf-8")
 
     generate(demo_suite, "none", "demo_report.md",
-             f"agent-report-card demo --port {PORT} --judge none", 1)
+             f"agent-report-card demo --port {PORT} --judge none "
+             f"--html report.html", 1, html=True)
     generate(RELEASE_SUITE, "none", "sample_pass_with_warnings.md",
              f"agent-report-card run --tests examples/release_questions.yaml "
              f"--endpoint http://localhost:{PORT} --judge none", 0)

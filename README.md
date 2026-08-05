@@ -100,8 +100,16 @@ verdict, all real runs against the bundled bot:
 
 Each log is the exact command and per-case console stream that produced
 its report, ending with the exit code (0 for both PASS levels, 1 for
-NOT READY: what CI keys on). `scripts/make_gallery.py` regenerates all
-eight files.
+NOT READY: what CI keys on). `scripts/make_gallery.py` regenerates them.
+
+Pass `--html report.html` and you also get
+[the same report as one self-contained HTML file](reports/demo_report.html)
+for the stakeholder who would rather receive an attachment than a
+markdown file: inline CSS, zero JavaScript, no external requests, and a
+print stylesheet so it becomes a clean PDF. GitHub shows `.html` as
+source, so download it or open it locally to see it rendered. It is a
+second rendering of the same document, never a different one, and a test
+asserts the two carry identical numbers.
 
 ## 🔌 What your endpoint must return
 

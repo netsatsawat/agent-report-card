@@ -5,7 +5,30 @@ artifacts in [`reports/`](reports/), not from memory.
 
 ## Unreleased
 
-Nothing yet.
+### Added
+
+- `--html PATH` on `run` and `demo`: a self-contained HTML rendering of
+  the same report, for the stakeholder who would rather receive an
+  attachment than a markdown file. Inline CSS, zero JavaScript, no
+  external requests of any kind, a `@media print` stylesheet so it makes
+  a clean PDF, and light/dark via `prefers-color-scheme`. Off by default;
+  the markdown report is still the product.
+
+### How it avoids becoming a second source of truth
+
+The HTML is a projection of the markdown string `render()` already
+returned, never a second reading of the scoreboard, so it cannot contain
+a number the markdown does not. Three tests hold that line: `report_html`
+is parsed to assert it imports nothing from the package (an import of the
+scoreboard would recreate the second surface), every committed report
+must convert with an unrecognized line raising rather than being skipped,
+and the number tokens in the HTML must equal the markdown's exactly.
+
+Because the report quotes answers written by the system under test, the
+converter escapes before applying the report's own markers, passes
+through only two allowlisted raw-HTML lines matched in full, emits no
+attribute carrying text from the run, and ships a Content-Security-Policy
+whose `style-src` is the hash of the stylesheet actually emitted.
 
 ## 0.1.1 — 2026-08-06
 

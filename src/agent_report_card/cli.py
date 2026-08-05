@@ -9,7 +9,7 @@ import time
 from importlib import resources
 from pathlib import Path
 
-from . import __version__, calibrate, catalog, scrub
+from . import __version__, calibrate, catalog, report_html, scrub
 from .checks_code import run_code_checks
 from .checks_judge import (DEFAULT_JUDGE, JudgeClient, parse_judge_spec,
                            run_judge_checks)
@@ -76,6 +76,10 @@ example:
     run_p.add_argument("--scores", default="report.scores.json", metavar="PATH",
                        help="machine-readable sidecar; format unstable in "
                             "v0.1 (default: report.scores.json)")
+    run_p.add_argument("--html", default=None, metavar="PATH",
+                       help="also write a self-contained HTML rendering of "
+                            "the same report (inline CSS, no JavaScript, no "
+                            "external requests); off by default")
     run_p.add_argument("--timeout", type=float, default=60.0, metavar="SECONDS",
                        help="per endpoint HTTP call (default: 60)")
     run_p.add_argument("--judge-timeout", type=float, default=120.0,
@@ -107,6 +111,9 @@ example:
                         help="markdown report (default: report.md)")
     demo_p.add_argument("--scores", default="report.scores.json",
                         metavar="PATH", help="sidecar path")
+    demo_p.add_argument("--html", default=None, metavar="PATH",
+                        help="also write a self-contained HTML rendering of "
+                             "the same report; off by default")
     demo_p.add_argument("--keep-serving", action="store_true",
                         help="leave the fixture bot running so you can point "
                              "your own commands at it")
@@ -165,7 +172,7 @@ def _register_url_secrets(url: str) -> None:
 
 def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
                  timeout, judge_timeout, limit, tags, verbose, command,
-                 demo_fallback=False):
+                 html_path=None, demo_fallback=False):
     _register_url_secrets(endpoint_url)
     if judge_spec == DEFAULT_JUDGE and suite.judge_model:
         judge_spec = f"ollama:{suite.judge_model}"  # the suite's judge block
@@ -235,22 +242,31 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
         judge_desc = "none (deterministic only)"
     judge_calls = judge.calls if judge else 0
 
-    Path(out_path).write_text(
-        render(board, endpoint_url, judge_desc, command, calibration,
-               wall, judge_calls), encoding="utf-8")
+    markdown = render(board, endpoint_url, judge_desc, command, calibration,
+                      wall, judge_calls)
+    Path(out_path).write_text(markdown, encoding="utf-8")
     Path(scores_path).write_text(
         scores_sidecar(board, endpoint_url, judge_desc, command, wall),
         encoding="utf-8")
+    if html_path:
+        # a projection of the markdown just written, never a second render
+        Path(html_path).write_text(report_html.to_html(markdown),
+                                   encoding="utf-8")
     if judge:
         judge.close()
 
-    scrub.sprint(f"{banner_line(board)} -> {out_path}")
+    destination = out_path if not html_path else f"{out_path}, {html_path}"
+    scrub.sprint(f"{banner_line(board)} -> {destination}")
     gate_failed = any(ok is False for _n, ok, _t in board.gate_results)
     return EXIT_GATE_FAILED if gate_failed else EXIT_OK
 
 
 def cmd_run(args) -> int:
     import shlex
+    if args.html and Path(args.html).resolve() == Path(args.out).resolve():
+        scrub.sprint("error: --html and --out point at the same file; the "
+                     "markdown report is the product, pick a different path")
+        return EXIT_ERROR
     suite = load_suite(args.tests)
     # the Reproduce command carries every behavior-changing non-default flag
     parts = ["agent-report-card", "run", "--tests", args.tests,
@@ -261,6 +277,8 @@ def cmd_run(args) -> int:
         parts += ["--out", args.out]
     if args.scores != "report.scores.json":
         parts += ["--scores", args.scores]
+    if args.html:
+        parts += ["--html", args.html]
     if args.timeout != 60.0:
         parts += ["--timeout", str(args.timeout)]
     if args.judge_timeout != 120.0:
@@ -272,7 +290,8 @@ def cmd_run(args) -> int:
     command = shlex.join(parts)
     return run_pipeline(suite, args.endpoint, args.judge, args.out,
                         args.scores, args.timeout, args.judge_timeout,
-                        args.limit, args.tags, args.verbose, command)
+                        args.limit, args.tags, args.verbose, command,
+                        html_path=args.html)
 
 
 def cmd_demo(args) -> int:
@@ -309,10 +328,12 @@ def cmd_demo(args) -> int:
         command = ("agent-report-card demo"
                    + (f" --port {args.port}" if args.port is not None else "")
                    + (f" --judge {args.judge}" if args.judge != DEFAULT_JUDGE
-                      else ""))
+                      else "")
+                   + (f" --html {args.html}" if args.html else ""))
         code = run_pipeline(suite, endpoint, args.judge, args.out,
                             args.scores, 30.0, 120.0, None, None,
-                            args.verbose, command, demo_fallback=True)
+                            args.verbose, command, html_path=args.html,
+                            demo_fallback=True)
         if args.keep_serving:
             scrub.sprint("bot still serving (Ctrl-C to stop); try the README "
                          "command in another terminal:")

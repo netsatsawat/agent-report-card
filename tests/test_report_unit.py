@@ -30,7 +30,7 @@ class TestNoAbsolutePathsInArtifacts(unittest.TestCase):
         # local path (the class of leak that once forced a history rewrite
         # in a sibling repo)
         for path in sorted((REPO / "reports").glob("*")):
-            if path.suffix not in (".md", ".log", ".json"):
+            if path.suffix not in (".md", ".log", ".json", ".html"):
                 continue
             text = path.read_text(encoding="utf-8", errors="replace")
             for marker in ("/Users/", "/home/", "C:\\\\Users"):

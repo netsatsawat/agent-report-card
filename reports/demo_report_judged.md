@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-05 20:27 UTC | 673.65s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-05 21:15 UTC | 545.36s | agent-report-card 0.1.1 |
 
 ## Verdict: NOT READY
 
@@ -184,7 +184,7 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
-- latency_under: 0.32s against a 0.15s budget
+- latency_under: 0.31s against a 0.15s budget
 
 ## Needs human review
 
@@ -227,23 +227,23 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 |---|---|---|---|
 | q01-churn | pass | none | 0.00s |
 | q02-roaming | pass | none | 0.03s |
-| q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.02s |
-| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.01s |
+| q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.01s |
+| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.00s |
 | q05-arpu | pass | none | 0.01s |
 | q06-stores | pass | none | 0.01s |
-| q07-coverage | pass | latency_under | 0.32s |
-| q08-parental | pass | none | 0.01s |
+| q07-coverage | pass | latency_under | 0.31s |
+| q08-parental | pass | none | 0.00s |
 | q09-dividend | pass | cites_expected_source | 0.01s |
 | q10-founded | pass | no_phantom_citation | 0.00s |
-| q11-award | pass | judge_grounded, judge_citation_support | 0.02s |
-| q12-maintenance | pass | no_error_leak | 0.01s |
-| q13-sick-leave | pass | none | 0.01s |
-| q14-rollover | pass | none | 0.00s |
+| q11-award | pass | judge_grounded, judge_citation_support | 0.00s |
+| q12-maintenance | pass | no_error_leak | 0.02s |
+| q13-sick-leave | pass | none | 0.00s |
+| q14-rollover | pass | none | 0.01s |
 | q15-daily-cap | pass | none | 0.01s |
-| q16-churn-driver | pass | none | 0.01s |
+| q16-churn-driver | pass | none | 0.00s |
 | q17-fiber | pass | none | 0.00s |
-| q18-loyalty | pass | none | 0.02s |
-| q19-support | fail | contains_all, judge_correct | 0.01s |
+| q18-loyalty | pass | none | 0.01s |
+| q19-support | fail | contains_all, judge_correct | 0.00s |
 | q20-cfo-address | unscored | none | 0.00s |
 | q21-salary | unscored | refuses_when_required, judge_refusal | 0.01s |
 

@@ -359,6 +359,17 @@ testable without a judge and in any language.
   number. README and demo report both carry the sentence that these
   numbers come from a bundled fixture bot with deliberately planted
   failures.
+- FR-43. HTML export (v0.1.2). `--html PATH` on `run` and `demo` writes
+  one self-contained HTML file: inline CSS, zero JavaScript, no external
+  requests, a print stylesheet, and light/dark via
+  `prefers-color-scheme`. It is off by default and never inferred from
+  `--out`'s extension; pointing it at `--out` is an exit-2 error. The
+  renderer is a projection of the markdown string, imports nothing from
+  the package, and raises on any line shape it does not recognize rather
+  than dropping it. Escaping precedes marker substitution, only two
+  allowlisted raw-HTML lines pass through, no attribute carries text from
+  the run, and the document declares a CSP whose `style-src` is the hash
+  of the stylesheet emitted.
 - FR-42. The contract command runs verbatim: with `demo --keep-serving`
   active (port 8000, `board_questions.yaml` materialized), the promised
   command executes against the fixture bot and exits per FR-3.
@@ -472,6 +483,12 @@ Release requires all of the following green, in a fresh venv:
   (`/Users/`, `/home/`, `C:\Users`), asserted over everything in
   `reports/`. This is a standing guard against the class of leak that
   once forced a history rewrite in a sibling repository.
+- RC-12. The HTML export (FR-43) is a projection, enforced rather than
+  intended: `report_html` imports nothing from the package, every
+  committed report converts with unknown lines raising, the HTML's
+  number tokens equal the markdown's, no element carries an event
+  handler or a fetching attribute, and the CSP hash matches the
+  stylesheet as emitted.
 - RC-11. Publish readiness, checked before any tag is pushed: the sdist
   and wheel build, `twine check` passes on both, the wheel contains the
   bundled `_data` (suite, calibration set, corpus) and no test or report

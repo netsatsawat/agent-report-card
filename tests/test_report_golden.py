@@ -45,7 +45,9 @@ class TestGoldenReport(unittest.TestCase):
         # the endpoint port is ephemeral in tests but canonical (8123) in
         # the committed gallery; mask host:port and the --port flag on both
         host = re.compile(r"(?:localhost|127\.0\.0\.1):\d+")
-        flag = re.compile(r" --port \d+")
+        # invocation-specific flags, not report format: the gallery pins a
+        # port and asks for the HTML sibling, a fresh test run does neither
+        flag = re.compile(r" --port \d+| --html \S+")
         def norm(text):
             return flag.sub("", host.sub("<HOST:PORT>", mask(text)))
         self.assertEqual(

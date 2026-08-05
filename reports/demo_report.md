@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-05 20:15 UTC | 0.33s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-05 21:06 UTC | 0.33s | agent-report-card 0.1.1 |
 
 ## Verdict: NOT READY
 
@@ -190,7 +190,7 @@ The judge did not run (--judge none). Every number above comes from the determin
 ## Reproduce
 
 ```
-agent-report-card demo --port 8123 --judge none
+agent-report-card demo --port 8123 --judge none --html report.html
 ```
 
 Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2. Tool version 0.1.1, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
