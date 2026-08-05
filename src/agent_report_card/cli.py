@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sys
 import time
@@ -157,6 +158,30 @@ example:
 
 # ---------------------------------------------------------------- pipeline
 
+def _colliding_outputs(out_path, scores_path, html_path):
+    """The name of a clash between two output paths, or None.
+
+    Checked in run_pipeline rather than in one subcommand, so every
+    caller is covered: `demo --html report.md` would otherwise write the
+    markdown and then silently overwrite it with HTML, and --out defaults
+    to report.md, so that is a single plausible typo away.
+    """
+    named = [("--out", out_path), ("--scores", scores_path),
+             ("--html", html_path)]
+    seen = {}
+    for flag, path in named:
+        if not path:
+            continue
+        try:
+            key = os.path.normcase(os.path.realpath(path))
+        except OSError:
+            key = os.path.normcase(os.path.abspath(path))
+        if key in seen:
+            return f"{seen[key]} and {flag} point at the same file"
+        seen[key] = flag
+    return None
+
+
 def _register_url_secrets(url: str) -> None:
     """Anything credential-shaped in the endpoint URL gets scrubbed from
     every output surface: userinfo, and the values of query parameters."""
@@ -167,12 +192,24 @@ def _register_url_secrets(url: str) -> None:
         scrub.register(parts.username, "ENDPOINT_USER")
     if parts.password:
         scrub.register(parts.password, "ENDPOINT_PASSWORD")
+    # Register the decoded value AND the raw wire form. Scrubbing is
+    # exact-substring, and what gets printed is the URL as given, so a
+    # percent-encoded secret would otherwise never match its own decoding.
     for key, value in parse_qsl(parts.query):
         scrub.register(value, f"ENDPOINT_QUERY_{key.upper()}")
+    for pair in parts.query.split("&"):
+        if "=" in pair:
+            key, raw = pair.split("=", 1)
+            scrub.register(raw, f"ENDPOINT_QUERY_{key.upper()}")
 
 def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
                  timeout, judge_timeout, limit, tags, verbose, command,
                  html_path=None, demo_fallback=False):
+    clash = _colliding_outputs(out_path, scores_path, html_path)
+    if clash:
+        scrub.sprint(f"error: {clash}; the markdown report is the product, "
+                     f"pick a different path")
+        return EXIT_ERROR
     _register_url_secrets(endpoint_url)
     if judge_spec == DEFAULT_JUDGE and suite.judge_model:
         judge_spec = f"ollama:{suite.judge_model}"  # the suite's judge block
@@ -249,9 +286,17 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
         scores_sidecar(board, endpoint_url, judge_desc, command, wall),
         encoding="utf-8")
     if html_path:
-        # a projection of the markdown just written, never a second render
-        Path(html_path).write_text(report_html.to_html(markdown),
-                                   encoding="utf-8")
+        # a projection of the markdown just written, never a second render.
+        # A failure here is a tool error, not a failed gate: exiting 1
+        # would tell CI the bot regressed when the disk was full.
+        try:
+            Path(html_path).write_text(report_html.to_html(markdown),
+                                       encoding="utf-8")
+        except (OSError, report_html.UnrenderableLine) as exc:
+            scrub.sprint(f"error: could not write {html_path}: {exc}")
+            if judge:
+                judge.close()
+            return EXIT_ERROR
     if judge:
         judge.close()
 
@@ -263,10 +308,6 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
 
 def cmd_run(args) -> int:
     import shlex
-    if args.html and Path(args.html).resolve() == Path(args.out).resolve():
-        scrub.sprint("error: --html and --out point at the same file; the "
-                     "markdown report is the product, pick a different path")
-        return EXIT_ERROR
     suite = load_suite(args.tests)
     # the Reproduce command carries every behavior-changing non-default flag
     parts = ["agent-report-card", "run", "--tests", args.tests,
@@ -295,6 +336,8 @@ def cmd_run(args) -> int:
 
 
 def cmd_demo(args) -> int:
+    import shlex
+
     from . import demo_bot
 
     tests_path = Path("board_questions.yaml")
@@ -329,7 +372,8 @@ def cmd_demo(args) -> int:
                    + (f" --port {args.port}" if args.port is not None else "")
                    + (f" --judge {args.judge}" if args.judge != DEFAULT_JUDGE
                       else "")
-                   + (f" --html {args.html}" if args.html else ""))
+                   + (f" --html {shlex.quote(args.html)}"
+                      if args.html else ""))
         code = run_pipeline(suite, endpoint, args.judge, args.out,
                             args.scores, 30.0, 120.0, None, None,
                             args.verbose, command, html_path=args.html,

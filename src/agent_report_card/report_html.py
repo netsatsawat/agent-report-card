@@ -93,7 +93,12 @@ def _banner(line: str) -> str | None:
 
 
 def _meta_table(header: list[str], rows: list[list[str]]) -> str | None:
-    if header != META_HEADERS or len(rows) != 1:
+    """The header table as a grid, but only when it is exactly the shape
+    expected. A ragged row means some cell contained a pipe, and zipping
+    it against the headers would drop and mislabel values; fall back to
+    the generic table, which is lossless."""
+    if (header != META_HEADERS or len(rows) != 1
+            or len(rows[0]) != len(header)):
         return None
     pairs = "".join(f"<dt>{escape(k)}</dt><dd>{_inline(v)}</dd>"
                     for k, v in zip(header, rows[0]))
@@ -202,7 +207,12 @@ def _body(markdown: str) -> tuple[list[str], str, str]:
         if stripped.startswith("> "):
             quoted = []
             while i < len(lines) and lines[i].strip().startswith(">"):
-                quoted.append(lines[i].strip()[1:].lstrip(" "))
+                # drop the marker and the single separator space only: the
+                # rest is the answer's own indentation, which the stylesheet
+                # preserves with pre-wrap because a quoted traceback is
+                # evidence and its shape is part of it
+                rest = lines[i].strip()[1:]
+                quoted.append(rest[1:] if rest.startswith(" ") else rest)
                 i += 1
             out.append("<blockquote>"
                        + escape("\n".join(quoted), quote=True)

@@ -134,6 +134,50 @@ class TestParity(unittest.TestCase):
                     NUMBER.findall(text_of(to_html(markdown))),
                     "the HTML shows different numbers than report.md")
 
+    def test_prose_survives_too_not_just_numbers(self):
+        """Numbers alone would let a digitless section vanish unnoticed."""
+        markers = re.compile(r"^[#>\-\s|]+|[*`|]")
+        for path in REPORTS:
+            with self.subTest(report=path.name):
+                markdown = path.read_text(encoding="utf-8")
+                want = [markers.sub(" ", ln).split()
+                        for ln in markdown.splitlines()]
+                words = [w for line in want for w in line if w.isalpha()]
+                seen = text_of(to_html(markdown))
+                missing = [w for w in set(words) if w not in seen]
+                self.assertEqual([], missing,
+                                 "words present in report.md are absent "
+                                 "from the HTML")
+
+    def test_the_committed_html_matches_the_committed_markdown(self):
+        """The README showcases this file; it must not drift from its own
+        report between gallery runs."""
+        html = REPO / "reports" / "demo_report.html"
+        markdown = REPO / "reports" / "demo_report.md"
+        self.assertTrue(html.exists(), "reports/demo_report.html is missing")
+        self.assertEqual(
+            html.read_text(encoding="utf-8"),
+            to_html(markdown.read_text(encoding="utf-8")),
+            "reports/demo_report.html is stale; regenerate with `make gallery`")
+
+    def test_an_indented_quoted_line_keeps_its_shape(self):
+        # a quoted traceback is evidence; its indentation is part of it
+        html = to_html("# T\n\n> Traceback (most recent call last):\n"
+                       '>   File "/srv/bot/render.py", line 88\n'
+                       ">     KeyError: 'x'\n")
+        self.assertIn('  File "/srv/bot/render.py", line 88',
+                      Structure(html).text)
+        self.assertIn("    KeyError: 'x'", Structure(html).text)
+
+    def test_a_pipe_in_a_metadata_cell_does_not_drop_values(self):
+        md = ("# T\n\n"
+              "| endpoint | tests | judge | date | wall clock | tool |\n"
+              "|---|---|---|---|---|---|\n"
+              "| http://x | a|b | j | d | 1s | t |\n")
+        text = Structure(to_html(md)).text
+        for value in ("http://x", "a", "b", "j", "1s", "t"):
+            self.assertIn(value, text)
+
     def test_verdict_and_headings_survive(self):
         markdown = (REPO / "reports" / "demo_report_judged.md").read_text(
             encoding="utf-8")
