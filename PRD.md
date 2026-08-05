@@ -3,11 +3,26 @@
 | | |
 |---|---|
 | Product | agent-report-card, RAG QA mode |
-| Version | v0.1 (first public release) |
-| Status | Approved for build |
+| Version | v0.1, shipped as 0.1.1 (see Release history) |
+| Status | Shipped |
 | Owner | Satsawat Natakarnkitkul |
-| Date | 2026-08-05 |
-| Provenance | Synthesized from a five-agent design panel (competitive research, three independent designs, scoring judge), then hardened by a four-lens adversarial review (19 confirmed findings applied). PLAN.md holds the design rationale and the amendment record. |
+| Date | 2026-08-05, updated 2026-08-06 at release |
+| Provenance | Synthesized from a five-agent design panel (competitive research, three independent designs, scoring judge), hardened by a four-lens adversarial review of this document (19 findings), then by a five-lens review of the built code (49 findings) and a four-lens final review of scripts, sample data, and safety (15 findings). PLAN.md holds the design rationale and the amendment record. |
+
+## 0. Release history
+
+- **v0.1.0** (tag `v0.1.0`, GitHub release): the build described below, CI
+  green from a fresh clone. Cut before the publishing pipeline existed, so
+  it was never published to PyPI.
+- **v0.1.1**: first PyPI release. Adds fully documented `--help` (every
+  flag, plus the exit-code contract), `SECURITY.md`, and the trusted
+  publishing workflow. No change to the check catalog, scoring, or report
+  format.
+
+The rule this established, and the reason for the version bump: the
+artifact on PyPI and the code at the git tag must be byte-identical.
+Publishing 0.1.0 built from a later commit would have broken that
+silently and permanently, since PyPI never allows re-uploading a version.
 
 ## 1. Problem and opportunity
 
@@ -117,9 +132,27 @@ against any user endpoint with their own file and URL substituted.
 - FR-1. Console script `agent-report-card`, package `agent_report_card`,
   subcommands `run`, `demo`, `init`, `judge-check`, `checks`. Python
   3.10+, dependencies `pyyaml` and `httpx` only. MIT license, LICENSE
-  file committed. v0.1 publishes to PyPI at the release tag; before
-  publication the README's install path is clone plus `pip install -e .`,
-  and the README states which one it is quoting.
+  file committed.
+- FR-1a. Publishing. The package publishes to PyPI from a git tag, and
+  the tagged tree is the tree that is built: a version is never published
+  from a commit the tag does not point at. Publication uses PyPI trusted
+  publishing (OIDC) via `.github/workflows/publish.yml`, so no API token
+  exists in the repository, in GitHub secrets, or on any developer
+  machine, which is the same guarantee the tool makes to its own users.
+  The workflow re-runs the full test suite and the README-claims verifier
+  before anything is uploaded. It fires on a published GitHub release and
+  can be dispatched by hand.
+- FR-1b. Every user-facing entry point documents itself. `--help` at the
+  top level lists all subcommands and shows worked examples grouped by
+  intent; every subcommand documents every flag with its default; and
+  `run --help` states the exit-code contract, since that contract is what
+  CI depends on. No flag may ship without help text.
+- FR-1c. `SECURITY.md` states what the tool reads (nothing but explicit
+  `${VAR}` references in the user's own suite), what it sends where (only
+  the configured endpoint and judge), how secret scrubbing works and
+  precisely where it fails, and that prompt injection from the system
+  under test into the judge is inherent to LLM-as-judge and undefended in
+  v0.1.
 - FR-2. `run` accepts `--tests`, `--endpoint`, `--judge` (default
   `ollama:qwen3.6:27b` at `http://localhost:11434`; `none` is a
   first-class mode), `--out` (default report.md), `--scores` (default
@@ -432,6 +465,18 @@ Release requires all of the following green, in a fresh venv:
   and which checks unlock when contexts and sources are mapped.
 - RC-8. Contract-command test: with `demo --keep-serving` active, the
   verbatim README command runs and exits per contract (G2, FR-42).
+- RC-9. Help coverage is tested, not assumed: every subcommand answers
+  `--help`, `run --help` states the exit codes, and a test fails if any
+  flag is listed without a description (FR-1b).
+- RC-10. No committed artifact contains an absolute local path
+  (`/Users/`, `/home/`, `C:\Users`), asserted over everything in
+  `reports/`. This is a standing guard against the class of leak that
+  once forced a history rewrite in a sibling repository.
+- RC-11. Publish readiness, checked before any tag is pushed: the sdist
+  and wheel build, `twine check` passes on both, the wheel contains the
+  bundled `_data` (suite, calibration set, corpus) and no test or report
+  files, and the version in `pyproject.toml` matches
+  `agent_report_card.__version__` and the tag being cut.
 
 ## 10. Milestones
 
@@ -470,12 +515,14 @@ milestone M4):
 
 ## 12. Future versions
 
-- v0.1.1 candidates (only if users ask): static single-file HTML export
-  of the same report (same section order, inline CSS, zero JavaScript,
-  no server; a second rendering of the document, never a dashboard, for
-  the stakeholder who receives it by email), OpenAI-compatible judge URL
+- v0.1.1 (shipped): documented `--help` including the exit-code contract,
+  `SECURITY.md`, and trusted publishing. Deferred from it, and still the
+  next candidates if users ask: a static single-file HTML export of the
+  same report (same section order, inline CSS, zero JavaScript, no
+  server; a second rendering of the document, never a dashboard, for the
+  stakeholder who receives it by email), an OpenAI-compatible judge URL
   option for LM Studio and vLLM, `judge_complete` for multi-part
-  questions, per-category calibration breakdown.
+  questions, and a per-category calibration breakdown.
 - v0.2: agent-trace mode ingesting agent-failure-lab-style per-step
   JSONL; requires the lab to version its format first.
 - v0.3: baseline diffing against a stored scores sidecar, fail-the-build

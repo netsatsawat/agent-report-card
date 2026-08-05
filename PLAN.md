@@ -33,6 +33,26 @@
 > case is tagged critical, response mapping defaults now match the
 > documented default contract, the suite's judge block is honored when
 > the CLI flag is not given, and match: contains requires must_contain.
+>
+> **Amended again 2026-08-06 at release.** A final four-lens review of
+> scripts, sample data, renderer templates, and safety confirmed 15 more
+> findings, all fixed: the gallery now runs on a fixed port so a committed
+> report's header, sidecar, log, and Reproduce command cannot contradict
+> each other; judge free-text is flattened and capped before it can inject
+> structure into a markdown bullet; `endpoint.path` must start with `/` so
+> a suite file can never smuggle a host and send your headers elsewhere;
+> and the localization line no longer claims "no contexts came back" when
+> contexts did. Shipped alongside: documented `--help` with the exit-code
+> contract, `SECURITY.md`, and PyPI trusted publishing.
+>
+> **The versioning rule, learned the hard way.** v0.1.0 was tagged before
+> the publish workflow existed, so publishing "0.1.0" would have meant
+> uploading a build from a later commit than the tag pointed at. Because
+> PyPI never allows re-uploading a version, that inconsistency would have
+> been permanent and undetectable to anyone comparing the two. The fix was
+> to ship 0.1.1 rather than rewrite a published tag, and the rule is now
+> in the PRD as FR-1a and RC-11: the tagged tree is the tree that gets
+> built, verified before the tag is pushed.
 
 Written 2026-08-05, from a design panel: one competitive-research pass over the
 August 2026 eval landscape, three independent designs (minimal-first,

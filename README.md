@@ -56,13 +56,13 @@ and its output is a text file that cannot be deprecated.
 ## ⚡ Five minutes, no model, no keys
 
 ```bash
-git clone https://github.com/netsatsawat/agent-report-card
-cd agent-report-card && python3 -m venv .venv && .venv/bin/pip install -e .
-.venv/bin/agent-report-card demo --judge none
+pip install agent-report-card
+agent-report-card demo --judge none
 ```
 
-Python 3.10 or newer (stock macOS `python3` may be 3.9; use
-`python3.11 -m venv .venv` or a `pyenv`/`uv` interpreter in that case).
+Python 3.10 or newer (stock macOS `python3` may be 3.9; use a
+`python3.11`, `pyenv`, or `uv` interpreter in that case). To work on the
+tool itself, clone it and `pip install -e .` instead.
 
 That boots a bundled fixture bot (a fake support bot for the fictional
 Northstar Telecom, with nine flaws planted on purpose), runs the bundled
@@ -77,9 +77,9 @@ not seconds, and pretending otherwise would break house rules.
 To try the promised command exactly as written above:
 
 ```bash
-.venv/bin/agent-report-card demo --keep-serving --port 8000
+agent-report-card demo --keep-serving --port 8000
 # in another terminal, from the same directory:
-.venv/bin/agent-report-card run --tests board_questions.yaml --endpoint http://localhost:8000 --judge none
+agent-report-card run --tests board_questions.yaml --endpoint http://localhost:8000 --judge none
 ```
 
 (`--port 8000` errors clearly if something else owns the port; without
@@ -195,8 +195,9 @@ drift from a fresh run or from the committed artifact behind them.
 
 ## 🗺️ Roadmap
 
-- v0.1 (this): RAG QA mode, the report, the judge's own report card.
-- v0.1.1 candidates: static single-file HTML export of the same report,
+- v0.1.1 (this, on PyPI): RAG QA mode, the report, the judge's own
+  report card, documented `--help`, and trusted publishing.
+- Next, if users ask: static single-file HTML export of the same report,
   OpenAI-compatible judge URLs, multi-part completeness check.
 - v0.2: agent-trace mode, per-step scoring of multi-step agent runs
   (see [agent-failure-lab](https://github.com/netsatsawat/agent-failure-lab)).
