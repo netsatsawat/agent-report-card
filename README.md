@@ -69,10 +69,18 @@ the flag, `demo` falls back to a free port and tells you. Drop
 `--judge none` when Ollama is up; without Ollama the run exits 2 with a
 message naming the fallback, because `run` never silently downgrades.)
 
-See a report before installing anything:
-[reports/demo_report.md](reports/demo_report.md) (deterministic run) and
-[reports/demo_report_judged.md](reports/demo_report_judged.md) (same bot,
-judged by a local qwen3.6:27b).
+See a report before installing anything — one committed example per
+verdict, all real runs against the bundled bot:
+
+| verdict | report | how it happened |
+|---|---|---|
+| NOT READY | [demo_report_judged.md](reports/demo_report_judged.md) | the flawed demo suite, judged by a local qwen3.6:27b; gates fail on accuracy, hallucination, and a critical leak |
+| NOT READY, no judge | [demo_report.md](reports/demo_report.md) | same suite deterministically; hallucination honestly renders n/a |
+| PASS | [sample_pass.md](reports/sample_pass.md) | the flaw-free subset ([examples/release_questions.yaml](examples/release_questions.yaml)), judged; every gate green, no warnings |
+| PASS WITH WARNINGS | [sample_pass_with_warnings.md](reports/sample_pass_with_warnings.md) | the same clean suite without a judge: the judge-fed hallucination gate cannot be evaluated, and that is a warning, never a silent pass |
+
+`scripts/make_gallery.py` regenerates the last two; exit codes are 0 for
+both PASS levels and 1 for NOT READY, which is what CI keys on.
 
 ## What your endpoint must return
 

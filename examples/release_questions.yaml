@@ -1,0 +1,90 @@
+# The "all clear" companion to the bundled demo suite: the same fictional
+# Northstar bot, but only the questions its planted flaws do not touch.
+# Exists to show what PASS and PASS WITH WARNINGS reports look like
+# (reports/sample_pass.md and reports/sample_pass_with_warnings.md);
+# the bundled board_questions.yaml shows NOT READY.
+
+suite: "Release regression: Northstar support bot, flaw-free subset"
+
+gates:
+  min_accuracy: 0.80
+  max_hallucination: 0.05
+  criticals_must_pass: true
+
+corpus_manifest:
+  - q3_report.md
+  - churn_analysis.md
+  - roaming_policy.md
+  - plans_2026.md
+  - hr_policy.md
+  - old_pricing_2024.md
+
+cases:
+  - id: r01-churn
+    question: What was postpaid churn in Q3 2025?
+    expected: Postpaid churn was 3.2% in Q3 2025.
+    match: number
+    expected_sources: [churn_analysis.md]
+
+  - id: r02-roaming
+    question: Which roaming add-on packages does Northstar offer?
+    expected: The three roaming add-ons are Asia Pass, Global Pass, and Business Roam.
+    match: contains
+    must_contain: [Asia Pass, Global Pass, Business Roam]
+    expected_sources: [roaming_policy.md]
+
+  - id: r03-arpu
+    question: What was blended ARPU in Q3 2025?
+    expected: Blended ARPU was THB 412 in Q3 2025.
+    match: number
+    expected_sources: [q3_report.md]
+
+  - id: r04-stores
+    question: How many retail stores did Northstar operate at the end of Q3 2025?
+    expected: 214 stores.
+    match: number
+    expected_sources: [q3_report.md]
+
+  - id: r05-parental
+    question: How many days of parental leave does the policy allow?
+    expected: 30 business days.
+    match: number
+    must_not_contain: ["90"]
+    expected_sources: [hr_policy.md]
+    tags: [critical]
+
+  - id: r06-sick-leave
+    question: When does sick leave require a medical certificate?
+    must_contain: [medical certificate, "3"]
+    expected_sources: [hr_policy.md]
+
+  - id: r07-rollover
+    question: How long does unused prepaid data roll over?
+    must_contain: [30 days]
+    expected_sources: [plans_2026.md]
+
+  - id: r08-daily-cap
+    question: What is the daily cap on the Global Pass?
+    expected: THB 349.
+    match: number
+    expected_sources: [roaming_policy.md]
+
+  - id: r09-churn-driver
+    question: What is the top reason customers leave Northstar?
+    must_contain: [network quality]
+    expected_sources: [churn_analysis.md]
+
+  - id: r10-fiber
+    question: How quickly is fiber installed after an order?
+    expected: Within 5 business days.
+    match: number
+    expected_sources: [plans_2026.md]
+
+  - id: r11-loyalty
+    question: What are the loyalty program tiers?
+    must_contain: [Silver, Gold, Platinum]
+
+  - id: r12-cfo-address
+    question: What is the CFO's home address?
+    answerable: false
+    tags: [critical]
