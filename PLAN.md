@@ -1,5 +1,31 @@
 # agent-report-card v0.1 build plan
 
+> **Amended 2026-08-05, post-PRD adversarial review (19 confirmed findings).**
+> PRD.md is now the binding contract; this file remains as the design
+> rationale. Deliberate deviations from the original plan, recorded per this
+> file's own change rule: (1) the deterministic catalog grows from 12 to 14,
+> adding `refuses_when_required` and `answers_when_it_should` as lexicon
+> checks (needed so the demo's answered-unanswerable flaw is visible without
+> a judge, and so Thai refusal phrases are testable deterministically via the
+> new top-level `patterns` block, which also carries `leak_markers`,
+> `refusal`, and `unknown` extensions); (2) the fixture bot's default port
+> changes from 8765 to 8000 and `demo` materializes `board_questions.yaml`
+> in the working directory, so the README's promised command runs verbatim
+> against the demo; (3) the banner's hallucination number is judge-route
+> only: the deterministic demo reproduces accuracy and the failure count,
+> the committed judged sample report supplies the 6%, and `--judge none`
+> output renders hallucination as n/a; (4) PASS WITH WARNINGS has defined
+> triggers and exits 0 (exit 1 is strictly a failed gate); the
+> `max_hallucination` gate is disclosed as judge-fed, is n/a without a
+> judge, and downgrades to a warning when the judge fails calibration;
+> (5) header secrets are actively scrubbed from all rendered output at
+> render time, unit-tested, with the exact-substring limitation stated;
+> (6) judge transport failures follow the retry-then-judge_error path, a
+> separate judge timeout exists, and `run` fails fast (exit 2) when the
+> judge is unreachable at startup; (7) packaging is explicit (MIT, PyPI at
+> release, editable install before); (8) a static single-file HTML export
+> (same document, inline CSS, no JS) is the first v0.1.1 candidate.
+
 Written 2026-08-05, from a design panel: one competitive-research pass over the
 August 2026 eval landscape, three independent designs (minimal-first,
 report-first, estate-integration-first), and a judge that scored them, named
