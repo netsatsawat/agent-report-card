@@ -1,0 +1,49 @@
+# Publish to PyPI via trusted publishing (OIDC): there is no API token in
+# this repository, on any laptop, or in GitHub secrets. PyPI is configured
+# to trust this repo and this workflow file, and mints a short-lived
+# credential at publish time. A tool whose first README line is "no API
+# keys, ever" should not ship itself with a stored key.
+#
+# Fires when a GitHub release is published, and can be run by hand
+# (workflow_dispatch) for a release that predates this workflow.
+
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install
+        run: pip install -e . build
+      - name: nothing ships that has not passed its own suite
+        run: |
+          python -m unittest discover tests
+          python scripts/verify_readme_claims.py
+      - name: build sdist and wheel
+        run: python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # the only permission trusted publishing needs
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

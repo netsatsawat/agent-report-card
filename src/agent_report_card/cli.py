@@ -24,50 +24,120 @@ EXIT_OK, EXIT_GATE_FAILED, EXIT_ERROR = 0, 1, 2
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="agent-report-card",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         description="A performance review for your AI agent: one CLI, one "
-                    "YAML test file, one markdown report.")
+                    "YAML test file, one markdown report.",
+        epilog="""\
+try it with no model and no keys:
+  agent-report-card demo --judge none      bundled fixture bot, fully offline
+
+grade your own bot:
+  agent-report-card init my_tests.yaml     commented starter suite
+  agent-report-card run --tests my_tests.yaml --endpoint http://localhost:8000
+
+understand the scoring:
+  agent-report-card checks                 what each of the 19 checks catches
+  agent-report-card judge-check            measure your judge before trusting it
+
+The report is the product: report.md carries the verdict, the failing
+answers quoted verbatim, and what the run could not tell you.
+Docs: https://github.com/netsatsawat/agent-report-card""")
     parser.add_argument("--version", action="version",
                         version=f"agent-report-card {__version__}")
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command", required=True,
+                                metavar="{run,demo,init,judge-check,checks}")
 
-    run_p = sub.add_parser("run", help="run a test suite against an endpoint")
-    run_p.add_argument("--tests", required=True)
-    run_p.add_argument("--endpoint", required=True)
-    run_p.add_argument("--judge", default=DEFAULT_JUDGE,
-                       help=f"'{DEFAULT_JUDGE}', 'ollama:MODEL[@URL]', or 'none'")
-    run_p.add_argument("--out", default="report.md")
-    run_p.add_argument("--scores", default="report.scores.json")
-    run_p.add_argument("--timeout", type=float, default=60.0,
-                       help="per endpoint HTTP call, seconds")
+    run_p = sub.add_parser(
+        "run", help="run a test suite against an endpoint",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Run a YAML (or JSON) test suite against a live HTTP "
+                    "endpoint and write a markdown report.",
+        epilog="""\
+exit codes (this is the CI contract):
+  0   PASS or PASS WITH WARNINGS
+  1   at least one gate in the suite's `gates` block failed
+  2   tool error: bad suite file, unreachable endpoint, or a judge was
+      requested but is unavailable (run never downgrades silently)
+
+example:
+  agent-report-card run --tests board_questions.yaml \\
+      --endpoint http://localhost:8000 --judge none""")
+    run_p.add_argument("--tests", required=True, metavar="PATH",
+                       help="the test suite, YAML or JSON, strictly validated")
+    run_p.add_argument("--endpoint", required=True, metavar="URL",
+                       help="system under test; a bare origin gets the "
+                            "suite's endpoint.path appended")
+    run_p.add_argument("--judge", default=DEFAULT_JUDGE, metavar="SPEC",
+                       help=f"'{DEFAULT_JUDGE}' (default), "
+                            f"'ollama:MODEL[@URL]', or 'none' to run the "
+                            f"deterministic checks only")
+    run_p.add_argument("--out", default="report.md", metavar="PATH",
+                       help="markdown report (default: report.md)")
+    run_p.add_argument("--scores", default="report.scores.json", metavar="PATH",
+                       help="machine-readable sidecar; format unstable in "
+                            "v0.1 (default: report.scores.json)")
+    run_p.add_argument("--timeout", type=float, default=60.0, metavar="SECONDS",
+                       help="per endpoint HTTP call (default: 60)")
     run_p.add_argument("--judge-timeout", type=float, default=120.0,
-                       help="per judge call, seconds")
-    run_p.add_argument("--limit", type=int, default=None)
-    run_p.add_argument("--tags", default=None,
-                       help="comma-separated; run only cases with one of these tags")
-    run_p.add_argument("-v", "--verbose", action="store_true")
+                       metavar="SECONDS",
+                       help="per judge call; large local models are slow "
+                            "(default: 120)")
+    run_p.add_argument("--limit", type=int, default=None, metavar="N",
+                       help="run only the first N cases, for a fast smoke test")
+    run_p.add_argument("--tags", default=None, metavar="TAG,TAG",
+                       help="comma-separated; run only cases carrying one of "
+                            "these tags")
+    run_p.add_argument("-v", "--verbose", action="store_true",
+                       help="stream per-case progress; judged runs are long "
+                            "and silence is unhelpful")
 
-    demo_p = sub.add_parser("demo", help="run the bundled fixture bot and suite")
-    demo_p.add_argument("--judge", default=DEFAULT_JUDGE)
-    demo_p.add_argument("--port", type=int, default=None,
+    demo_p = sub.add_parser(
+        "demo", help="run the bundled fixture bot and suite",
+        description="Boot a bundled fixture bot (a fake support bot with "
+                    "flaws planted on purpose), run the bundled suite "
+                    "against it, and write a report. Needs no model and no "
+                    "keys with --judge none.")
+    demo_p.add_argument("--judge", default=DEFAULT_JUDGE, metavar="SPEC",
+                        help="as in `run`; falls back to none with a notice "
+                             "if the judge is unreachable")
+    demo_p.add_argument("--port", type=int, default=None, metavar="PORT",
                         help="fixture bot port (default 8000; falls back to "
                              "a free port with a notice when 8000 is taken)")
-    demo_p.add_argument("--out", default="report.md")
-    demo_p.add_argument("--scores", default="report.scores.json")
+    demo_p.add_argument("--out", default="report.md", metavar="PATH",
+                        help="markdown report (default: report.md)")
+    demo_p.add_argument("--scores", default="report.scores.json",
+                        metavar="PATH", help="sidecar path")
     demo_p.add_argument("--keep-serving", action="store_true",
-                        help="leave the fixture bot running in the foreground")
-    demo_p.add_argument("-v", "--verbose", action="store_true")
+                        help="leave the fixture bot running so you can point "
+                             "your own commands at it")
+    demo_p.add_argument("-v", "--verbose", action="store_true",
+                        help="stream per-case progress")
 
-    init_p = sub.add_parser("init", help="write a commented starter YAML")
-    init_p.add_argument("path", nargs="?", default="tests.example.yaml")
+    init_p = sub.add_parser(
+        "init", help="write a commented starter YAML",
+        description="Write a starter test suite showing every supported "
+                    "field. Refuses to overwrite an existing file.")
+    init_p.add_argument("path", nargs="?", default="tests.example.yaml",
+                        help="where to write it (default: tests.example.yaml)")
 
-    jc_p = sub.add_parser("judge-check",
-                          help="run the judge's own 30-pair labeled exam")
-    jc_p.add_argument("--judge", default=DEFAULT_JUDGE)
-    jc_p.add_argument("--judge-timeout", type=float, default=120.0)
+    jc_p = sub.add_parser(
+        "judge-check", help="run the judge's own 30-pair labeled exam",
+        description="Grade the judge before it grades you: 30 hand-labeled "
+                    "pairs, including five answers wrong by under 1 percent. "
+                    "Prints agreement, false-pass rate, false-fail rate, and "
+                    "subtle-numeric recall, then caches the result so every "
+                    "report can embed it.")
+    jc_p.add_argument("--judge", default=DEFAULT_JUDGE, metavar="SPEC",
+                      help="judge to examine (default: %(default)s)")
+    jc_p.add_argument("--judge-timeout", type=float, default=120.0,
+                      metavar="SECONDS", help="per judge call (default: 120)")
 
-    checks_p = sub.add_parser("checks", help="print the check catalog")
+    checks_p = sub.add_parser(
+        "checks", help="print the check catalog",
+        description="Print every check with its route and what it catches. "
+                    "The catalog is fixed by design.")
     checks_p.add_argument("--md", action="store_true",
-                          help="emit CHECKS.md markdown instead")
+                          help="emit CHECKS.md markdown instead of plain lines")
 
     args = parser.parse_args(argv)
     try:
