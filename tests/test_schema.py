@@ -98,6 +98,15 @@ class TestSchema(unittest.TestCase):
             load_suite(write(bad_needle))
         self.assertIn("not a valid regex", str(ctx.exception))
 
+    def test_endpoint_path_must_start_with_slash(self):
+        # a path like '@evil.example/ask' would turn the user's host into
+        # URL userinfo and send the request (with headers) elsewhere
+        bad = GOOD.replace("endpoint:\n",
+                           "endpoint:\n  path: \"@evil.example/ask\"\n")
+        with self.assertRaises(SchemaError) as ctx:
+            load_suite(write(bad))
+        self.assertIn("must start with '/'", str(ctx.exception))
+
     def test_match_contains_requires_must_contain(self):
         bad = GOOD.replace("    match: number", "    match: contains")
         with self.assertRaises(SchemaError) as ctx:

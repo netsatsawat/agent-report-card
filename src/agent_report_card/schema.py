@@ -183,9 +183,15 @@ def load_suite(path: str) -> Suite:
     resp = ep_raw.get("response") or {}
     _check_keys(resp, RESPONSE_KEYS, resp.get(LINE_KEY, 1), None, "endpoint.response")
     headers_raw = ep_raw.get("headers") or {}
+    ep_path = str(ep_raw.get("path", "/ask"))
+    if not ep_path.startswith("/"):
+        _err(ep_raw.get(LINE_KEY, 1), None,
+             f"endpoint.path {ep_path!r} must start with '/'",
+             "a path may never carry a host, userinfo, or scheme; the host "
+             "comes only from --endpoint")
     endpoint = EndpointCfg(
         method=str(ep_raw.get("method", "POST")).upper(),
-        path=str(ep_raw.get("path", "/ask")),
+        path=ep_path,
         question_field=str(req.get("question_field", "question")),
         answer_path=str(resp.get("answer", "answer")),
         # absent key -> the documented default contract; explicit null -> off

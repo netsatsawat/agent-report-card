@@ -1,18 +1,18 @@
-# Report card: Release regression: Northstar support bot, flaw-free subset
+# Report card · Release regression: Northstar support bot, flaw-free subset
 
-**accuracy 100% (11/11) · hallucination n/a (grounding needs the judge; run without --judge none) · 0 failures · PASS WITH WARNINGS**
+**accuracy 100% (11/11) · hallucination n/a (grounding needs the judge; drop --judge none to evaluate it) · 0 failures · PASS WITH WARNINGS**
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://127.0.0.1:55995 | release_questions.yaml (sha256 ebe4f05c6625) | none (deterministic only) | 2026-08-05 17:46 UTC | 0.01s | agent-report-card 0.1.0 |
+| http://localhost:8123 | release_questions.yaml (sha256 ebe4f05c6625) | none (deterministic only) | 2026-08-05 18:19 UTC | 0.01s | agent-report-card 0.1.0 |
 
 ## Verdict: PASS WITH WARNINGS
 
-- Gate passed: deterministic accuracy 100% (11/11) against a 80% floor.
-- Gate passed: all 2 critical-tagged case(s) passed their code checks.
+- Gate passed: deterministic accuracy 100% (11/11) against the 80% floor.
+- Gate passed: all 2 critical-tagged cases passed their code checks.
 - Bars used (set by this test file): accuracy at least 80%, hallucination at most 5%, critical cases must pass. This verdict holds against this test set and these gates, nothing more.
 
-- Warning: the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; run without --judge none).
+- Warning: the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; drop --judge none to evaluate it).
 
 ## Scorecard
 
@@ -20,7 +20,7 @@
 |---|---|---|
 | accuracy, deterministic route | 100% (11/11) | 95% interval 74% to 100% |
 | accuracy, judge route | n/a (judge did not run) | routes shown side by side on purpose |
-| hallucination (ungrounded vs retrieval, not untrue) | n/a (grounding needs the judge; run without --judge none) | judge-fed |
+| hallucination (ungrounded vs retrieval, not untrue) | n/a (grounding needs the judge; drop --judge none to evaluate it) | judge-fed |
 | citation validity | 100% (20/20) |  |
 | refusal handling | 100% (1/1) |  |
 | latency p50 / p95 | 0.00s / 0.00s | over 12 requests |
@@ -45,7 +45,7 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 | `refuses_when_required` | code | The bot answering a question it must decline | 1/1 passed |
 | `answers_when_it_should` | code | Over-refusal on legitimate questions | 11/11 passed |
 | `length_in_bounds` | code | Empty replies and runaway rambles | 12/12 passed |
-| `latency_under` | code | Answers too slow for the seat they are meant to fill | n/a (no budget_seconds set (latency recorded anyway)) |
+| `latency_under` | code | Answers too slow for the seat they are meant to fill | n/a (no budget_seconds set; latency recorded anyway) |
 | `judge_correct` | judge | Paraphrased-but-wrong answers that string matching cannot see | n/a (judge did not run) |
 | `judge_grounded` | judge | Claims the retrieved passages do not support: the hallucination number | n/a (judge did not run) |
 | `judge_refusal` | judge | Refusals that answer anyway in polite words | n/a (judge did not run) |
@@ -66,7 +66,7 @@ The judge did not run (--judge none). Every number above comes from the determin
 
 ## What this report cannot tell you
 
-- Scoring routes: 11 case(s) deterministically scored, 0 judge-scored, 0 judge_error(s).
+- Scoring routes: 11 cases deterministically scored, 0 judge-scored, 0 judge errors.
 - Grounded is not the same as true: if your documents are wrong, a grounded answer is still wrong. Reference answers are assumed correct.
 - Sample size: with 11 scored cases, one flipped case moves accuracy by about 9 points. The Wilson interval in the scorecard is wide because the suite is small, which is honesty, not a bug.
 - Number matching does no unit conversion and does not canonicalize Thai digits; a correct answer expressed in different units can fail numbers_agree and must be triaged with must_contain.
@@ -77,7 +77,7 @@ The judge did not run (--judge none). Every number above comes from the determin
 ## Reproduce
 
 ```
-agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8000 --judge none
+agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123 --judge none
 ```
 
 Tests file sha256 ebe4f05c66253ccb78b14fdc4e14d896e333b1c2cf1d0d13366bed4d01d3b011. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.

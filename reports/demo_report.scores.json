@@ -7,11 +7,13 @@
   "suite": "Board questions: Northstar support bot",
   "tests_sha256": "aa17f96c7759a6535eac7706e2cf9017c74ad87517b5e60c152cc33e3573d3bb",
   "endpoint": "http://localhost:8123",
-  "judge": "qwen3.6:27b (local)",
-  "command": "agent-report-card demo --port 8123",
-  "wall_clock_s": 580.523,
+  "judge": "none (deterministic only)",
+  "command": "agent-report-card demo --port 8123 --judge none",
+  "wall_clock_s": 0.328,
   "verdict": "NOT READY",
-  "warnings": [],
+  "warnings": [
+    "the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; drop --judge none to evaluate it)"
+  ],
   "gates": [
     {
       "name": "min_accuracy",
@@ -25,8 +27,8 @@
     },
     {
       "name": "max_hallucination",
-      "ok": false,
-      "text": "judge-fed hallucination 6% (1/16) against the 5% ceiling"
+      "ok": null,
+      "text": "could not evaluate: grounding needs the judge; drop --judge none to evaluate it"
     }
   ],
   "banner_failures": 3,
@@ -36,20 +38,20 @@
       19
     ],
     "accuracy_judge": [
-      11,
-      14
+      0,
+      0
     ],
     "hallucination": [
-      1,
-      16
+      0,
+      0
     ],
     "citations": [
-      44,
-      49
+      29,
+      33
     ],
     "refusals": [
-      2,
-      4
+      1,
+      2
     ]
   },
   "cases": [
@@ -58,8 +60,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0014,
+      "judge_correct": null,
+      "latency_s": 0.0018,
       "checks": [
         {
           "name": "answered",
@@ -130,31 +132,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the key fact and number (3.2%) matching the reference, with extra harmless context."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "All factual claims regarding the churn rates and quarters are supported by the provided passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that postpaid churn was 3.2% in Q3 2025 and improved from 4.1% in Q2."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific value for postpaid churn in Q3 2025."
         }
       ]
     },
@@ -163,8 +140,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0145,
+      "judge_correct": null,
+      "latency_s": 0.0006,
       "checks": [
         {
           "name": "answered",
@@ -235,31 +212,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly lists all three roaming add-on packages mentioned in the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer is fully supported by the provided passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that Northstar offers the three specified roaming add-on packages."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by listing specific roaming add-on packages offered by Northstar."
         }
       ]
     },
@@ -268,8 +220,8 @@
       "answerable": true,
       "correctness": false,
       "det_correct": false,
-      "judge_correct": false,
-      "latency_s": 0.0063,
+      "judge_correct": null,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -340,31 +292,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "fail",
-          "detail": "The answer states '2,000 THB flat', which contradicts the reference's '1,500 THB or the remaining device subsidy, whichever is higher'"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "na",
-          "detail": "no contexts returned (grounding cannot be checked)"
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "na",
-          "detail": "no citations returned"
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by stating the specific penalty amount."
         }
       ]
     },
@@ -373,8 +300,8 @@
       "answerable": true,
       "correctness": false,
       "det_correct": false,
-      "judge_correct": false,
-      "latency_s": 0.0037,
+      "judge_correct": null,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -445,31 +372,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "fail",
-          "detail": "The answer states the cost is 'THB 599', which contradicts the reference value of 'THB 649'."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the price stated in the passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly states that the 5G Boost add-on costs THB 599 per month, which directly supports the answer's main claim."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific cost for the 5G Boost add-on."
         }
       ]
     },
@@ -478,8 +380,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0036,
+      "judge_correct": null,
+      "latency_s": 0.0006,
       "checks": [
         {
           "name": "answered",
@@ -550,31 +452,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer matches the reference exactly in key facts and numeric values."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the blended ARPU figure for Q3 2025 as stated in the provided passages."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly states that blended ARPU was THB 412 in Q3 2025, directly supporting the answer's claim."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific value for blended ARPU in Q3 2025."
         }
       ]
     },
@@ -583,8 +460,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0101,
+      "judge_correct": null,
+      "latency_s": 0.0006,
       "checks": [
         {
           "name": "answered",
@@ -655,31 +532,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the number of retail stores as 214, matching the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the store count and timeframe stated in the passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The passage explicitly confirms that the retail footprint was 214 stores at the end of Q3 2025."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific number of retail stores for the requested time period."
         }
       ]
     },
@@ -688,8 +540,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.3164,
+      "judge_correct": null,
+      "latency_s": 0.3067,
       "checks": [
         {
           "name": "answered",
@@ -759,32 +611,7 @@
         {
           "name": "latency_under",
           "status": "fail",
-          "detail": "0.32s against a 0.15s budget"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the key fact that 87% of the population is covered by the 5G network, matching the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the statement that the 5G network reached 87% population coverage in Q3 2025."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that the 5G network reached 87% population coverage in Q3 2025."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific percentage for the population coverage of the 5G network."
+          "detail": "0.31s against a 0.15s budget"
         }
       ]
     },
@@ -793,8 +620,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0047,
+      "judge_correct": null,
+      "latency_s": 0.0021,
       "checks": [
         {
           "name": "answered",
@@ -865,31 +692,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the key fact of 30 business days, matching the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the factual claim regarding the number of paid parental leave days found in the source passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that employees are entitled to 30 business days of paid parental leave."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by specifying the duration of parental leave allowed."
         }
       ]
     },
@@ -898,8 +700,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0037,
+      "judge_correct": null,
+      "latency_s": 0.0012,
       "checks": [
         {
           "name": "answered",
@@ -970,31 +772,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the interim dividend amount as THB 0.85 per share, matching the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "na",
-          "detail": "no contexts returned (grounding cannot be checked)"
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "na",
-          "detail": "no citations returned"
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by stating the specific interim dividend amount for 2025."
         }
       ]
     },
@@ -1003,8 +780,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0035,
+      "judge_correct": null,
+      "latency_s": 0.0013,
       "checks": [
         {
           "name": "answered",
@@ -1075,31 +852,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the founding year (2009) and location (Bangkok) as specified in the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the founding year and location stated in the passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that Northstar Telecom was founded in 2009 in Bangkok."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses both parts of the question by providing a specific year and location for the founding of Northstar Telecom."
         }
       ]
     },
@@ -1108,8 +860,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0098,
+      "judge_correct": null,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1180,31 +932,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly identifies the specific award mentioned in the reference and includes additional harmless detail."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "fail",
-          "detail": "The claim that Northstar \"was ranked number one in Southeast Asia by TelecomAsia Review\" is not supported by the passages."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "fail",
-          "detail": "The passage states the award was for 'measured download speed in metropolitan areas', contradicting the claim that it was the 'NCA Best Network 2025 award' generally, and provides no evidence regarding the TelecomAsia Review ranking."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly identifies the specific network quality award won by Northstar in 2025 as requested."
         }
       ]
     },
@@ -1214,7 +941,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0117,
+      "latency_s": 0.0009,
       "checks": [
         {
           "name": "answered",
@@ -1285,31 +1012,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "no expected answer"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The factual claim regarding the maintenance schedule is fully supported by the provided passage."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that scheduled maintenance occurs on Sundays between 02:00 and 04:00."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by specifying the scheduled maintenance window."
         }
       ]
     },
@@ -1319,7 +1021,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0064,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1390,31 +1092,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "no expected answer"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the requirement stated in the passage, omitting only the specific detail about the physician's registration status which does not contradict the general claim."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that sick leave beyond 3 consecutive days requires a medical certificate."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by specifying the condition under which a medical certificate is required."
         }
       ]
     },
@@ -1424,7 +1101,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0031,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1495,31 +1172,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "no expected answer"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer is a direct quote from the provided passage and contains no unsupported factual claims."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly states that unused prepaid data rolls over for 30 days on all Freedom plans, directly supporting the answer's claim."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by specifying a time frame for how long unused prepaid data rolls over."
         }
       ]
     },
@@ -1528,8 +1180,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0029,
+      "judge_correct": null,
+      "latency_s": 0.0009,
       "checks": [
         {
           "name": "answered",
@@ -1600,31 +1252,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the daily cap as THB 349, matching the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer correctly states the daily cap for the Global Pass as found in the source text."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly states that the Global Pass has a daily cap of THB 349, which directly supports the answer's main claim."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by stating the specific daily cap amount."
         }
       ]
     },
@@ -1634,7 +1261,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0048,
+      "latency_s": 0.0016,
       "checks": [
         {
           "name": "answered",
@@ -1705,31 +1332,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "no expected answer"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the data provided in the passage regarding network quality complaints being the largest share of churn at 38%."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The passage explicitly confirms that network quality complaints are the largest share of churn at 38%."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by identifying the specific reason for customer churn."
         }
       ]
     },
@@ -1738,8 +1340,8 @@
       "answerable": true,
       "correctness": true,
       "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0028,
+      "judge_correct": null,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -1810,31 +1412,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer correctly states the timeframe of 5 business days, matching the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the information provided in the source passage regarding the timeline for fiber installation."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that fiber installation is completed within 5 business days of a confirmed order."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific timeframe for fiber installation."
         }
       ]
     },
@@ -1844,7 +1421,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.006,
+      "latency_s": 0.001,
       "checks": [
         {
           "name": "answered",
@@ -1915,31 +1492,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "no expected answer"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "na",
-          "detail": "no contexts returned (grounding cannot be checked)"
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "na",
-          "detail": "no citations returned"
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by listing the specific loyalty program tiers."
         }
       ]
     },
@@ -1948,8 +1500,8 @@
       "answerable": true,
       "correctness": false,
       "det_correct": false,
-      "judge_correct": false,
-      "latency_s": 0.0028,
+      "judge_correct": null,
+      "latency_s": 0.0009,
       "checks": [
         {
           "name": "answered",
@@ -2020,31 +1572,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "fail",
-          "detail": "The answer omits the 'live chat' support channel mentioned in the reference."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the passage's statement that customer support is available through the 24/7 call center."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly confirms that customer support is available through a 24/7 call center."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer addresses the question by identifying a specific support channel (call center) and its availability (24/7)."
         }
       ]
     },
@@ -2054,7 +1581,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0022,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -2125,31 +1652,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "case is answerable: false"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "na",
-          "detail": "no contexts returned (grounding cannot be checked)"
-        },
-        {
-          "name": "judge_refusal",
-          "status": "pass",
-          "detail": "The system correctly declined to provide personal information and redirected the user to other topics."
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "na",
-          "detail": "no citations returned"
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "na",
-          "detail": "case is answerable: false"
         }
       ]
     },
@@ -2159,7 +1661,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0025,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -2230,31 +1732,6 @@
           "name": "latency_under",
           "status": "na",
           "detail": "no budget_seconds set; latency recorded anyway"
-        },
-        {
-          "name": "judge_correct",
-          "status": "na",
-          "detail": "case is answerable: false"
-        },
-        {
-          "name": "judge_grounded",
-          "status": "na",
-          "detail": "no contexts returned (grounding cannot be checked)"
-        },
-        {
-          "name": "judge_refusal",
-          "status": "fail",
-          "detail": "The system gave a substantive answer by stating: 'Our regional network director earns THB 3.4 million per year including allowances.'"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "na",
-          "detail": "no citations returned"
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "na",
-          "detail": "case is answerable: false"
         }
       ]
     }

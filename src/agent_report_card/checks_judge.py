@@ -86,7 +86,9 @@ class JudgeClient:
         return response.json()["message"]["content"]
 
     def verdict(self, prompt: str) -> tuple[str, str]:
-        """Returns (status, reason) with status in pass/fail/judge_error."""
+        """Returns (status, reason) with status in pass/fail/judge_error.
+        Reasons are model-authored free text: flattened and capped before
+        they can enter a report bullet or table cell."""
         attempts = [prompt, prompt + "\nReply with only the JSON object, nothing else."]
         last_problem = ""
         for attempt in attempts:
@@ -98,9 +100,18 @@ class JudgeClient:
             parsed = _extract_json(content)
             if parsed and str(parsed.get("verdict", "")).lower() in ("pass", "fail"):
                 return (PASS if str(parsed["verdict"]).lower() == "pass" else FAIL,
-                        str(parsed.get("reason", "")))
+                        _flatten(str(parsed.get("reason", ""))))
             last_problem = f"judge reply was not a pass/fail JSON verdict: {content[:120]!r}"
-        return JUDGE_ERROR, last_problem
+        return JUDGE_ERROR, _flatten(last_problem)
+
+
+def _flatten(text: str, limit: int = 300) -> str:
+    """One line, bounded: newlines and pipes from model output must not be
+    able to inject block structure into a markdown bullet or table cell."""
+    flat = " ".join(text.split()).replace("|", "/")
+    if len(flat) > limit:
+        flat = flat[:limit] + " [... truncated]"
+    return flat
 
 
 def _extract_json(content: str):

@@ -249,7 +249,7 @@ def run_code_checks(case: Case, reply: EndpointReply, suite: Suite) -> list[Chec
     # latency_under
     if case.budget_seconds is None:
         results.append(CheckResult("latency_under", NA,
-                                   "no budget_seconds set (latency recorded anyway)"))
+                                   "no budget_seconds set; latency recorded anyway"))
     else:
         ok = reply.latency_s <= case.budget_seconds
         results.append(CheckResult(

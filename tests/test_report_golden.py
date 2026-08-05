@@ -42,13 +42,16 @@ class TestGoldenReport(unittest.TestCase):
 
     def test_matches_committed_golden(self):
         committed = GOLDEN.read_text(encoding="utf-8")
-        # the endpoint port is ephemeral in tests; mask it on both sides
-        port = re.compile(r"127\.0\.0\.1:\d+")
+        # the endpoint port is ephemeral in tests but canonical (8123) in
+        # the committed gallery; mask host:port and the --port flag on both
+        host = re.compile(r"(?:localhost|127\.0\.0\.1):\d+")
+        flag = re.compile(r" --port \d+")
+        def norm(text):
+            return flag.sub("", host.sub("<HOST:PORT>", mask(text)))
         self.assertEqual(
-            port.sub("127.0.0.1:<PORT>", mask(self.fresh)),
-            port.sub("127.0.0.1:<PORT>", mask(committed)),
+            norm(self.fresh), norm(committed),
             "fresh demo report drifted from reports/demo_report.md; "
-            "regenerate with `make demo-report` if the change is intended")
+            "regenerate with `make gallery` if the change is intended")
 
     def test_every_percentage_carries_its_fraction(self):
         for match in re.finditer(r"(\d+)% \((\d+)/(\d+)\)", self.fresh):

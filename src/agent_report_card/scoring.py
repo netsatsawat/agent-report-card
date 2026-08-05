@@ -167,9 +167,11 @@ def score(records: list, suite: Suite, judged: bool,
     grounded_errors = sum(1 for r in records
                           if r.status("judge_grounded") == JUDGE_ERROR)
     if not judged:
-        halluc_na = "grounding needs the judge; run without --judge none"
+        halluc_na = "grounding needs the judge; drop --judge none to evaluate it"
     elif grounded_errors and not grounded_eval:
-        halluc_na = (f"all {grounded_errors} grounding call(s) failed "
+        halluc_na = ("the only grounding call failed (judge_error); nothing "
+                     "was evaluated" if grounded_errors == 1 else
+                     f"all {grounded_errors} grounding calls failed "
                      f"(judge_error); nothing was evaluated")
     else:
         halluc_na = "no case returned contexts to ground against"
@@ -217,8 +219,8 @@ def _apply_gates(board: Scoreboard):
         ok = board.accuracy_det.rate >= gates.min_accuracy
         board.gate_results.append((
             "min_accuracy", ok,
-            f"deterministic accuracy {board.accuracy_det.pct()} against a "
-            f"{round(100 * gates.min_accuracy)}% floor"))
+            f"deterministic accuracy {board.accuracy_det.pct()} against the "
+            f"{100 * gates.min_accuracy:g}% floor"))
         hard_fail |= not ok
     else:
         board.gate_results.append((
@@ -240,11 +242,15 @@ def _apply_gates(board: Scoreboard):
                 "n/a: no case is tagged critical"))
         else:
             ok = not critical_bad
+            n_crit = len(criticals)
+            passed_text = (f"the critical-tagged case passed its code checks"
+                           if n_crit == 1 else
+                           f"all {n_crit} critical-tagged cases passed their "
+                           f"code checks")
             board.gate_results.append((
                 "criticals_must_pass", ok,
-                f"all {len(criticals)} critical-tagged case(s) passed their "
-                f"code checks" if ok else
-                f"critical case(s) failed code checks: "
+                passed_text if ok else
+                f"critical cases failed code checks: "
                 f"{', '.join(r.case.id for r in critical_bad)}"))
             hard_fail |= not ok
 
@@ -255,7 +261,7 @@ def _apply_gates(board: Scoreboard):
             board.gate_results.append((
                 "max_hallucination", None,
                 f"hallucination {board.hallucination.pct()} exceeds the "
-                f"{round(100 * gates.max_hallucination)}% ceiling, but the "
+                f"{100 * gates.max_hallucination:g}% ceiling, but the "
                 f"judge failed calibration, so this downgrades to a warning"))
             board.warnings.append(
                 "the judge-fed hallucination gate would have failed, but the "
@@ -263,8 +269,8 @@ def _apply_gates(board: Scoreboard):
         else:
             board.gate_results.append((
                 "max_hallucination", ok,
-                f"hallucination {board.hallucination.pct()} (judge-fed) against "
-                f"a {round(100 * gates.max_hallucination)}% ceiling"))
+                f"judge-fed hallucination {board.hallucination.pct()} against "
+                f"the {100 * gates.max_hallucination:g}% ceiling"))
             hard_fail |= not ok
     else:
         board.gate_results.append((

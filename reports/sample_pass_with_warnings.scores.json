@@ -6,29 +6,29 @@
   "prompt_hash": "1bf57252a9a4",
   "suite": "Release regression: Northstar support bot, flaw-free subset",
   "tests_sha256": "ebe4f05c66253ccb78b14fdc4e14d896e333b1c2cf1d0d13366bed4d01d3b011",
-  "endpoint": "http://127.0.0.1:55995",
+  "endpoint": "http://localhost:8123",
   "judge": "none (deterministic only)",
-  "command": "agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8000 --judge none",
-  "wall_clock_s": 0.007,
+  "command": "agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123 --judge none",
+  "wall_clock_s": 0.012,
   "verdict": "PASS WITH WARNINGS",
   "warnings": [
-    "the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; run without --judge none)"
+    "the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; drop --judge none to evaluate it)"
   ],
   "gates": [
     {
       "name": "min_accuracy",
       "ok": true,
-      "text": "deterministic accuracy 100% (11/11) against a 80% floor"
+      "text": "deterministic accuracy 100% (11/11) against the 80% floor"
     },
     {
       "name": "criticals_must_pass",
       "ok": true,
-      "text": "all 2 critical-tagged case(s) passed their code checks"
+      "text": "all 2 critical-tagged cases passed their code checks"
     },
     {
       "name": "max_hallucination",
       "ok": null,
-      "text": "could not evaluate: grounding needs the judge; run without --judge none"
+      "text": "could not evaluate: grounding needs the judge; drop --judge none to evaluate it"
     }
   ],
   "banner_failures": 0,
@@ -61,7 +61,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0012,
+      "latency_s": 0.0018,
       "checks": [
         {
           "name": "answered",
@@ -131,12 +131,332 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
     {
       "id": "r02-roaming",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0009,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set; latency recorded anyway"
+        }
+      ]
+    },
+    {
+      "id": "r03-arpu",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0008,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set; latency recorded anyway"
+        }
+      ]
+    },
+    {
+      "id": "r04-stores",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0008,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set; latency recorded anyway"
+        }
+      ]
+    },
+    {
+      "id": "r05-parental",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0007,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set; latency recorded anyway"
+        }
+      ]
+    },
+    {
+      "id": "r06-sick-leave",
       "answerable": true,
       "correctness": true,
       "det_correct": true,
@@ -211,327 +531,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
-        }
-      ]
-    },
-    {
-      "id": "r03-arpu",
-      "answerable": true,
-      "correctness": true,
-      "det_correct": true,
-      "judge_correct": null,
-      "latency_s": 0.0006,
-      "checks": [
-        {
-          "name": "answered",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "exact_match",
-          "status": "na",
-          "detail": "match is not 'exact'"
-        },
-        {
-          "name": "contains_all",
-          "status": "na",
-          "detail": "no must_contain listed"
-        },
-        {
-          "name": "contains_none",
-          "status": "na",
-          "detail": "no must_not_contain listed"
-        },
-        {
-          "name": "numbers_agree",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "regex_match",
-          "status": "na",
-          "detail": "match is not 'regex'"
-        },
-        {
-          "name": "cites_expected_source",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_phantom_citation",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "retrieval_hit",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_error_leak",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "refuses_when_required",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "answers_when_it_should",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "length_in_bounds",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "latency_under",
-          "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
-        }
-      ]
-    },
-    {
-      "id": "r04-stores",
-      "answerable": true,
-      "correctness": true,
-      "det_correct": true,
-      "judge_correct": null,
-      "latency_s": 0.0004,
-      "checks": [
-        {
-          "name": "answered",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "exact_match",
-          "status": "na",
-          "detail": "match is not 'exact'"
-        },
-        {
-          "name": "contains_all",
-          "status": "na",
-          "detail": "no must_contain listed"
-        },
-        {
-          "name": "contains_none",
-          "status": "na",
-          "detail": "no must_not_contain listed"
-        },
-        {
-          "name": "numbers_agree",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "regex_match",
-          "status": "na",
-          "detail": "match is not 'regex'"
-        },
-        {
-          "name": "cites_expected_source",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_phantom_citation",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "retrieval_hit",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_error_leak",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "refuses_when_required",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "answers_when_it_should",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "length_in_bounds",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "latency_under",
-          "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
-        }
-      ]
-    },
-    {
-      "id": "r05-parental",
-      "answerable": true,
-      "correctness": true,
-      "det_correct": true,
-      "judge_correct": null,
-      "latency_s": 0.0004,
-      "checks": [
-        {
-          "name": "answered",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "exact_match",
-          "status": "na",
-          "detail": "match is not 'exact'"
-        },
-        {
-          "name": "contains_all",
-          "status": "na",
-          "detail": "no must_contain listed"
-        },
-        {
-          "name": "contains_none",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "numbers_agree",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "regex_match",
-          "status": "na",
-          "detail": "match is not 'regex'"
-        },
-        {
-          "name": "cites_expected_source",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_phantom_citation",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "retrieval_hit",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_error_leak",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "refuses_when_required",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "answers_when_it_should",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "length_in_bounds",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "latency_under",
-          "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
-        }
-      ]
-    },
-    {
-      "id": "r06-sick-leave",
-      "answerable": true,
-      "correctness": true,
-      "det_correct": true,
-      "judge_correct": null,
-      "latency_s": 0.0004,
-      "checks": [
-        {
-          "name": "answered",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "exact_match",
-          "status": "na",
-          "detail": "match is not 'exact'"
-        },
-        {
-          "name": "contains_all",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "contains_none",
-          "status": "na",
-          "detail": "no must_not_contain listed"
-        },
-        {
-          "name": "numbers_agree",
-          "status": "na",
-          "detail": "match is not 'number'"
-        },
-        {
-          "name": "regex_match",
-          "status": "na",
-          "detail": "match is not 'regex'"
-        },
-        {
-          "name": "cites_expected_source",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_phantom_citation",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "retrieval_hit",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_error_leak",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "refuses_when_required",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "answers_when_it_should",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "length_in_bounds",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "latency_under",
-          "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
@@ -541,7 +541,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0003,
+      "latency_s": 0.0009,
       "checks": [
         {
           "name": "answered",
@@ -611,7 +611,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
@@ -621,7 +621,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0004,
+      "latency_s": 0.0011,
       "checks": [
         {
           "name": "answered",
@@ -691,7 +691,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
@@ -701,7 +701,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0003,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -771,7 +771,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
@@ -781,7 +781,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0003,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -851,7 +851,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
@@ -861,7 +861,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0003,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -931,7 +931,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     },
@@ -941,7 +941,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0003,
+      "latency_s": 0.0007,
       "checks": [
         {
           "name": "answered",
@@ -1011,7 +1011,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         }
       ]
     }

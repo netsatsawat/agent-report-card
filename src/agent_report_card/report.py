@@ -55,6 +55,10 @@ def _fmt_latency(seconds: float) -> str:
     return f"{seconds:.2f}s"
 
 
+def _n(count: int, word: str) -> str:
+    return f"{count} {word}{'' if count == 1 else 's'}"
+
+
 def banner_line(board: Scoreboard) -> str:
     acc = board.accuracy_det if board.accuracy_det.applicable else board.accuracy_judge
     parts = [f"accuracy {acc.pct()}",
@@ -94,6 +98,10 @@ def localization(record) -> str | None:
     if hit == FAIL:
         return ("Where it broke: retrieval_hit FAILED, the evidence never "
                 "reached the model. Retrieval fault.")
+    if record.reply.contexts:
+        return ("Where it broke: contexts came back, but retrieval_hit had "
+                "nothing to check (no must_contain or expected_sources), so "
+                "this failure cannot be localized.")
     return ("Where it broke: no contexts came back for this case, so "
             "retrieval fault and generation fault cannot be told apart.")
 
@@ -106,7 +114,7 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     lines = []
     add = lines.append
 
-    add(f"# Report card: {suite.name}")
+    add(f"# Report card · {suite.name}")
     add("")
     add(f"**{banner_line(board)}**")
     add("")
@@ -138,9 +146,12 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     gates = suite.gates
     origin = "set by this test file" if gates.explicit else \
         "this tool's default opinions; override them in the YAML gates block"
+    criticals_clause = ("critical cases must pass"
+                        if gates.criticals_must_pass
+                        else "the criticals gate is disabled by this test file")
     add(f"- Bars used ({origin}): accuracy at least "
-        f"{round(100 * gates.min_accuracy)}%, hallucination at most "
-        f"{round(100 * gates.max_hallucination)}%, critical cases must pass. "
+        f"{100 * gates.min_accuracy:g}%, hallucination at most "
+        f"{100 * gates.max_hallucination:g}%, {criticals_clause}. "
         f"This verdict holds against this test set and these gates, nothing more.")
     if board.warnings:
         add("")
@@ -195,11 +206,11 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
         add("No case failed a check on this run.")
         add("")
     else:
-        add(f"{len(failing)} case(s) failed at least one check. The banner's "
-            f"failure count ({board.banner_failures}) is narrower on "
-            f"purpose: it counts answerable cases whose correctness verdict "
-            f"failed, while this section quotes every case that failed "
-            f"anything.")
+        add(f"{_n(len(failing), 'case')} failed at least one check. The "
+            f"banner's failure count ({board.banner_failures}) is narrower "
+            f"on purpose: it counts answerable cases whose correctness "
+            f"verdict failed, while this section quotes every case that "
+            f"failed anything.")
         add("")
     for i, r in enumerate(failing, 1):
         names = ", ".join(c.name for c in r.failed_checks)
@@ -208,10 +219,13 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
         flag = " (judge-flagged)" if judge_only else ""
         add(f"### {i}. {r.case.id}{flag}")
         add("")
-        add(f"**Question:** {r.case.question}")
+        add(f"**Question:** {' '.join(r.case.question.split())}")
+        add("")
         if r.case.expected:
-            add(f"**Expected:** {r.case.expected}")
+            add(f"**Expected:** {' '.join(r.case.expected.split())}")
+            add("")
         add("**Got:**")
+        add("")
         add(_quote(r.reply.answer if not r.reply.error
                    else f"(no usable answer: {r.reply.error})"))
         add("")
@@ -283,8 +297,8 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     add("")
     n_det = board.accuracy_det.den
     n_judge = board.accuracy_judge.den
-    add(f"- Scoring routes: {n_det} case(s) deterministically scored, "
-        f"{n_judge} judge-scored, {board.judge_error_count} judge_error(s).")
+    add(f"- Scoring routes: {_n(n_det, 'case')} deterministically scored, "
+        f"{n_judge} judge-scored, {_n(board.judge_error_count, 'judge error')}.")
     add("- Grounded is not the same as true: if your documents are wrong, a "
         "grounded answer is still wrong. Reference answers are assumed "
         "correct.")

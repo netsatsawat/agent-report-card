@@ -6,27 +6,27 @@
   "prompt_hash": "1bf57252a9a4",
   "suite": "Release regression: Northstar support bot, flaw-free subset",
   "tests_sha256": "ebe4f05c66253ccb78b14fdc4e14d896e333b1c2cf1d0d13366bed4d01d3b011",
-  "endpoint": "http://127.0.0.1:56008",
+  "endpoint": "http://localhost:8123",
   "judge": "qwen3.6:27b (local)",
-  "command": "agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8000",
-  "wall_clock_s": 364.19,
+  "command": "agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123",
+  "wall_clock_s": 291.763,
   "verdict": "PASS",
   "warnings": [],
   "gates": [
     {
       "name": "min_accuracy",
       "ok": true,
-      "text": "deterministic accuracy 100% (11/11) against a 80% floor"
+      "text": "deterministic accuracy 100% (11/11) against the 80% floor"
     },
     {
       "name": "criticals_must_pass",
       "ok": true,
-      "text": "all 2 critical-tagged case(s) passed their code checks"
+      "text": "all 2 critical-tagged cases passed their code checks"
     },
     {
       "name": "max_hallucination",
       "ok": true,
-      "text": "hallucination 0% (0/10) (judge-fed) against a 5% ceiling"
+      "text": "judge-fed hallucination 0% (0/10) against the 5% ceiling"
     }
   ],
   "banner_failures": 0,
@@ -59,7 +59,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0013,
+      "latency_s": 0.0016,
       "checks": [
         {
           "name": "answered",
@@ -129,7 +129,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -164,7 +164,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0235,
+      "latency_s": 0.0037,
       "checks": [
         {
           "name": "answered",
@@ -234,7 +234,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -265,111 +265,6 @@
     },
     {
       "id": "r03-arpu",
-      "answerable": true,
-      "correctness": true,
-      "det_correct": true,
-      "judge_correct": true,
-      "latency_s": 0.0047,
-      "checks": [
-        {
-          "name": "answered",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "exact_match",
-          "status": "na",
-          "detail": "match is not 'exact'"
-        },
-        {
-          "name": "contains_all",
-          "status": "na",
-          "detail": "no must_contain listed"
-        },
-        {
-          "name": "contains_none",
-          "status": "na",
-          "detail": "no must_not_contain listed"
-        },
-        {
-          "name": "numbers_agree",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "regex_match",
-          "status": "na",
-          "detail": "match is not 'regex'"
-        },
-        {
-          "name": "cites_expected_source",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_phantom_citation",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "retrieval_hit",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "no_error_leak",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "refuses_when_required",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "answers_when_it_should",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "length_in_bounds",
-          "status": "pass",
-          "detail": ""
-        },
-        {
-          "name": "latency_under",
-          "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
-        },
-        {
-          "name": "judge_correct",
-          "status": "pass",
-          "detail": "The answer matches the reference exactly in key facts and numeric values."
-        },
-        {
-          "name": "judge_grounded",
-          "status": "pass",
-          "detail": "The answer accurately reflects the blended ARPU figure for Q3 2025 as stated in the provided passages."
-        },
-        {
-          "name": "judge_refusal",
-          "status": "na",
-          "detail": "case is answerable"
-        },
-        {
-          "name": "judge_citation_support",
-          "status": "pass",
-          "detail": "The cited passage explicitly states that blended ARPU was THB 412 in Q3 2025, directly supporting the answer's claim."
-        },
-        {
-          "name": "judge_on_topic",
-          "status": "pass",
-          "detail": "The answer directly addresses the question by providing a specific value for blended ARPU in Q3 2025."
-        }
-      ]
-    },
-    {
-      "id": "r04-stores",
       "answerable": true,
       "correctness": true,
       "det_correct": true,
@@ -444,7 +339,112 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer matches the reference exactly in key facts and numeric values."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the blended ARPU figure for Q3 2025 as stated in the provided passages."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly states that blended ARPU was THB 412 in Q3 2025, directly supporting the answer's claim."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific value for blended ARPU in Q3 2025."
+        }
+      ]
+    },
+    {
+      "id": "r04-stores",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0053,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -479,7 +479,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0096,
+      "latency_s": 0.0109,
       "checks": [
         {
           "name": "answered",
@@ -549,7 +549,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -584,7 +584,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0028,
+      "latency_s": 0.006,
       "checks": [
         {
           "name": "answered",
@@ -654,7 +654,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -689,7 +689,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0025,
+      "latency_s": 0.0035,
       "checks": [
         {
           "name": "answered",
@@ -759,7 +759,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -794,7 +794,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0069,
+      "latency_s": 0.0043,
       "checks": [
         {
           "name": "answered",
@@ -864,7 +864,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -899,7 +899,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0095,
+      "latency_s": 0.0033,
       "checks": [
         {
           "name": "answered",
@@ -969,7 +969,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -1004,7 +1004,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0063,
+      "latency_s": 0.0039,
       "checks": [
         {
           "name": "answered",
@@ -1074,7 +1074,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -1109,7 +1109,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0023,
+      "latency_s": 0.0081,
       "checks": [
         {
           "name": "answered",
@@ -1179,7 +1179,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",
@@ -1214,7 +1214,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0041,
+      "latency_s": 0.0034,
       "checks": [
         {
           "name": "answered",
@@ -1284,7 +1284,7 @@
         {
           "name": "latency_under",
           "status": "na",
-          "detail": "no budget_seconds set (latency recorded anyway)"
+          "detail": "no budget_seconds set; latency recorded anyway"
         },
         {
           "name": "judge_correct",

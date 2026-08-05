@@ -155,7 +155,14 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
     board = score(records, suite, judged=judge is not None,
                   judge_unreliable=calibrate.unreliable(calibration))
     wall = time.perf_counter() - start
-    judge_desc = f"{judge.model} (local)" if judge else "none (deterministic only)"
+    if judge:
+        from urllib.parse import urlsplit
+        host = urlsplit(judge.base_url).hostname or ""
+        judge_desc = (f"{judge.model} (local)"
+                      if host in ("localhost", "127.0.0.1", "::1")
+                      else f"{judge.model} @ {host}")
+    else:
+        judge_desc = "none (deterministic only)"
     judge_calls = judge.calls if judge else 0
 
     Path(out_path).write_text(
@@ -173,13 +180,26 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
 
 
 def cmd_run(args) -> int:
+    import shlex
     suite = load_suite(args.tests)
-    command = (f"agent-report-card run --tests {args.tests} "
-               f"--endpoint {args.endpoint}"
-               + (f" --judge {args.judge}" if args.judge != DEFAULT_JUDGE else "")
-               + (f" --out {args.out}" if args.out != "report.md" else "")
-               + (f" --limit {args.limit}" if args.limit else "")
-               + (f" --tags {args.tags}" if args.tags else ""))
+    # the Reproduce command carries every behavior-changing non-default flag
+    parts = ["agent-report-card", "run", "--tests", args.tests,
+             "--endpoint", args.endpoint]
+    if args.judge != DEFAULT_JUDGE:
+        parts += ["--judge", args.judge]
+    if args.out != "report.md":
+        parts += ["--out", args.out]
+    if args.scores != "report.scores.json":
+        parts += ["--scores", args.scores]
+    if args.timeout != 60.0:
+        parts += ["--timeout", str(args.timeout)]
+    if args.judge_timeout != 120.0:
+        parts += ["--judge-timeout", str(args.judge_timeout)]
+    if args.limit:
+        parts += ["--limit", str(args.limit)]
+    if args.tags:
+        parts += ["--tags", args.tags]
+    command = shlex.join(parts)
     return run_pipeline(suite, args.endpoint, args.judge, args.out,
                         args.scores, args.timeout, args.judge_timeout,
                         args.limit, args.tags, args.verbose, command)
@@ -194,26 +214,32 @@ def cmd_demo(args) -> int:
         tests_path.write_text(bundled.read_text(encoding="utf-8"),
                               encoding="utf-8")
         scrub.sprint(f"wrote {tests_path} (the bundled demo suite)")
+    else:
+        scrub.sprint(f"using the existing {tests_path} in this directory "
+                     f"(delete it to run the bundled suite; a modified file "
+                     f"will not reproduce the README numbers)")
 
     try:
-        port = args.port if args.port is not None else 8000
-        server = demo_bot.serve(port=port, background=True)
+        server = demo_bot.serve(port=args.port if args.port is not None else 8000,
+                                background=True)
     except OSError:
         if args.port is not None:
             scrub.sprint(f"error: port {args.port} is already in use; "
                          f"pick another with --port")
             return EXIT_ERROR
         server = demo_bot.serve(port=0, background=True)
-        port = server.server_address[1]
         scrub.sprint(f"port 8000 is in use on this machine; the fixture bot "
-                     f"took port {port} instead")
+                     f"took port {server.server_address[1]} instead")
+    port = server.server_address[1]  # the socket is the only truth (--port 0 works)
     endpoint = f"http://127.0.0.1:{port}"
     scrub.sprint(f"fixture bot serving on {endpoint} "
                  f"(fictional Northstar Telecom; flaws planted on purpose)")
     try:
         suite = load_suite(str(tests_path))
-        command = "agent-report-card demo" + \
-            (" --judge none" if args.judge == "none" else "")
+        command = ("agent-report-card demo"
+                   + (f" --port {args.port}" if args.port is not None else "")
+                   + (f" --judge {args.judge}" if args.judge != DEFAULT_JUDGE
+                      else ""))
         code = run_pipeline(suite, endpoint, args.judge, args.out,
                             args.scores, 30.0, 120.0, None, None,
                             args.verbose, command, demo_fallback=True)

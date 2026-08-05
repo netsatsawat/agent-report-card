@@ -24,6 +24,20 @@ class TestQuoteTruncation(unittest.TestCase):
         self.assertEqual(_quote("short"), "> short")
 
 
+class TestNoAbsolutePathsInArtifacts(unittest.TestCase):
+    def test_committed_reports_carry_no_machine_paths(self):
+        # committed artifacts must never leak a home directory or absolute
+        # local path (the class of leak that once forced a history rewrite
+        # in a sibling repo)
+        for path in sorted((REPO / "reports").glob("*")):
+            if path.suffix not in (".md", ".log", ".json"):
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for marker in ("/Users/", "/home/", "C:\\\\Users"):
+                self.assertNotIn(marker, text,
+                                 f"{path.name} contains {marker!r}")
+
+
 class TestChecksMdDrift(unittest.TestCase):
     def test_committed_checks_md_matches_catalog(self):
         committed = (REPO / "CHECKS.md").read_text(encoding="utf-8")

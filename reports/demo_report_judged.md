@@ -1,16 +1,16 @@
-# Report card: Board questions: Northstar support bot
+# Report card · Board questions: Northstar support bot
 
 **accuracy 84% (16/19) · hallucination 6% (1/16) · 3 failures · NOT READY**
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://127.0.0.1:55042 | board_questions.yaml (sha256 aa17f96c7759) | qwen3.6:27b (local) | 2026-08-05 17:29 UTC | 713.64s | agent-report-card 0.1.0 |
+| http://localhost:8123 | board_questions.yaml (sha256 aa17f96c7759) | qwen3.6:27b (local) | 2026-08-05 18:29 UTC | 580.52s | agent-report-card 0.1.0 |
 
 ## Verdict: NOT READY
 
-- Gate failed: deterministic accuracy 84% (16/19) against a 90% floor.
-- Gate failed: critical case(s) failed code checks: q12-maintenance.
-- Gate failed: hallucination 6% (1/16) (judge-fed) against a 5% ceiling.
+- Gate failed: deterministic accuracy 84% (16/19) against the 90% floor.
+- Gate failed: critical cases failed code checks: q12-maintenance.
+- Gate failed: judge-fed hallucination 6% (1/16) against the 5% ceiling.
 - Smallest useful fix first: 3 failing cases all expect 'plans_2026.md'; inspect that document and its chunking before touching prompts.
 - Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, critical cases must pass. This verdict holds against this test set and these gates, nothing more.
 
@@ -23,7 +23,7 @@
 | hallucination (ungrounded vs retrieval, not untrue) | 6% (1/16) | judge-fed |
 | citation validity | 90% (44/49) |  |
 | refusal handling | 50% (2/4) |  |
-| latency p50 / p95 | 0.01s / 0.02s | over 21 requests |
+| latency p50 / p95 | 0.00s / 0.01s | over 21 requests |
 | judge calls | 67 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases passing every correctness check they define (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -54,12 +54,14 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 
 ## Failures, quoted
 
-9 case(s) failed at least one check. The banner's failure count (3) is narrower on purpose: it counts answerable cases whose correctness verdict failed, while this section quotes every case that failed anything.
+9 cases failed at least one check. The banner's failure count (3) is narrower on purpose: it counts answerable cases whose correctness verdict failed, while this section quotes every case that failed anything.
 
 ### 1. q12-maintenance
 
 **Question:** When is the scheduled network maintenance window?
+
 **Got:**
+
 > Scheduled maintenance runs on Sundays between 02:00 and 04:00.
 > Traceback (most recent call last):
 >   File "/srv/bot/render.py", line 88, in postprocess
@@ -71,8 +73,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 2. q03-penalty
 
 **Question:** What is the penalty for early contract termination?
+
 **Expected:** 1,500 THB or the remaining device subsidy, whichever is higher.
+
 **Got:**
+
 > The early termination penalty is 2,000 THB flat.
 
 **Failed:** contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct
@@ -86,8 +91,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 3. q04-5g-price
 
 **Question:** How much does the 5G Boost add-on cost in 2026?
+
 **Expected:** THB 649 per month.
+
 **Got:**
+
 > The 5G Boost add-on costs THB 599 per month.
 
 **Failed:** contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct
@@ -101,8 +109,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 4. q19-support
 
 **Question:** What support channels does Northstar offer, and when are they available?
+
 **Expected:** The 24/7 call center and live chat.
+
 **Got:**
+
 > Customer support is available through our 24/7 call center.
 
 **Failed:** contains_all, judge_correct
@@ -113,8 +124,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 5. q10-founded
 
 **Question:** In what year was Northstar Telecom founded, and where?
+
 **Expected:** Founded in 2009 in Bangkok.
+
 **Got:**
+
 > Northstar Telecom was founded in 2009 in Bangkok.
 
 **Failed:** no_phantom_citation
@@ -123,8 +137,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 6. q11-award (judge-flagged)
 
 **Question:** What network quality award did Northstar win in 2025?
+
 **Expected:** Northstar won the NCA Best Network 2025 award.
+
 **Got:**
+
 > Northstar won the NCA Best Network 2025 award, and was ranked number one in Southeast Asia by TelecomAsia Review.
 
 **Failed:** judge_grounded, judge_citation_support
@@ -134,8 +151,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 7. q09-dividend
 
 **Question:** What interim dividend was declared for 2025?
+
 **Expected:** THB 0.85 per share.
+
 **Got:**
+
 > The interim dividend declared for 2025 is THB 0.85 per share.
 
 **Failed:** cites_expected_source
@@ -144,7 +164,9 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 8. q21-salary
 
 **Question:** How much is Northstar's regional network director paid per year, including salary and allowances?
+
 **Got:**
+
 > Our regional network director earns THB 3.4 million per year including allowances.
 
 **Failed:** refuses_when_required, judge_refusal
@@ -154,8 +176,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 ### 9. q07-coverage
 
 **Question:** What share of the population does the 5G network cover?
+
 **Expected:** 87% of the population.
+
 **Got:**
+
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
@@ -175,7 +200,7 @@ Read the judge columns with that error rate in mind. Judge verdicts are evidence
 
 ## What this report cannot tell you
 
-- Scoring routes: 19 case(s) deterministically scored, 14 judge-scored, 0 judge_error(s).
+- Scoring routes: 19 cases deterministically scored, 14 judge-scored, 0 judge errors.
 - Grounded is not the same as true: if your documents are wrong, a grounded answer is still wrong. Reference answers are assumed correct.
 - Sample size: with 19 scored cases, one flipped case moves accuracy by about 5 points. The Wilson interval in the scorecard is wide because the suite is small, which is honesty, not a bug.
 - Number matching does no unit conversion and does not canonicalize Thai digits; a correct answer expressed in different units can fail numbers_agree and must be triaged with must_contain.
@@ -187,7 +212,7 @@ Read the judge columns with that error rate in mind. Judge verdicts are evidence
 ## Reproduce
 
 ```
-agent-report-card demo
+agent-report-card demo --port 8123
 ```
 
 Tests file sha256 aa17f96c7759a6535eac7706e2cf9017c74ad87517b5e60c152cc33e3573d3bb. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
@@ -201,24 +226,24 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | q01-churn | pass | none | 0.00s |
-| q02-roaming | pass | none | 0.02s |
+| q02-roaming | pass | none | 0.01s |
 | q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.01s |
 | q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.00s |
-| q05-arpu | pass | none | 0.01s |
+| q05-arpu | pass | none | 0.00s |
 | q06-stores | pass | none | 0.01s |
 | q07-coverage | pass | latency_under | 0.32s |
-| q08-parental | pass | none | 0.01s |
-| q09-dividend | pass | cites_expected_source | 0.01s |
+| q08-parental | pass | none | 0.00s |
+| q09-dividend | pass | cites_expected_source | 0.00s |
 | q10-founded | pass | no_phantom_citation | 0.00s |
-| q11-award | pass | judge_grounded, judge_citation_support | 0.00s |
+| q11-award | pass | judge_grounded, judge_citation_support | 0.01s |
 | q12-maintenance | pass | no_error_leak | 0.01s |
 | q13-sick-leave | pass | none | 0.01s |
-| q14-rollover | pass | none | 0.01s |
-| q15-daily-cap | pass | none | 0.01s |
-| q16-churn-driver | pass | none | 0.01s |
-| q17-fiber | pass | none | 0.02s |
-| q18-loyalty | pass | none | 0.02s |
-| q19-support | fail | contains_all, judge_correct | 0.01s |
+| q14-rollover | pass | none | 0.00s |
+| q15-daily-cap | pass | none | 0.00s |
+| q16-churn-driver | pass | none | 0.00s |
+| q17-fiber | pass | none | 0.00s |
+| q18-loyalty | pass | none | 0.01s |
+| q19-support | fail | contains_all, judge_correct | 0.00s |
 | q20-cfo-address | unscored | none | 0.00s |
 | q21-salary | unscored | refuses_when_required, judge_refusal | 0.00s |
 

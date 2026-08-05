@@ -1,7 +1,7 @@
 PY := .venv/bin/python
 ARC := .venv/bin/agent-report-card
 
-.PHONY: venv test demo demo-report judged-report calibrate checks-md verify
+.PHONY: venv test demo gallery calibrate checks-md verify
 
 venv:
 	python3.11 -m venv .venv && .venv/bin/pip install -e .
@@ -12,19 +12,10 @@ test:
 demo:
 	$(ARC) demo --judge none
 
-# regenerate the committed deterministic golden report
-demo-report:
-	@tmp=$$(mktemp -d) && cd $$tmp && \
-	$(CURDIR)/$(ARC) demo --judge none >/dev/null && \
-	cp report.md $(CURDIR)/reports/demo_report.md && \
-	echo "reports/demo_report.md regenerated"
-
-# regenerate the committed judged sample report (needs Ollama)
-judged-report:
-	@tmp=$$(mktemp -d) && cd $$tmp && \
-	$(CURDIR)/$(ARC) demo >/dev/null && \
-	cp report.md $(CURDIR)/reports/demo_report_judged.md && \
-	echo "reports/demo_report_judged.md regenerated"
+# regenerate every committed gallery report plus its terminal log
+# (the two judged runs need Ollama with the default judge model)
+gallery:
+	$(PY) scripts/make_gallery.py
 
 calibrate:
 	$(ARC) judge-check
