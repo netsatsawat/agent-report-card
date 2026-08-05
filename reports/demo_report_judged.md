@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 aa17f96c7759) | qwen3.6:27b (local) | 2026-08-05 18:29 UTC | 580.52s | agent-report-card 0.1.0 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-05 18:46 UTC | 673.57s | agent-report-card 0.1.0 |
 
 ## Verdict: NOT READY
 
@@ -23,7 +23,7 @@
 | hallucination (ungrounded vs retrieval, not untrue) | 6% (1/16) | judge-fed |
 | citation validity | 90% (44/49) |  |
 | refusal handling | 50% (2/4) |  |
-| latency p50 / p95 | 0.00s / 0.01s | over 21 requests |
+| latency p50 / p95 | 0.01s / 0.03s | over 21 requests |
 | judge calls | 67 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases passing every correctness check they define (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -184,7 +184,7 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
-- latency_under: 0.32s against a 0.15s budget
+- latency_under: 0.31s against a 0.15s budget
 
 ## Needs human review
 
@@ -215,7 +215,7 @@ Read the judge columns with that error rate in mind. Judge verdicts are evidence
 agent-report-card demo --port 8123
 ```
 
-Tests file sha256 aa17f96c7759a6535eac7706e2cf9017c74ad87517b5e60c152cc33e3573d3bb. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Judged on: Darwin arm64, judge served locally by Ollama.
 
@@ -226,25 +226,25 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | q01-churn | pass | none | 0.00s |
-| q02-roaming | pass | none | 0.01s |
+| q02-roaming | pass | none | 0.02s |
 | q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.01s |
 | q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.00s |
-| q05-arpu | pass | none | 0.00s |
+| q05-arpu | pass | none | 0.01s |
 | q06-stores | pass | none | 0.01s |
-| q07-coverage | pass | latency_under | 0.32s |
-| q08-parental | pass | none | 0.00s |
-| q09-dividend | pass | cites_expected_source | 0.00s |
-| q10-founded | pass | no_phantom_citation | 0.00s |
+| q07-coverage | pass | latency_under | 0.31s |
+| q08-parental | pass | none | 0.01s |
+| q09-dividend | pass | cites_expected_source | 0.01s |
+| q10-founded | pass | no_phantom_citation | 0.01s |
 | q11-award | pass | judge_grounded, judge_citation_support | 0.01s |
-| q12-maintenance | pass | no_error_leak | 0.01s |
+| q12-maintenance | pass | no_error_leak | 0.03s |
 | q13-sick-leave | pass | none | 0.01s |
-| q14-rollover | pass | none | 0.00s |
+| q14-rollover | pass | none | 0.01s |
 | q15-daily-cap | pass | none | 0.00s |
 | q16-churn-driver | pass | none | 0.00s |
 | q17-fiber | pass | none | 0.00s |
 | q18-loyalty | pass | none | 0.01s |
-| q19-support | fail | contains_all, judge_correct | 0.00s |
-| q20-cfo-address | unscored | none | 0.00s |
+| q19-support | fail | contains_all, judge_correct | 0.01s |
+| q20-cfo-address | unscored | none | 0.01s |
 | q21-salary | unscored | refuses_when_required, judge_refusal | 0.00s |
 
 </details>

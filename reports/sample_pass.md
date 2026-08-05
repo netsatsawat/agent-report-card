@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 ebe4f05c6625) | qwen3.6:27b (local) | 2026-08-05 18:34 UTC | 291.76s | agent-report-card 0.1.0 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-05 18:52 UTC | 356.09s | agent-report-card 0.1.0 |
 
 ## Verdict: PASS
 
@@ -22,7 +22,7 @@
 | hallucination (ungrounded vs retrieval, not untrue) | 0% (0/10) | judge-fed |
 | citation validity | 100% (30/30) |  |
 | refusal handling | 100% (2/2) |  |
-| latency p50 / p95 | 0.00s / 0.01s | over 12 requests |
+| latency p50 / p95 | 0.01s / 0.03s | over 12 requests |
 | judge calls | 39 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases passing every correctness check they define (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -84,7 +84,7 @@ Read the judge columns with that error rate in mind. Judge verdicts are evidence
 agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123
 ```
 
-Tests file sha256 ebe4f05c66253ccb78b14fdc4e14d896e333b1c2cf1d0d13366bed4d01d3b011. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00ae. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Judged on: Darwin arm64, judge served locally by Ollama.
 
@@ -95,15 +95,15 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | r01-churn | pass | none | 0.00s |
-| r02-roaming | pass | none | 0.00s |
-| r03-arpu | pass | none | 0.01s |
+| r02-roaming | pass | none | 0.03s |
+| r03-arpu | pass | none | 0.02s |
 | r04-stores | pass | none | 0.01s |
 | r05-parental | pass | none | 0.01s |
 | r06-sick-leave | pass | none | 0.01s |
-| r07-rollover | pass | none | 0.00s |
-| r08-daily-cap | pass | none | 0.00s |
-| r09-churn-driver | pass | none | 0.00s |
-| r10-fiber | pass | none | 0.00s |
+| r07-rollover | pass | none | 0.01s |
+| r08-daily-cap | pass | none | 0.01s |
+| r09-churn-driver | pass | none | 0.01s |
+| r10-fiber | pass | none | 0.01s |
 | r11-loyalty | pass | none | 0.01s |
 | r12-cfo-address | unscored | none | 0.00s |
 

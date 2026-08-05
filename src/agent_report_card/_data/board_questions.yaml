@@ -36,7 +36,7 @@ corpus_manifest:
 cases:
   - id: q01-churn
     question: What was postpaid churn in Q3 2025?
-    expected: Postpaid churn was 3.2% in Q3 2025.
+    expected: Postpaid churn was 3.2%.
     match: number
     expected_sources: [churn_analysis.md]
 
@@ -66,7 +66,7 @@ cases:
 
   - id: q05-arpu
     question: What was blended ARPU in Q3 2025?
-    expected: Blended ARPU was THB 412 in Q3 2025.
+    expected: Blended ARPU was THB 412.
     match: number
     expected_sources: [q3_report.md]
 

@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 ebe4f05c6625) | none (deterministic only) | 2026-08-05 18:19 UTC | 0.01s | agent-report-card 0.1.0 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-05 18:35 UTC | 0.01s | agent-report-card 0.1.0 |
 
 ## Verdict: PASS WITH WARNINGS
 
@@ -80,7 +80,7 @@ The judge did not run (--judge none). Every number above comes from the determin
 agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123 --judge none
 ```
 
-Tests file sha256 ebe4f05c66253ccb78b14fdc4e14d896e333b1c2cf1d0d13366bed4d01d3b011. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00ae. Tool version 0.1.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Cross-check: the scores sidecar written beside this report carries every raw per-case record; scripts/recount.py in the repository recomputes all rollups from it independently, and the test suite asserts equality with the numbers above.
 

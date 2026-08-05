@@ -5,11 +5,11 @@
   "prompt_version": "v1",
   "prompt_hash": "1bf57252a9a4",
   "suite": "Board questions: Northstar support bot",
-  "tests_sha256": "aa17f96c7759a6535eac7706e2cf9017c74ad87517b5e60c152cc33e3573d3bb",
+  "tests_sha256": "6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2",
   "endpoint": "http://localhost:8123",
   "judge": "qwen3.6:27b (local)",
   "command": "agent-report-card demo --port 8123",
-  "wall_clock_s": 580.523,
+  "wall_clock_s": 673.569,
   "verdict": "NOT READY",
   "warnings": [],
   "gates": [
@@ -59,7 +59,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0014,
+      "latency_s": 0.0016,
       "checks": [
         {
           "name": "answered",
@@ -134,7 +134,7 @@
         {
           "name": "judge_correct",
           "status": "pass",
-          "detail": "The answer correctly states the key fact and number (3.2%) matching the reference, with extra harmless context."
+          "detail": "The answer correctly states the postpaid churn rate of 3.2% for Q3 2025 as specified in the reference."
         },
         {
           "name": "judge_grounded",
@@ -164,7 +164,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0145,
+      "latency_s": 0.016,
       "checks": [
         {
           "name": "answered",
@@ -269,7 +269,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": false,
-      "latency_s": 0.0063,
+      "latency_s": 0.0121,
       "checks": [
         {
           "name": "answered",
@@ -374,7 +374,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": false,
-      "latency_s": 0.0037,
+      "latency_s": 0.0041,
       "checks": [
         {
           "name": "answered",
@@ -479,7 +479,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0036,
+      "latency_s": 0.0109,
       "checks": [
         {
           "name": "answered",
@@ -554,7 +554,7 @@
         {
           "name": "judge_correct",
           "status": "pass",
-          "detail": "The answer matches the reference exactly in key facts and numeric values."
+          "detail": "The answer correctly states the blended ARPU as THB 412, matching the reference."
         },
         {
           "name": "judge_grounded",
@@ -584,7 +584,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0101,
+      "latency_s": 0.0119,
       "checks": [
         {
           "name": "answered",
@@ -689,7 +689,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.3164,
+      "latency_s": 0.314,
       "checks": [
         {
           "name": "answered",
@@ -759,7 +759,7 @@
         {
           "name": "latency_under",
           "status": "fail",
-          "detail": "0.32s against a 0.15s budget"
+          "detail": "0.31s against a 0.15s budget"
         },
         {
           "name": "judge_correct",
@@ -794,7 +794,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0047,
+      "latency_s": 0.0056,
       "checks": [
         {
           "name": "answered",
@@ -899,7 +899,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0037,
+      "latency_s": 0.0084,
       "checks": [
         {
           "name": "answered",
@@ -1004,7 +1004,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0035,
+      "latency_s": 0.0078,
       "checks": [
         {
           "name": "answered",
@@ -1109,7 +1109,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0098,
+      "latency_s": 0.012,
       "checks": [
         {
           "name": "answered",
@@ -1214,7 +1214,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0117,
+      "latency_s": 0.0264,
       "checks": [
         {
           "name": "answered",
@@ -1319,7 +1319,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0064,
+      "latency_s": 0.009,
       "checks": [
         {
           "name": "answered",
@@ -1424,7 +1424,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0031,
+      "latency_s": 0.0059,
       "checks": [
         {
           "name": "answered",
@@ -1529,7 +1529,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0029,
+      "latency_s": 0.0035,
       "checks": [
         {
           "name": "answered",
@@ -1634,7 +1634,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0048,
+      "latency_s": 0.0047,
       "checks": [
         {
           "name": "answered",
@@ -1739,7 +1739,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0028,
+      "latency_s": 0.0036,
       "checks": [
         {
           "name": "answered",
@@ -1844,7 +1844,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.006,
+      "latency_s": 0.0104,
       "checks": [
         {
           "name": "answered",
@@ -1949,7 +1949,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": false,
-      "latency_s": 0.0028,
+      "latency_s": 0.0083,
       "checks": [
         {
           "name": "answered",
@@ -2054,7 +2054,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0022,
+      "latency_s": 0.0075,
       "checks": [
         {
           "name": "answered",
@@ -2159,7 +2159,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0025,
+      "latency_s": 0.0032,
       "checks": [
         {
           "name": "answered",
