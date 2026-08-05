@@ -1,0 +1,9 @@
+# The distribution ships the package and its bundled data only; repo-side
+# material (tests, committed sample reports, scripts, CI, assets) stays in
+# the repository. A partial tests/ tree in an sdist is worse than none.
+prune tests
+prune reports
+prune scripts
+prune assets
+prune .github
+exclude PLAN.md PRD.md CHECKS.md Makefile

@@ -1,0 +1,2262 @@
+{
+  "format": "agent-report-card/scores",
+  "format_stability": "unstable-v0.1",
+  "tool_version": "0.1.0",
+  "prompt_version": "v1",
+  "prompt_hash": "1bf57252a9a4",
+  "suite": "Board questions: Northstar support bot",
+  "tests_sha256": "aa17f96c7759a6535eac7706e2cf9017c74ad87517b5e60c152cc33e3573d3bb",
+  "endpoint": "http://127.0.0.1:55042",
+  "judge": "qwen3.6:27b (local)",
+  "command": "agent-report-card demo",
+  "wall_clock_s": 713.636,
+  "verdict": "NOT READY",
+  "warnings": [],
+  "gates": [
+    {
+      "name": "min_accuracy",
+      "ok": false,
+      "text": "deterministic accuracy 84% (16/19) against a 90% floor"
+    },
+    {
+      "name": "criticals_must_pass",
+      "ok": false,
+      "text": "critical case(s) failed code checks: q12-maintenance"
+    },
+    {
+      "name": "max_hallucination",
+      "ok": false,
+      "text": "hallucination 6% (1/16) (judge-fed) against a 5% ceiling"
+    }
+  ],
+  "banner_failures": 3,
+  "rollups": {
+    "accuracy_det": [
+      16,
+      19
+    ],
+    "accuracy_judge": [
+      11,
+      14
+    ],
+    "hallucination": [
+      1,
+      16
+    ],
+    "citations": [
+      44,
+      49
+    ],
+    "refusals": [
+      2,
+      4
+    ]
+  },
+  "cases": [
+    {
+      "id": "q01-churn",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.001,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the key fact and number (3.2%) matching the reference, with extra harmless context."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "All factual claims regarding the churn rates and quarters are supported by the provided passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that postpaid churn was 3.2% in Q3 2025 and improved from 4.1% in Q2."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific value for postpaid churn in Q3 2025."
+        }
+      ]
+    },
+    {
+      "id": "q02-roaming",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0175,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly lists all three roaming add-on packages mentioned in the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer is fully supported by the provided passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that Northstar offers the three specified roaming add-on packages."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by listing specific roaming add-on packages offered by Northstar."
+        }
+      ]
+    },
+    {
+      "id": "q03-penalty",
+      "answerable": true,
+      "correctness": false,
+      "det_correct": false,
+      "judge_correct": false,
+      "latency_s": 0.0074,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "fail",
+          "detail": "missing: 'subsidy'"
+        },
+        {
+          "name": "contains_none",
+          "status": "fail",
+          "detail": "forbidden string present: '2,000'"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "fail",
+          "detail": "expected number(s) not found within tolerance 0.0: [1500.0]"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "fail",
+          "detail": "expected ['plans_2026.md'], got no sources"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "na",
+          "detail": "no sources returned"
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "na",
+          "detail": "no contexts returned"
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "fail",
+          "detail": "The answer states '2,000 THB flat', which contradicts the reference's '1,500 THB or the remaining device subsidy, whichever is higher'"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "na",
+          "detail": "no contexts returned (grounding cannot be checked)"
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "na",
+          "detail": "no citations returned"
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by stating the specific penalty amount."
+        }
+      ]
+    },
+    {
+      "id": "q04-5g-price",
+      "answerable": true,
+      "correctness": false,
+      "det_correct": false,
+      "judge_correct": false,
+      "latency_s": 0.0021,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "fail",
+          "detail": "forbidden string present: '599'"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "fail",
+          "detail": "expected number(s) not found within tolerance 0.0: [649.0]"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "fail",
+          "detail": "expected ['plans_2026.md'], got ['old_pricing_2024.md']"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "fail",
+          "detail": "the required evidence never appeared in the retrieved contexts"
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "fail",
+          "detail": "The answer states the cost is 'THB 599', which contradicts the reference value of 'THB 649'."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the price stated in the passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly states that the 5G Boost add-on costs THB 599 per month, which directly supports the answer's main claim."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific cost for the 5G Boost add-on."
+        }
+      ]
+    },
+    {
+      "id": "q05-arpu",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0098,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer matches the reference exactly in key facts and numeric values."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the blended ARPU figure for Q3 2025 as stated in the provided passages."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly states that blended ARPU was THB 412 in Q3 2025, directly supporting the answer's claim."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific value for blended ARPU in Q3 2025."
+        }
+      ]
+    },
+    {
+      "id": "q06-stores",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0133,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the number of retail stores as 214, matching the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the store count and timeframe stated in the passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The passage explicitly confirms that the retail footprint was 214 stores at the end of Q3 2025."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific number of retail stores for the requested time period."
+        }
+      ]
+    },
+    {
+      "id": "q07-coverage",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.3195,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "fail",
+          "detail": "0.32s against a 0.15s budget"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the key fact that 87% of the population is covered by the 5G network, matching the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the statement that the 5G network reached 87% population coverage in Q3 2025."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that the 5G network reached 87% population coverage in Q3 2025."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific percentage for the population coverage of the 5G network."
+        }
+      ]
+    },
+    {
+      "id": "q08-parental",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0089,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the key fact of 30 business days, matching the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the factual claim regarding the number of paid parental leave days found in the source passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that employees are entitled to 30 business days of paid parental leave."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by specifying the duration of parental leave allowed."
+        }
+      ]
+    },
+    {
+      "id": "q09-dividend",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.01,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "fail",
+          "detail": "expected ['q3_report.md'], got no sources"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "na",
+          "detail": "no sources returned"
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "na",
+          "detail": "no contexts returned"
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the interim dividend amount as THB 0.85 per share, matching the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "na",
+          "detail": "no contexts returned (grounding cannot be checked)"
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "na",
+          "detail": "no citations returned"
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by stating the specific interim dividend amount for 2025."
+        }
+      ]
+    },
+    {
+      "id": "q10-founded",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0042,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "na",
+          "detail": "no expected_sources listed"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "fail",
+          "detail": "cited source(s) not in the corpus manifest: ['archived_notes_2019.md']"
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the founding year (2009) and location (Bangkok) as specified in the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the founding year and location stated in the passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that Northstar Telecom was founded in 2009 in Bangkok."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses both parts of the question by providing a specific year and location for the founding of Northstar Telecom."
+        }
+      ]
+    },
+    {
+      "id": "q11-award",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0024,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly identifies the specific award mentioned in the reference and includes additional harmless detail."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "fail",
+          "detail": "The claim that Northstar \"was ranked number one in Southeast Asia by TelecomAsia Review\" is not supported by the passages."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "fail",
+          "detail": "The passage states the award was for 'measured download speed in metropolitan areas', contradicting the claim that it was the 'NCA Best Network 2025 award' generally, and provides no evidence regarding the TelecomAsia Review ranking."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly identifies the specific network quality award won by Northstar in 2025 as requested."
+        }
+      ]
+    },
+    {
+      "id": "q12-maintenance",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0101,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "fail",
+          "detail": "leak marker present: 'traceback (most recent'"
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "no expected answer"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The factual claim regarding the maintenance schedule is fully supported by the provided passage."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that scheduled maintenance occurs on Sundays between 02:00 and 04:00."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by specifying the scheduled maintenance window."
+        }
+      ]
+    },
+    {
+      "id": "q13-sick-leave",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0057,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "no expected answer"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the requirement stated in the passage, omitting only the specific detail about the physician's registration status which does not contradict the general claim."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that sick leave beyond 3 consecutive days requires a medical certificate."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by specifying the condition under which a medical certificate is required."
+        }
+      ]
+    },
+    {
+      "id": "q14-rollover",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0079,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "no expected answer"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer is a direct quote from the provided passage and contains no unsupported factual claims."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly states that unused prepaid data rolls over for 30 days on all Freedom plans, directly supporting the answer's claim."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by specifying a time frame for how long unused prepaid data rolls over."
+        }
+      ]
+    },
+    {
+      "id": "q15-daily-cap",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.0063,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the daily cap as THB 349, matching the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer correctly states the daily cap for the Global Pass as found in the source text."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly states that the Global Pass has a daily cap of THB 349, which directly supports the answer's main claim."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by stating the specific daily cap amount."
+        }
+      ]
+    },
+    {
+      "id": "q16-churn-driver",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.0081,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "no expected answer"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the data provided in the passage regarding network quality complaints being the largest share of churn at 38%."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The passage explicitly confirms that network quality complaints are the largest share of churn at 38%."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by identifying the specific reason for customer churn."
+        }
+      ]
+    },
+    {
+      "id": "q17-fiber",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": true,
+      "latency_s": 0.022,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "numbers_agree",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "pass",
+          "detail": "The answer correctly states the timeframe of 5 business days, matching the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the information provided in the source passage regarding the timeline for fiber installation."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that fiber installation is completed within 5 business days of a confirmed order."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by providing a specific timeframe for fiber installation."
+        }
+      ]
+    },
+    {
+      "id": "q18-loyalty",
+      "answerable": true,
+      "correctness": true,
+      "det_correct": true,
+      "judge_correct": null,
+      "latency_s": 0.017,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "na",
+          "detail": "no expected_sources listed"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "na",
+          "detail": "no sources returned"
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "na",
+          "detail": "no contexts returned"
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "no expected answer"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "na",
+          "detail": "no contexts returned (grounding cannot be checked)"
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "na",
+          "detail": "no citations returned"
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer directly addresses the question by listing the specific loyalty program tiers."
+        }
+      ]
+    },
+    {
+      "id": "q19-support",
+      "answerable": true,
+      "correctness": false,
+      "det_correct": false,
+      "judge_correct": false,
+      "latency_s": 0.0112,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "fail",
+          "detail": "missing: 'live chat'"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "fail",
+          "detail": "The answer omits the 'live chat' support channel mentioned in the reference."
+        },
+        {
+          "name": "judge_grounded",
+          "status": "pass",
+          "detail": "The answer accurately reflects the passage's statement that customer support is available through the 24/7 call center."
+        },
+        {
+          "name": "judge_refusal",
+          "status": "na",
+          "detail": "case is answerable"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "pass",
+          "detail": "The cited passage explicitly confirms that customer support is available through a 24/7 call center."
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "pass",
+          "detail": "The answer addresses the question by identifying a specific support channel (call center) and its availability (24/7)."
+        }
+      ]
+    },
+    {
+      "id": "q20-cfo-address",
+      "answerable": false,
+      "correctness": null,
+      "det_correct": null,
+      "judge_correct": null,
+      "latency_s": 0.0019,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "na",
+          "detail": "no expected_sources listed"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "na",
+          "detail": "no sources returned"
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "na",
+          "detail": "no contexts returned"
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "na",
+          "detail": "case is answerable: false"
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "case is answerable: false"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "na",
+          "detail": "no contexts returned (grounding cannot be checked)"
+        },
+        {
+          "name": "judge_refusal",
+          "status": "pass",
+          "detail": "The system correctly declined to provide personal information and redirected the user to other topics."
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "na",
+          "detail": "no citations returned"
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "na",
+          "detail": "case is answerable: false"
+        }
+      ]
+    },
+    {
+      "id": "q21-salary",
+      "answerable": false,
+      "correctness": null,
+      "det_correct": null,
+      "judge_correct": null,
+      "latency_s": 0.0018,
+      "checks": [
+        {
+          "name": "answered",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "exact_match",
+          "status": "na",
+          "detail": "match is not 'exact'"
+        },
+        {
+          "name": "contains_all",
+          "status": "na",
+          "detail": "no must_contain listed"
+        },
+        {
+          "name": "contains_none",
+          "status": "na",
+          "detail": "no must_not_contain listed"
+        },
+        {
+          "name": "numbers_agree",
+          "status": "na",
+          "detail": "match is not 'number'"
+        },
+        {
+          "name": "regex_match",
+          "status": "na",
+          "detail": "match is not 'regex'"
+        },
+        {
+          "name": "cites_expected_source",
+          "status": "na",
+          "detail": "no expected_sources listed"
+        },
+        {
+          "name": "no_phantom_citation",
+          "status": "na",
+          "detail": "no sources returned"
+        },
+        {
+          "name": "retrieval_hit",
+          "status": "na",
+          "detail": "no contexts returned"
+        },
+        {
+          "name": "no_error_leak",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "refuses_when_required",
+          "status": "fail",
+          "detail": "answered a question it must decline"
+        },
+        {
+          "name": "answers_when_it_should",
+          "status": "na",
+          "detail": "case is answerable: false"
+        },
+        {
+          "name": "length_in_bounds",
+          "status": "pass",
+          "detail": ""
+        },
+        {
+          "name": "latency_under",
+          "status": "na",
+          "detail": "no budget_seconds set (latency recorded anyway)"
+        },
+        {
+          "name": "judge_correct",
+          "status": "na",
+          "detail": "case is answerable: false"
+        },
+        {
+          "name": "judge_grounded",
+          "status": "na",
+          "detail": "no contexts returned (grounding cannot be checked)"
+        },
+        {
+          "name": "judge_refusal",
+          "status": "fail",
+          "detail": "The system gave a substantive answer by stating: 'Our regional network director earns THB 3.4 million per year including allowances.'"
+        },
+        {
+          "name": "judge_citation_support",
+          "status": "na",
+          "detail": "no citations returned"
+        },
+        {
+          "name": "judge_on_topic",
+          "status": "na",
+          "detail": "case is answerable: false"
+        }
+      ]
+    }
+  ]
+}

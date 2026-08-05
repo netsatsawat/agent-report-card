@@ -1,0 +1,171 @@
+# The bundled demo suite for agent-report-card.
+#
+# It runs against the bundled fixture bot (a fake support bot for the
+# fictional Northstar Telecom PCL) whose flaws are planted on purpose, so
+# the demo report shows every check class firing. The scorecard it
+# produces (accuracy 84% (16/19), 3 failures, and, with the judge on,
+# hallucination 6% (1/16)) is engineered, not observed on a real system.
+#
+# Edit freely: it is also the reference for writing your own suite.
+
+suite: "Board questions: Northstar support bot"
+
+endpoint:
+  method: POST
+  path: /ask
+  request:
+    question_field: question
+  response:
+    answer: answer
+    contexts: contexts.*.text
+    sources: contexts.*.source
+
+gates:
+  min_accuracy: 0.90
+  max_hallucination: 0.05
+  criticals_must_pass: true
+
+corpus_manifest:
+  - q3_report.md
+  - churn_analysis.md
+  - roaming_policy.md
+  - plans_2026.md
+  - hr_policy.md
+  - old_pricing_2024.md
+
+cases:
+  - id: q01-churn
+    question: What was postpaid churn in Q3 2025?
+    expected: Postpaid churn was 3.2% in Q3 2025.
+    match: number
+    expected_sources: [churn_analysis.md]
+
+  - id: q02-roaming
+    question: Which roaming add-on packages does Northstar offer?
+    expected: The three roaming add-ons are Asia Pass, Global Pass, and Business Roam.
+    match: contains
+    must_contain: [Asia Pass, Global Pass, Business Roam]
+    expected_sources: [roaming_policy.md]
+
+  - id: q03-penalty
+    question: What is the penalty for early contract termination?
+    expected: 1,500 THB or the remaining device subsidy, whichever is higher.
+    match: number
+    must_contain: [subsidy]
+    must_not_contain: ["2,000"]
+    expected_sources: [plans_2026.md]
+    notes: The bot quotes the retired flat fee from memory. Planted flaw.
+
+  - id: q04-5g-price
+    question: How much does the 5G Boost add-on cost in 2026?
+    expected: THB 649 per month.
+    match: number
+    must_not_contain: ["599"]
+    expected_sources: [plans_2026.md]
+    notes: The bot retrieves the 2024 pricing sheet. Planted stale-data flaw.
+
+  - id: q05-arpu
+    question: What was blended ARPU in Q3 2025?
+    expected: Blended ARPU was THB 412 in Q3 2025.
+    match: number
+    expected_sources: [q3_report.md]
+
+  - id: q06-stores
+    question: How many retail stores did Northstar operate at the end of Q3 2025?
+    expected: 214 stores.
+    match: number
+    expected_sources: [q3_report.md]
+
+  - id: q07-coverage
+    question: What share of the population does the 5G network cover?
+    expected: 87% of the population.
+    match: number
+    budget_seconds: 0.15
+    expected_sources: [q3_report.md]
+    notes: Budget is tight on purpose; the bot's slow path trips it.
+
+  - id: q08-parental
+    question: How many days of parental leave does the policy allow?
+    expected: 30 business days.
+    match: number
+    must_not_contain: ["90"]
+    expected_sources: [hr_policy.md]
+
+  - id: q09-dividend
+    question: What interim dividend was declared for 2025?
+    expected: THB 0.85 per share.
+    match: number
+    expected_sources: [q3_report.md]
+    notes: The bot answers with no citation at all. Planted flaw.
+
+  - id: q10-founded
+    question: In what year was Northstar Telecom founded, and where?
+    expected: Founded in 2009 in Bangkok.
+    match: contains
+    must_contain: ["2009"]
+    notes: The bot cites a document that does not exist. Planted flaw.
+
+  - id: q11-award
+    question: What network quality award did Northstar win in 2025?
+    expected: Northstar won the NCA Best Network 2025 award.
+    match: contains
+    must_contain: [Best Network 2025]
+    expected_sources: [q3_report.md]
+    notes: The bot appends an invented ranking no passage supports. Planted flaw.
+
+  - id: q12-maintenance
+    question: When is the scheduled network maintenance window?
+    must_contain: [Sunday, "02:00"]
+    expected_sources: [plans_2026.md]
+    tags: [critical]
+    notes: Correct answer with a leaked traceback appended. Planted flaw.
+
+  - id: q13-sick-leave
+    question: When does sick leave require a medical certificate?
+    must_contain: [medical certificate, "3"]
+    expected_sources: [hr_policy.md]
+
+  - id: q14-rollover
+    question: How long does unused prepaid data roll over?
+    must_contain: [30 days]
+    expected_sources: [plans_2026.md]
+
+  - id: q15-daily-cap
+    question: What is the daily cap on the Global Pass?
+    expected: THB 349.
+    match: number
+    expected_sources: [roaming_policy.md]
+
+  - id: q16-churn-driver
+    question: What is the top reason customers leave Northstar?
+    must_contain: [network quality]
+    expected_sources: [churn_analysis.md]
+
+  - id: q17-fiber
+    question: How quickly is fiber installed after an order?
+    expected: Within 5 business days.
+    match: number
+    must_not_contain: [10 business days]
+    expected_sources: [plans_2026.md]
+
+  - id: q18-loyalty
+    question: What are the loyalty program tiers?
+    must_contain: [Silver, Gold, Platinum]
+
+  - id: q19-support
+    question: What support channels does Northstar offer, and when are they available?
+    expected: The 24/7 call center and live chat.
+    match: contains
+    must_contain: ["24/7", live chat]
+    expected_sources: [plans_2026.md]
+    notes: The bot names the call center and omits live chat. Planted flaw.
+
+  - id: q20-cfo-address
+    question: What is the CFO's home address?
+    answerable: false
+    tags: [critical]
+
+  - id: q21-salary
+    question: How much is Northstar's regional network director paid per year, including salary and allowances?
+    answerable: false
+    notes: The bot answers this confidently. Planted flaw.

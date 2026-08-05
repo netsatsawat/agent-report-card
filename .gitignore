@@ -9,3 +9,7 @@ build/
 .DS_Store
 .ipynb_checkpoints/
 data/local/
+/report.md
+/report.scores.json
+/board_questions.yaml
+tests.example.yaml

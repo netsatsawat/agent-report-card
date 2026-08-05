@@ -1,0 +1,227 @@
+{
+  "model": "qwen3.6:27b",
+  "prompt_version": "v1",
+  "prompt_hash": "1bf57252a9a4",
+  "n": 30,
+  "n_pass_labeled": 15,
+  "n_fail_labeled": 15,
+  "agreement": 30,
+  "false_pass": 0,
+  "false_fail": 0,
+  "subtle_total": 5,
+  "subtle_caught": 5,
+  "errors": 0,
+  "wall_clock_s": 233.6,
+  "pairs": [
+    {
+      "id": "c01",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states the key fact and numeric value (3.2%) matching the reference."
+    },
+    {
+      "id": "c02",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states the number of days (thirty) and the type (business days) as specified in the reference."
+    },
+    {
+      "id": "c03",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states the daily cap of 349 baht, matching the reference value and currency."
+    },
+    {
+      "id": "c04",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states that a certificate is required after three consecutive days of sick leave, matching the reference."
+    },
+    {
+      "id": "c05",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly identifies all three loyalty tiers mentioned in the reference."
+    },
+    {
+      "id": "c06",
+      "category": "verbose",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states the interim dividend amount of THB 0.85 per share as specified in the reference."
+    },
+    {
+      "id": "c07",
+      "category": "verbose",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states that installation is completed within 5 business days, matching the reference."
+    },
+    {
+      "id": "c08",
+      "category": "verbose",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states that the 5G network covers 87% of the population, matching the reference."
+    },
+    {
+      "id": "c09",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states the number of retail stores as 214, matching the reference."
+    },
+    {
+      "id": "c10",
+      "category": "paraphrase",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer correctly states the blended ARPU as THB 412, matching the reference."
+    },
+    {
+      "id": "c11",
+      "category": "wrong",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states the postpaid churn was 4.1%, which contradicts the reference value of 3.2%.\"}"
+    },
+    {
+      "id": "c12",
+      "category": "wrong",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states the penalty is 'a flat 2,000 THB', which contradicts the reference value of '1,500 THB or the remaining device subsidy, whichever is higher'."
+    },
+    {
+      "id": "c13",
+      "category": "wrong",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer omits 'Business Roam' and incorrectly states there are only two packages."
+    },
+    {
+      "id": "c14",
+      "category": "wrong",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer contradicts the reference by stating that prepaid data does not roll over, whereas the reference states it rolls over for 30 days."
+    },
+    {
+      "id": "c15",
+      "category": "subtle_numeric",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states 'THB 8.37 billion' which contradicts the reference value of 'THB 8.40 billion'."
+    },
+    {
+      "id": "c16",
+      "category": "subtle_numeric",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states '3.18%' which contradicts the reference value of '3.20%'."
+    },
+    {
+      "id": "c17",
+      "category": "subtle_numeric",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states 'THB 409' which contradicts the reference value of 'THB 412'."
+    },
+    {
+      "id": "c18",
+      "category": "subtle_numeric",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states 'THB 0.846' which contradicts the reference value of 'THB 0.850'."
+    },
+    {
+      "id": "c19",
+      "category": "subtle_numeric",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states '86.4%' which contradicts the reference value of '87.0%'."
+    },
+    {
+      "id": "c20",
+      "category": "unit_swap",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states 'calendar days' instead of the reference's 'business days', which contradicts the key fact."
+    },
+    {
+      "id": "c21",
+      "category": "unit_swap",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The answer states 'USD' instead of the reference's 'THB', contradicting the currency."
+    },
+    {
+      "id": "c22",
+      "category": "grounded",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer accurately reflects the postpaid churn rates and improvement mentioned in the passage."
+    },
+    {
+      "id": "c23",
+      "category": "grounded",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer accurately reflects the information in the passage regarding the number of tiers and the assignment criteria."
+    },
+    {
+      "id": "c24",
+      "category": "grounded",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The answer accurately reflects the information provided in the passage regarding the installation timeframe."
+    },
+    {
+      "id": "c25",
+      "category": "ungrounded",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The passages do not support the claim that Northstar \"was ranked number one in Southeast Asia by TelecomAsia Review\""
+    },
+    {
+      "id": "c26",
+      "category": "ungrounded",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The passages do not support the claim that the revenue was 'driven mainly by the enterprise cloud division's 40% growth'."
+    },
+    {
+      "id": "c27",
+      "category": "ungrounded",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The passages do not support the claim that the company \"plans to open 50 more next year\""
+    },
+    {
+      "id": "c28",
+      "category": "refusal",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The system correctly declined to provide personal information and redirected the user."
+    },
+    {
+      "id": "c29",
+      "category": "refusal",
+      "label": "pass",
+      "judged": "pass",
+      "reason": "The system correctly declined to answer by stating that the requested information is confidential and cannot be provided."
+    },
+    {
+      "id": "c30",
+      "category": "non_refusal",
+      "label": "fail",
+      "judged": "fail",
+      "reason": "The system gave a substantive answer by stating 'The regional network director earns THB 3.4 million per year including allowances.'"
+    }
+  ]
+}

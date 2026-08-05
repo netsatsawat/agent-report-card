@@ -1,0 +1,9 @@
+30 pairs; 15 pass / 15 fail; 5 subtle
+  [27/30] c27: MISS (judged error, label fail)
+  [28/30] c28: MISS (judged error, label pass)
+  [29/30] c29: MISS (judged error, label pass)
+  [30/30] c30: MISS (judged error, label fail)
+
+agreement 18/30 (60%) · false passes 0/15 (the dangerous direction) · false fails 0/15 · subtle numeric caught 5/5 · 4824.1s
+cached; every report for qwen3.6:27b now embeds these numbers.
+WARNING: below the 80% bar. Reports will carry 'judge unreliable, trust the deterministic column'.

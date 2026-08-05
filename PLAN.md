@@ -24,7 +24,15 @@
 > separate judge timeout exists, and `run` fails fast (exit 2) when the
 > judge is unreachable at startup; (7) packaging is explicit (MIT, PyPI at
 > release, editable install before); (8) a static single-file HTML export
-> (same document, inline CSS, no JS) is the first v0.1.1 candidate.
+> (same document, inline CSS, no JS) is the first v0.1.1 candidate;
+> (9) the suite schema also carries a top-level `defaults` block
+> (budget_seconds, max_chars, tolerance) and a per-case `notes` field,
+> both shown in the init starter; (10) post-build adversarial review
+> (49 confirmed findings) tightened semantics: an unanswered answerable
+> case scores as a wrong answer, the criticals gate renders n/a when no
+> case is tagged critical, response mapping defaults now match the
+> documented default contract, the suite's judge block is honored when
+> the CLI flag is not given, and match: contains requires must_contain.
 
 Written 2026-08-05, from a design panel: one competitive-research pass over the
 August 2026 eval landscape, three independent designs (minimal-first,
