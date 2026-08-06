@@ -119,7 +119,9 @@ against any user endpoint with their own file and URL substituted.
   check in or out of the catalog by issue, or editing the small source.
 - Cloud judge adapters (OpenAI, Anthropic): local by default, no keys ever
   read. The judge URL flag accepts what it accepts; no false "localhost
-  only" enforcement is claimed.
+  only" enforcement is claimed. Deferred, not rejected: 5.8 specifies them
+  for v0.2 as an opt-in the user selects and credentials the user holds,
+  which is why principle 2 reads "by default" rather than "only".
 - Multi-turn conversations, streaming endpoints, auth beyond one bearer
   header, concurrency, embedding-similarity checks, Windows promises.
 - Thai word segmentation and Thai judge calibration: thai-rag-bench's job
@@ -374,12 +376,69 @@ testable without a judge and in any language.
   active (port 8000, `board_questions.yaml` materialized), the promised
   command executes against the fixture bot and exits per FR-3.
 
+### 5.8 Any judge, any graded system (v0.2)
+
+The adoption barrier in v0.1 is not the report, it is the sentence "install
+Ollama and pull a 27B model". That is where an evaluator stops. Principle 2
+says local judge *first*, not local *only*, and this section is what makes
+the difference real: the judge becomes pluggable, the user supplies their own
+model and their own credentials, and the report says which judge graded the
+run and whether anything left the machine.
+
+- FR-44. The judge spec generalizes to `PROVIDER:MODEL[@URL]`. Providers in
+  v0.2: `ollama` (unchanged, still the default and still what a bare spec
+  means), `openai` for any OpenAI-compatible `/v1/chat/completions` server,
+  which covers LM Studio, vLLM, llama.cpp and OpenAI itself, and `anthropic`
+  for the Messages API. An unknown provider is an exit-2 schema error naming
+  the providers that exist. `none` keeps its meaning.
+- FR-45. Credentials are the user's, held in the user's environment. Each
+  provider declares one environment variable it reads (`OPENAI_API_KEY`,
+  `ANTHROPIC_API_KEY`); nothing else is consulted. A key is never accepted as
+  a flag, so it cannot reach shell history, a process list, or a report
+  header. An unset variable fails fast naming the variable and never its
+  value, matching the existing `${VAR}` contract, and the value is registered
+  with the scrubber before the first request so it cannot reach any output
+  surface. The tool never prompts for a key, never reads a dotfile, never
+  writes one, and never selects a hosted provider on its own.
+- FR-46. Calibration is per judge, not per tool. The exam of JR-1 runs
+  against whichever judge is configured, and the cache key covers provider,
+  model and base URL. A cache entry from a different provider is refused
+  rather than reused, because a report that cites an exam a different judge
+  sat is the precise dishonesty this project exists to avoid.
+- FR-47. The report names the judge and its locality in the header:
+  provider, model, and local or remote. When the judge is remote the report
+  carries an explicit egress line stating that answers and retrieved contexts
+  were sent to that host. `SECURITY.md` gains the same disclosure. This is not
+  boilerplate: the tool is aimed in part at teams who cannot let their data
+  leave the building, and "the judge URL" reads very differently when it is
+  localhost than when it is a vendor.
+- FR-48. The graded system is no longer restricted to a flat request body.
+  `endpoint.request.question_field` stays the default for the simple case;
+  `endpoint.request.body` may instead carry a literal JSON object in which
+  the string `${question}` is substituted, so a provider API that wants
+  nested `messages` and required fields can be addressed directly. There is
+  no templating language: substitution is exact-string, into a structure the
+  user wrote, validated by the same strict loader as the rest of the suite.
+- FR-49. Grading a bare model is allowed and reported honestly. A model
+  called directly returns no contexts and no sources, so every
+  context-dependent check renders n/a with its reason, exactly as today, and
+  the report must not imply retrieval was assessed. The scoreboard says what
+  it graded: generation only.
+- FR-50. No provider SDKs. Every provider is spoken to over plain HTTP
+  through the existing client; runtime dependencies stay pyyaml and httpx.
+  A provider is a request shape, a response path and an auth header, which
+  is small enough to read, and NFR-5 still has to hold.
+
 ## 6. Non-functional requirements
 
 - NFR-1. Runs fully offline in `--judge none` mode; no telemetry, no
   network calls except to the user's endpoint and judge URL.
-- NFR-2. No API key is read from anywhere; there is no env var the tool
-  looks for except explicit `${VAR}` references in the user's YAML.
+- NFR-2. No API key is read from anywhere the user did not name. Through
+  v0.1 that means only explicit `${VAR}` references in the user's YAML. From
+  v0.2 it additionally means the single environment variable declared by a
+  hosted judge provider the user selected themselves (FR-45); no provider is
+  ever chosen by default, and no other variable is consulted. The badge and
+  the README line both keep their "by default" qualifier for this reason.
 - NFR-3. Sequential execution; wall clock printed in the report header.
   No unmeasured time claim anywhere in the docs; the README quotes
   measured runs only.
@@ -494,6 +553,23 @@ Release requires all of the following green, in a fresh venv:
   bundled `_data` (suite, calibration set, corpus) and no test or report
   files, and the version in `pyproject.toml` matches
   `agent_report_card.__version__` and the tag being cut.
+- RC-13 (v0.2). No credential reaches an output surface. A test runs each
+  hosted provider against a stub transport with a sentinel key in the
+  environment and asserts the sentinel appears in neither the report, the
+  scores sidecar, the console, nor any error message, including the failure
+  paths where the request itself is quoted back.
+- RC-14 (v0.2). The default stays local and the tool never picks a provider.
+  Tests assert a bare `--judge MODEL` still resolves to Ollama, that no
+  hosted provider is reachable without an explicit provider prefix, and that
+  a set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` changes nothing on a run that
+  did not ask for that provider.
+- RC-15 (v0.2). Calibration cannot be borrowed across judges. A cached exam
+  recorded under one provider, model or base URL is refused by another, and
+  a report can never cite a calibration its own judge did not sit.
+- RC-16 (v0.2). Remote judging is disclosed, not implied. Every report from
+  a hosted judge carries the provider, the model and the egress line naming
+  the host; a golden test covers the header for one local and one remote run,
+  so the disclosure cannot be dropped by accident.
 
 ## 10. Milestones
 
@@ -537,10 +613,14 @@ milestone M4):
   next candidates if users ask: a static single-file HTML export of the
   same report (same section order, inline CSS, zero JavaScript, no
   server; a second rendering of the document, never a dashboard, for the
-  stakeholder who receives it by email), an OpenAI-compatible judge URL
-  option for LM Studio and vLLM, `judge_complete` for multi-part
-  questions, and a per-category calibration breakdown.
-- v0.2: agent-trace mode ingesting agent-failure-lab-style per-step
-  JSONL; requires the lab to version its format first.
+  stakeholder who receives it by email), `judge_complete` for multi-part
+  questions, and a per-category calibration breakdown. The
+  OpenAI-compatible judge URL deferred here is now folded into the larger
+  pluggable-judge work in 5.8.
+- v0.2: any judge and any graded system (5.8, FR-44 to FR-50), plus
+  agent-trace mode ingesting agent-failure-lab-style per-step JSONL. The
+  two are independent; the trace mode still requires the lab to version its
+  format first, whereas the judge work is unblocked and is the one that
+  removes the "install Ollama first" barrier to trying the tool at all.
 - v0.3: baseline diffing against a stored scores sidecar, fail-the-build
   on regression, trend lines across committed reports.
