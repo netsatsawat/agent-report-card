@@ -428,6 +428,13 @@ run and whether anything left the machine.
   through the existing client; runtime dependencies stay pyyaml and httpx.
   A provider is a request shape, a response path and an auth header, which
   is small enough to read, and NFR-5 still has to hold.
+- FR-51. `judge-check` gains `--compare JUDGE [--compare JUDGE ...]`: the
+  same exam, the same pairs, N judges, one table carrying per-judge
+  agreement, kappa and the per-category breakdown of 7.1. It reports; it
+  never selects. Choosing a judge is the user's decision and the output
+  exists to inform it, which is the same stance the report takes on shipping.
+  Results are cached per judge under FR-46, so a comparison is cheap to
+  re-run and cannot silently mix a fresh judge with a stale exam.
 
 ## 6. Non-functional requirements
 
@@ -463,6 +470,47 @@ run and whether anything left the machine.
 - JR-4. Wording discipline everywhere: 30 items supports "measured error
   rate on this labeled set", never "calibrated". Judge-only failures are
   labeled "judge-flagged", visually distinct from code-verified.
+
+### 7.1 Judge measurement, v0.2
+
+The field moved while v0.1 shipped. LLM judges are now documented as
+systematically overconfident, chance-corrected agreement against human labels
+is the stated 2026 production practice, and NeurIPS 2026 carries a workshop
+(JUDGe) treating evaluator reliability as a measurement-instrument problem
+rather than a model problem. v0.1 already publishes a judge's error rate in
+every report, which is ahead of the tools; 7.1 is about reporting it in a form
+that cannot be over-read. Nothing here adds a capability. It adds resolution
+and it adds refusal.
+
+- JR-5. Per-category breakdown, not one number. The calibration set already
+  carries a `category` on every pair (paraphrase, subtle_numeric, unit_swap,
+  verbose, grounded, ungrounded, wrong, refusal, non_refusal); the report
+  breaks agreement down by it. The aggregate is the number that hides the
+  failure that matters: a judge scoring 28/30 while missing four of five
+  subtle-numeric pairs reads as 93% correct and is worthless at precisely the
+  job this tool exists for. This is the same defect as a mean coverage that
+  looks calibrated while the per-dataset range is not.
+- JR-6. Chance-corrected agreement. Cohen's kappa is reported beside raw
+  agreement, because the set is balanced 15/15 and a coin flip scores about
+  50% on it. Raw agreement flatters every judge by roughly that much, and a
+  reader deciding whether to trust judge-fed gates needs the corrected number.
+- JR-7. Every rate carries its denominator and a Wilson interval, and no rate
+  is printed for a category with fewer than five pairs: `unit_swap` has two
+  and `non_refusal` has one, so a percentage there is noise wearing a decimal
+  point. Those categories print the raw tally only. The wording discipline of
+  JR-4 extends to the breakdown.
+- JR-8. Comparison refuses to over-read itself. Where two judges are compared,
+  the report states "too close to separate on 30 items" whenever their
+  intervals overlap, rather than ranking them. Thirty hand-labeled pairs can
+  establish that a judge is usable; they cannot establish that one judge is
+  two points better than another, and a table that implies otherwise is the
+  failure mode this project spends its time avoiding elsewhere.
+- JR-9. Self-preference is disclosed when it is knowable. A suite may declare
+  `system_under_test.model_family`; when it matches the judge's family the
+  report says so, because a judge grading its own family is a named bias in
+  the literature and the reader should weigh the verdict accordingly. The
+  field is optional, never inferred, and absent means the report says nothing
+  rather than guessing.
 
 ## 8. Language support in v0.1
 
@@ -570,6 +618,21 @@ Release requires all of the following green, in a fresh venv:
   a hosted judge carries the provider, the model and the egress line naming
   the host; a golden test covers the header for one local and one remote run,
   so the disclosure cannot be dropped by accident.
+- RC-17 (v0.2). The breakdown cannot lie by omission or by precision. Tests
+  assert that every printed rate carries its denominator and interval, that
+  no category with fewer than five pairs prints a percentage, and that a
+  synthetic judge which passes every aggregate check while failing four of
+  five subtle-numeric pairs is visibly bad in the report rather than a 93%.
+- RC-18 (v0.2). Kappa is computed against the labels, not asserted. A
+  fixture judge with known behaviour (all-pass, all-fail, perfect, and a
+  seeded coin flip) produces the kappa each case mathematically requires:
+  0 for the constant and random judges, 1 for the perfect one. A judge that
+  agrees 50% of the time on a balanced set must not read as half right.
+- RC-19 (v0.2). Comparison declines to rank when it cannot. Two fixture
+  judges whose intervals overlap produce "too close to separate on 30 items"
+  and no ordering; two that are genuinely far apart produce the ordering.
+  The refusal is tested, because it is the part a future edit would delete
+  for looking indecisive.
 
 ## 10. Milestones
 
@@ -613,14 +676,39 @@ milestone M4):
   next candidates if users ask: a static single-file HTML export of the
   same report (same section order, inline CSS, zero JavaScript, no
   server; a second rendering of the document, never a dashboard, for the
-  stakeholder who receives it by email), `judge_complete` for multi-part
-  questions, and a per-category calibration breakdown. The
-  OpenAI-compatible judge URL deferred here is now folded into the larger
-  pluggable-judge work in 5.8.
-- v0.2: any judge and any graded system (5.8, FR-44 to FR-50), plus
-  agent-trace mode ingesting agent-failure-lab-style per-step JSONL. The
-  two are independent; the trace mode still requires the lab to version its
-  format first, whereas the judge work is unblocked and is the one that
-  removes the "install Ollama first" barrier to trying the tool at all.
+  stakeholder who receives it by email) and `judge_complete` for multi-part
+  questions. Two items deferred here have since been promoted rather than
+  dropped: the OpenAI-compatible judge URL is folded into 5.8, and the
+  per-category calibration breakdown is now 7.1, because a landscape read in
+  August 2026 showed it is the part of this tool the field has not caught up
+  to.
+- v0.2, in this order and for these reasons:
+  1. **Judge measurement (7.1, JR-5 to JR-9, FR-51).** Judge reliability is
+     an open problem the tools have not addressed: judges are documented as
+     systematically overconfident, chance-corrected agreement is the stated
+     production practice, and NeurIPS 2026 has a workshop on it. This project
+     already publishes a judge's error rate by default, which no incumbent
+     requires. Sharpening the thing we are alone on beats matching the thing
+     everyone has.
+  2. **Pluggable judges (5.8, FR-44 to FR-47, FR-50).** Necessary, not
+     differentiating: DeepEval already judges with OpenAI, Ollama, Anthropic,
+     Gemini or LiteLLM. What is still ours is the direction of the default,
+     since DeepEval reaches for GPT-4 and a key unless told otherwise. Build
+     it to remove "install Ollama and pull a 27B model" as the reason an
+     evaluator quits, and market it as nothing.
+  3. **Arbitrary graded systems (FR-48, FR-49).** Lowest value of the three
+     and last: by FR-49's own admission a bare model yields a report where
+     most checks are n/a, so it invites use in the mode where the tool is
+     weakest. Ship it only if someone asks.
+  4. **agent-trace mode**, still blocked on agent-failure-lab versioning its
+     JSONL format.
+
+  Context for that ordering: promptfoo, the most widely used open evaluator
+  (350k developers, a quarter of the Fortune 500), was acquired by OpenAI in
+  March 2026. It stays open source, but NIST AI RMF names evaluator
+  independence as a governance concern, so an OpenAI-owned grader of OpenAI
+  models is now something an adopter has to document and defend. A local-first
+  evaluator with no vendor behind it is worth more this year than last, and
+  that is a positioning fact, not a feature to build.
 - v0.3: baseline diffing against a stored scores sidecar, fail-the-build
   on regression, trend lines across committed reports.
