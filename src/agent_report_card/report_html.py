@@ -287,8 +287,7 @@ font-size:1.05rem;font-weight:700;letter-spacing:.03em}
 max-width:none;color:var(--ink-soft);font-size:.9375rem;font-variant-numeric:tabular-nums}
 .banner .metrics>span{flex:0 1 auto;min-width:0}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(11.5rem,1fr));
-gap:.75rem 1.5rem;margin:0 0 1.75rem;padding:0 0 1.25rem;
-border-bottom:1px solid var(--rule);font-size:.875rem}
+gap:.75rem 1.5rem;margin:0;font-size:.875rem}
 .meta dt{color:var(--ink-faint);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase}
 .meta dd{margin:.1rem 0 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .table-wrap{margin:0 0 1.5rem;overflow-x:auto}
