@@ -68,12 +68,14 @@ tool itself, clone it and `pip install -e .` instead.
 That boots a bundled fixture bot (a fake support bot for the fictional
 Northstar Telecom, with nine flaws planted on purpose), runs the bundled
 21-question suite against it, and writes `report.md`. Fully offline, and
-every report prints its own wall clock in the header (the committed
-deterministic run measured under a second, plus interpreter startup).
-With [Ollama](https://ollama.com) running, drop the `--judge none` and
-the judge checks light up too; the committed judged run's wall clock is
-in its own header, because judged runs on a 27B local model are minutes,
-not seconds, and pretending otherwise would break house rules.
+every report prints its own grading run in the header, which is how long
+grading took rather than how fast the bot answered (the committed
+deterministic run measured under a second, plus interpreter startup; the
+bot's own latency is a row in the scorecard). With
+[Ollama](https://ollama.com) running, drop the `--judge none` and the
+judge checks light up too; the committed judged run's figure is in its
+own header, because judged runs on a 27B local model are minutes, not
+seconds, and pretending otherwise would break house rules.
 
 To try the promised command exactly as written above:
 
