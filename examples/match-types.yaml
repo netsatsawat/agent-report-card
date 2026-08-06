@@ -1,0 +1,81 @@
+# Every match type, what it is for, and how it misleads.
+#
+#   agent-report-card demo --keep-serving
+#   agent-report-card run --tests examples/match-types.yaml \
+#     --endpoint http://localhost:8000 --judge none
+#
+# Every case here passes against the fixture bot, so the file shows the
+# types working rather than the tool complaining.
+#
+# Picking the match type IS the test design. Too strict and the suite
+# fails on rewording; too loose and it passes a wrong number. Rule of
+# thumb: the strictest type that survives a legitimate rewrite.
+
+suite: "Match types: exact, contains, number, regex, judge"
+
+defaults:
+  # Applies to every `match: number` case that does not override it.
+  # 0 means the numbers must agree exactly.
+  tolerance: 0
+
+cases:
+  # ---- number ---------------------------------------------------------
+  # Pulls the numbers out of both sides and compares those; wording is
+  # free. The right default for anything financial, because it is the
+  # type that catches an answer wrong by six cents.
+  - id: t01-number
+    question: What was blended ARPU in Q3 2025?
+    expected: Blended ARPU was THB 412.
+    match: number
+
+  # `tolerance` is a relative allowance. Use it when the source rounds
+  # and you do not want to fail on the rounding. Not as a way to make a
+  # failing test pass.
+  - id: t02-number-tolerance
+    question: What share of the population does the 5G network cover?
+    expected: 87% of the population.
+    match: number
+    tolerance: 0.01
+
+  # ---- contains -------------------------------------------------------
+  # Every string in must_contain must appear, case-insensitively. Good
+  # for lists and named entities, where order and connectives vary.
+  - id: t03-contains
+    question: Which roaming add-on packages does Northstar offer?
+    expected: The three roaming add-ons are Asia Pass, Global Pass, and Business Roam.
+    must_contain: [Asia Pass, Global Pass, Business Roam]
+    match: contains
+
+  # ---- exact ----------------------------------------------------------
+  # The whole answer, character for character after whitespace is
+  # normalised. Almost always wrong for a generative system: it fails on
+  # a trailing full stop or an added clause. Reserve it for canned or
+  # templated responses, and expect to maintain it.
+  - id: t04-exact
+    question: What was blended ARPU in Q3 2025?
+    expected: Blended ARPU was THB 412 in Q3 2025.
+    match: exact
+
+  # ---- regex ----------------------------------------------------------
+  # For shape rather than content: a time window, an ID pattern, a
+  # currency format. Keep it anchored enough that it cannot match more
+  # than you meant.
+  - id: t05-regex
+    question: What is the daily cap on the Global Pass?
+    expected: 'THB\s*349'
+    match: regex
+
+  # ---- judge ----------------------------------------------------------
+  # Semantic equivalence, for answers correct in many wordings that code
+  # cannot pin down. Costs a model call, and its verdict is evidence
+  # rather than proof.
+  #
+  # WARNING: `expected` with no `match` silently defaults to judge. Under
+  # `--judge none` such a case is checked by NOTHING and reports a pass.
+  # The tool prints a runtime warning naming any case in that state. Do
+  # not ignore it, and always write `match:` explicitly, as every case
+  # in this file does.
+  - id: t06-judge
+    question: When does sick leave require a medical certificate?
+    expected: A medical certificate is needed after three consecutive days of sick leave.
+    match: judge

@@ -1,0 +1,45 @@
+# The smallest suite that does something useful.
+#
+# Run it (two terminals):
+#   agent-report-card demo --keep-serving
+#   agent-report-card run --tests examples/minimal.yaml \
+#     --endpoint http://localhost:8000 --judge none
+#
+# No judge, no gates block, no endpoint block. Four questions against the
+# bundled fixture bot, checked by code alone. All four pass, so this is
+# what a clean run looks like. Start here and add only what a real
+# failure makes you add.
+
+suite: "Minimal: four questions, no judge"
+
+cases:
+  # `match: number` compares the numbers in the answer, not the wording,
+  # so "3.2%" and "churn was 3.2 percent" both pass and "3.4%" does not.
+  - id: m01-churn
+    question: What was postpaid churn in Q3 2025?
+    expected: Postpaid churn was 3.2%.
+    match: number
+
+  # `match: contains` wants every string in must_contain present,
+  # case-insensitively. Use it when the sentence is free but the facts
+  # are not.
+  - id: m02-roaming
+    question: Which roaming add-on packages does Northstar offer?
+    expected: The three roaming add-ons are Asia Pass, Global Pass, and Business Roam.
+    must_contain: [Asia Pass, Global Pass, Business Roam]
+    match: contains
+
+  # A question the corpus cannot answer. `answerable: false` inverts the
+  # test: passing means the bot declined instead of inventing something.
+  - id: m03-unanswerable
+    question: What is the CFO's home address?
+    answerable: false
+
+  # `must_not_contain` is the cheapest safety check there is. It needs no
+  # judge and no contexts. Here it pins a figure the bot must not confuse
+  # with the parental-leave allowance.
+  - id: m04-parental-leave
+    question: How many days of parental leave does the policy allow?
+    expected: 30 business days.
+    match: number
+    must_not_contain: ["90"]

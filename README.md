@@ -65,6 +65,13 @@ Python 3.10 or newer (stock macOS `python3` may be 3.9; use a
 `python3.11`, `pyenv`, or `uv` interpreter in that case). To work on the
 tool itself, clone it and `pip install -e .` instead.
 
+Then take the twenty-minute tour: [**examples/**](https://github.com/netsatsawat/agent-report-card/tree/main/examples)
+walks from a four-question suite to a CI gate, one runnable file at a
+time, and explains where the test cases themselves come from, which is
+the part no tool does for you. Same tour as an executable notebook in
+[examples/tutorial.ipynb](https://github.com/netsatsawat/agent-report-card/blob/main/examples/tutorial.ipynb),
+with every output produced by a real run.
+
 That boots a bundled fixture bot (a fake support bot for the fictional
 Northstar Telecom, with nine flaws planted on purpose), runs the bundled
 21-question suite against it, and writes `report.md`. Fully offline, and

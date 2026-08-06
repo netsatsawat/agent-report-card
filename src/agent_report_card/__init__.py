@@ -1,3 +1,3 @@
 """agent-report-card: a performance review for your AI agent."""
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"

@@ -13,3 +13,4 @@ data/local/
 /report.scores.json
 /board_questions.yaml
 tests.example.yaml
+.venv-docs/

@@ -5,7 +5,11 @@ artifacts in [`reports/`](reports/), not from memory.
 
 ## Unreleased
 
-Opening the 0.2 line. Judge measurement, per PRD 7.1.
+Nothing yet.
+
+## 0.2.0 — 2026-08-07
+
+Opens the 0.2 line. Judge measurement, per PRD 7.1.
 
 ### Added
 

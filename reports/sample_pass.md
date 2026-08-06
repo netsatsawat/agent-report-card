@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-06 05:21 UTC | 302.74s | agent-report-card 0.1.2 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-06 18:00 UTC | 388.05s | agent-report-card 0.2.0 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -24,7 +24,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 | hallucination (ungrounded vs retrieval, not untrue) | 0% (0/10) | judge-fed |
 | citation validity | 100% (30/30) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
 | refusal handling | 100% (2/2) | per check, not per case: 1 refusal case, plus judge_refusal on a judged run |
-| latency p50 / p95 / slowest | 0.00s / 0.02s / 0.02s | over 12 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
+| latency p50 / p95 / slowest | 0.01s / 0.02s / 0.02s | over 12 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 39 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -84,7 +84,7 @@ Judge: qwen3.6:27b (local), temperature 0, prompt set v1 (hash 1bf57252a9a4). Ju
 agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123
 ```
 
-Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00ae. Tool version 0.1.2, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00ae. Tool version 0.2.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Judged on: Darwin arm64, judge served locally by Ollama.
 
@@ -100,15 +100,15 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 |---|---|---|---|
 | r01-churn | pass | none | 0.00s |
 | r02-roaming | pass | none | 0.01s |
-| r03-arpu | pass | none | 0.02s |
+| r03-arpu | pass | none | 0.01s |
 | r04-stores | pass | none | 0.01s |
-| r05-parental | pass | none | 0.00s |
-| r06-sick-leave | pass | none | 0.00s |
+| r05-parental | pass | none | 0.02s |
+| r06-sick-leave | pass | none | 0.02s |
 | r07-rollover | pass | none | 0.01s |
 | r08-daily-cap | pass | none | 0.00s |
 | r09-churn-driver | pass | none | 0.01s |
-| r10-fiber | pass | none | 0.00s |
+| r10-fiber | pass | none | 0.01s |
 | r11-loyalty | pass | none | 0.00s |
-| r12-cfo-address | refused | none | 0.00s |
+| r12-cfo-address | refused | none | 0.01s |
 
 </details>

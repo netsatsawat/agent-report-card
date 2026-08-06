@@ -1,0 +1,70 @@
+# Grading which document the bot cited, not just what it said.
+#
+#   agent-report-card demo --keep-serving
+#   agent-report-card run --tests examples/citations-and-sources.yaml \
+#     --endpoint http://localhost:8000 --judge none
+#
+# These checks need your endpoint to return `contexts` carrying `source`
+# fields. Without them the grounding checks render n/a with the reason,
+# never as passes. The exception is `expected_sources`: a case naming a
+# document and citing nothing FAILS, because citing nothing is a real
+# answer to "did it cite the right document".
+#
+# EXPECT ONE FAILURE. c03 catches the stale-document flaw planted in the
+# fixture bot.
+
+suite: "Citations: right document, real document, grounded answer"
+
+# Every document the bot is allowed to cite. This is what turns a
+# plausible citation into a checkable one: anything cited that is not on
+# this list is a phantom the model invented, and no_phantom_citation
+# fails it. Leave the manifest out and that check renders n/a, because
+# the tool cannot infer what your corpus holds.
+corpus_manifest:
+  - q3_report.md
+  - churn_analysis.md
+  - roaming_policy.md
+  - plans_2026.md
+  - hr_policy.md
+  - old_pricing_2024.md
+
+cases:
+  # Right answer AND drawn from the document that actually contains it.
+  # A right answer from the wrong document is luck, and it stops being
+  # right the next time the corpus changes.
+  - id: c01-right-doc
+    question: What was postpaid churn in Q3 2025?
+    expected: Postpaid churn was 3.2%.
+    match: number
+    expected_sources: [churn_analysis.md]
+
+  - id: c02-right-doc-again
+    question: What is the daily cap on the Global Pass?
+    expected: THB 349.
+    match: number
+    expected_sources: [roaming_policy.md]
+
+  # The superseded-document trap, stated as a citation requirement. The
+  # 2024 pricing sheet is a real document in the manifest, which is
+  # exactly why the bot reaches for it and why banning a string would not
+  # be enough: the answer is fluent, sourced, and a year out of date.
+  - id: c03-not-the-stale-doc
+    question: How much does the 5G Boost add-on cost in 2026?
+    expected: THB 649 per month.
+    match: number
+    must_not_contain: ["599"]
+    expected_sources: [plans_2026.md]
+    tags: [critical]
+    notes: >-
+      Expected to fail against the fixture bot, which answers THB 599
+      citing old_pricing_2024.md. Both the number and the source are
+      wrong, and each is caught by a different check.
+
+  # Grounding is the judge's job: does the answer follow from the
+  # passages that came back? Under --judge none this renders n/a, and the
+  # banner's hallucination rate reads n/a rather than 0%, because an
+  # unmeasured rate is not a good one.
+  - id: c04-grounded
+    question: What is the top reason customers leave Northstar?
+    must_contain: [network quality]
+    expected_sources: [churn_analysis.md]

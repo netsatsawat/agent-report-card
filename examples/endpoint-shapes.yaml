@@ -1,0 +1,70 @@
+# Pointing the tool at an endpoint that is not the default shape.
+#
+# The tool speaks one POST per question, JSON in and JSON out. Everything
+# about that exchange is configurable, so the system under test can be
+# written in any language and does not have to be reshaped for grading.
+#
+# The default, which needs no endpoint block at all:
+#   POST {endpoint}/ask   {"question": "..."}
+#     -> {"answer": "...", "contexts": [{"text": "...", "source": "..."}]}
+
+suite: "Endpoint shapes: custom paths, response mapping, authentication"
+
+endpoint:
+  method: POST
+
+  # Path appended to --endpoint. If --endpoint already carries a path,
+  # that wins, so a full URL on the command line does what it looks like.
+  path: /v1/chat/completions
+
+  request:
+    # The single JSON key your question goes into.
+    question_field: prompt
+
+  response:
+    # Dot-paths into the response JSON. A digit indexes a list, and `*`
+    # maps the rest of the path over one. This covers any
+    # OpenAI-compatible server without a wrapper.
+    answer: choices.0.message.content
+
+    # Retrieved passages, if your API returns them. These unlock the
+    # grounding and retrieval-localization checks. Set to null when your
+    # endpoint has no such field, and those checks render n/a with the
+    # reason rather than silently passing.
+    contexts: choices.0.message.context.*.text
+    sources: choices.0.message.context.*.doc_id
+
+  headers:
+    # ${VAR} is read from your environment at load time. An unset
+    # variable fails fast naming the variable, never its value, and the
+    # value is scrubbed from the report, the sidecar, the console and
+    # every error message before the first request goes out.
+    #
+    # The tool reads no environment variable you did not write here.
+    Authorization: "Bearer ${MY_APP_TOKEN}"
+    X-Tenant: acme-prod
+
+cases:
+  - id: e01-smoke
+    question: What was postpaid churn in Q3 2025?
+    expected: Postpaid churn was 3.2%.
+    match: number
+
+  # Latency is graded too. `budget_seconds` fails the case when the
+  # endpoint is correct but too slow to ship, which is a real failure
+  # mode that an accuracy-only suite scores as a pass.
+  - id: e02-latency-budget
+    question: Which roaming add-on packages does Northstar offer?
+    expected: Roam Lite, Roam Plus and Roam Max.
+    must_contain: ["Roam Lite", "Roam Plus", "Roam Max"]
+    match: contains
+    budget_seconds: 5
+
+  # `max_chars` catches the other direction: an answer that is correct
+  # but far too long for the surface it renders in.
+  - id: e03-length-budget
+    question: In what year was Northstar Telecom founded, and where?
+    expected: 1998, in Bangkok.
+    match: contains
+    must_contain: ["1998", "Bangkok"]
+    max_chars: 400
