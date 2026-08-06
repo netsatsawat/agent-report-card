@@ -42,7 +42,8 @@ VERDICTS = {"PASS": "pass", "PASS WITH WARNINGS": "warn", "NOT READY": "fail"}
 # closing tag through the blockquote.
 RAW_HTML = ("<details><summary>Per-case appendix</summary>", "</details>")
 
-META_HEADERS = ["endpoint", "tests", "judge", "date", "wall clock", "tool"]
+META_HEADERS = ["endpoint", "tests", "judge", "date", "grading run",
+                "tool"]
 
 JUDGE_FLAG = " (judge-flagged)"
 

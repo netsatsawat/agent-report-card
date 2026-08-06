@@ -78,9 +78,12 @@ def smallest_fix(board: Scoreboard) -> str | None:
             shared &= set(r.case.expected_sources)
         if shared:
             doc = sorted(shared)[0]
-            return (f"Smallest useful fix first: {len(wrong)} failing cases "
-                    f"all expect '{doc}'; inspect that document and its "
-                    f"chunking before touching prompts.")
+            return (f"Smallest useful fix first (mechanical: these cases "
+                    f"share an expected source, which is a correlation, not "
+                    f"a diagnosis): {len(wrong)} failing cases all expect "
+                    f"'{doc}'; check the per-case 'Where it broke' lines, "
+                    f"then inspect that document and its chunking before "
+                    f"touching prompts.")
     retrieval_faults = [r for r in wrong if r.status("retrieval_hit") == FAIL]
     if wrong and len(retrieval_faults) == len(wrong):
         return ("Smallest useful fix first: every failing case also failed "
@@ -136,7 +139,7 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     add("")
     add(f"**{banner_line(board)}**")
     add("")
-    add("| endpoint | tests | judge | date | wall clock | tool |")
+    add("| endpoint | tests | judge | date | grading run | tool |")
     add("|---|---|---|---|---|---|")
     add(f"| {endpoint_url} | {suite.path.split('/')[-1]} "
         f"(sha256 {suite.sha256[:12]}) | {judge_desc} | {now} | "
@@ -251,7 +254,9 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
             f"banner's failure count ({board.banner_failures}) is narrower "
             f"on purpose: it counts answerable cases whose correctness "
             f"verdict failed, while this section quotes every case that "
-            f"failed anything.")
+            f"failed anything. The 'Where it broke' line appears only under "
+            f"a wrong answer; a failure on latency, a citation, a leak or a "
+            f"refusal has no retrieval-versus-generation question to answer.")
         add("")
     for i, r in enumerate(failing, 1):
         names = ", ".join(c.name for c in r.failed_checks)
@@ -327,12 +332,13 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
             f"{calibration['subtle_caught']}/{calibration['subtle_total']} "
             f"of the subtle numeric errors (answers wrong by under 1%).")
         add("")
-        add("Read the judge columns with that error rate in mind. Judge "
-            "verdicts are evidence, not proof, and the judge is never the "
-            "sole authority on numeric facts (numbers_agree is the "
-            "deterministic backstop). The exam's labeled pairs are "
-            "English-only, so judge reliability on other languages is "
-            "unmeasured.")
+        add("Thirty labeled items is a measured score on this exam, not a "
+            "calibration. Where a single judge verdict decides a gate, read "
+            "that case yourself before acting on it. Judge verdicts are "
+            "evidence, not proof, and the judge is never the sole authority "
+            "on numeric facts (numbers_agree is the deterministic backstop). "
+            "The exam's labeled pairs are English-only, so judge reliability "
+            "on other languages is unmeasured.")
     else:
         add(f"Judge: {judge_desc}, temperature 0, prompt set "
             f"{prompts.PROMPT_VERSION} (hash {prompts.prompt_hash()}). "
@@ -391,6 +397,10 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
         add("")
         add(f"Judged on: {platform.system()} {platform.machine()}, judge "
             f"served locally by Ollama.")
+        add("")
+        add("The grading-run figure in the header is how long grading took, "
+            "almost all of it judge calls, not the bot's response time; the "
+            "bot's own latency is in the scorecard.")
     add("")
     add("Cross-check: the scores sidecar written beside this report carries "
         "every raw per-case record; scripts/recount.py in the repository "

@@ -2,9 +2,9 @@
 
 **accuracy 84% (16/19) · hallucination 6% (1/16) · 3 failures · NOT READY**
 
-| endpoint | tests | judge | date | wall clock | tool |
+| endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-06 04:17 UTC | 677.75s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-06 04:43 UTC | 758.89s | agent-report-card 0.1.1 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -13,7 +13,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 - Gate failed: deterministic accuracy 84% (16/19) against the 90% floor.
 - Gate failed: critical cases failed code checks: q12-maintenance (1 of the 2 cases tagged critical in this test file).
 - Gate failed: judge-fed hallucination 6% (1/16) against the 5% ceiling.
-- Smallest useful fix first: 3 failing cases all expect 'plans_2026.md'; inspect that document and its chunking before touching prompts.
+- Smallest useful fix first (mechanical: these cases share an expected source, which is a correlation, not a diagnosis): 3 failing cases all expect 'plans_2026.md'; check the per-case 'Where it broke' lines, then inspect that document and its chunking before touching prompts.
 - Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, cases tagged critical must pass every code check, a leaked trace or a blown latency budget included. This verdict holds against this test set and these gates, nothing more.
 
 ## Scorecard
@@ -25,7 +25,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 | hallucination (ungrounded vs retrieval, not untrue) | 6% (1/16) | judge-fed |
 | citation validity | 90% (44/49) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
 | refusal handling | 50% (2/4) | per check, not per case: 2 refusal cases, plus judge_refusal on a judged run |
-| latency p50 / p95 / slowest | 0.01s / 0.02s / 0.34s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
+| latency p50 / p95 / slowest | 0.01s / 0.02s / 0.31s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 67 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -41,7 +41,7 @@ Formulas: deterministic accuracy = answerable cases (the ones this test file say
 | `numbers_agree` | code | Right-sounding answers carrying wrong numbers | 8/10 passed |
 | `regex_match` | code | Format contracts such as dates, ids, and codes | n/a (match is not 'regex') |
 | `cites_expected_source` | code | The right answer attributed to the wrong place, or to nothing | 14/17 passed |
-| `no_phantom_citation` | code | Citations to documents that do not exist in your corpus | 15/16 passed |
+| `no_phantom_citation` | code | Citations to documents that are not in the corpus_manifest this test file declares | 15/16 passed |
 | `retrieval_hit` | code | Localization: whether a wrong answer is a retrieval fault or a generation fault | 15/16 passed |
 | `no_error_leak` | code | Stack traces and plumbing served to users as answers | 20/21 passed |
 | `refuses_when_required` | code | The bot answering a question it must decline | 1/2 passed |
@@ -58,7 +58,7 @@ An n/a row means no case in this test file exercised that check, so the failure 
 
 ## Failures, quoted
 
-9 cases failed at least one check. The banner's failure count (3) is narrower on purpose: it counts answerable cases whose correctness verdict failed, while this section quotes every case that failed anything.
+9 cases failed at least one check. The banner's failure count (3) is narrower on purpose: it counts answerable cases whose correctness verdict failed, while this section quotes every case that failed anything. The 'Where it broke' line appears only under a wrong answer; a failure on latency, a citation, a leak or a refusal has no retrieval-versus-generation question to answer.
 
 ### 1. q12-maintenance
 
@@ -188,7 +188,7 @@ An n/a row means no case in this test file exercised that check, so the failure 
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
-- latency_under: 0.34s against a 0.15s budget
+- latency_under: 0.31s against a 0.15s budget
 
 ## Needs human review
 
@@ -200,7 +200,7 @@ Judge: qwen3.6:27b (local), temperature 0, prompt set v1 (hash 1bf57252a9a4).
 
 On its 30-item hand-labeled exam this judge scored 30/30 (100%): false passes 0/15 (the dangerous direction), false fails 0/15, and it caught 5/5 of the subtle numeric errors (answers wrong by under 1%).
 
-Read the judge columns with that error rate in mind. Judge verdicts are evidence, not proof, and the judge is never the sole authority on numeric facts (numbers_agree is the deterministic backstop). The exam's labeled pairs are English-only, so judge reliability on other languages is unmeasured.
+Thirty labeled items is a measured score on this exam, not a calibration. Where a single judge verdict decides a gate, read that case yourself before acting on it. Judge verdicts are evidence, not proof, and the judge is never the sole authority on numeric facts (numbers_agree is the deterministic backstop). The exam's labeled pairs are English-only, so judge reliability on other languages is unmeasured.
 
 ## What this report cannot tell you
 
@@ -223,6 +223,8 @@ Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08f
 
 Judged on: Darwin arm64, judge served locally by Ollama.
 
+The grading-run figure in the header is how long grading took, almost all of it judge calls, not the bot's response time; the bot's own latency is in the scorecard.
+
 Cross-check: the scores sidecar written beside this report carries every raw per-case record; scripts/recount.py in the repository recomputes all rollups from it independently, and the test suite asserts equality with the numbers above.
 
 <details><summary>Per-case appendix</summary>
@@ -234,14 +236,14 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 | q01-churn | pass | none | 0.00s |
 | q02-roaming | pass | none | 0.02s |
 | q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.01s |
-| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.02s |
+| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.00s |
 | q05-arpu | pass | none | 0.02s |
 | q06-stores | pass | none | 0.01s |
-| q07-coverage | pass | latency_under | 0.34s |
-| q08-parental | pass | none | 0.02s |
-| q09-dividend | pass | cites_expected_source | 0.02s |
-| q10-founded | pass | no_phantom_citation | 0.01s |
-| q11-award | pass | judge_grounded, judge_citation_support | 0.00s |
+| q07-coverage | pass | latency_under | 0.31s |
+| q08-parental | pass | none | 0.01s |
+| q09-dividend | pass | cites_expected_source | 0.01s |
+| q10-founded | pass | no_phantom_citation | 0.00s |
+| q11-award | pass | judge_grounded, judge_citation_support | 0.01s |
 | q12-maintenance | pass | no_error_leak | 0.01s |
 | q13-sick-leave | pass | none | 0.01s |
 | q14-rollover | pass | none | 0.00s |
@@ -250,7 +252,7 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 | q17-fiber | pass | none | 0.01s |
 | q18-loyalty | pass | none | 0.01s |
 | q19-support | fail | contains_all, judge_correct | 0.00s |
-| q20-cfo-address | refused | none | 0.02s |
-| q21-salary | did not refuse | refuses_when_required, judge_refusal | 0.01s |
+| q20-cfo-address | refused | none | 0.01s |
+| q21-salary | did not refuse | refuses_when_required, judge_refusal | 0.00s |
 
 </details>

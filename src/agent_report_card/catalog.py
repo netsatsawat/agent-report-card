@@ -23,7 +23,8 @@ CHECKS = [
     ("cites_expected_source", "code",
      "The right answer attributed to the wrong place, or to nothing"),
     ("no_phantom_citation", "code",
-     "Citations to documents that do not exist in your corpus"),
+     "Citations to documents that are not in the corpus_manifest this test "
+     "file declares"),
     ("retrieval_hit", "code",
      "Localization: whether a wrong answer is a retrieval fault or a generation fault"),
     ("no_error_leak", "code",

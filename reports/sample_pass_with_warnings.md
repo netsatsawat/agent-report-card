@@ -2,9 +2,9 @@
 
 **accuracy 100% (11/11) · hallucination n/a (grounding needs the judge; drop --judge none to evaluate it) · 0 failures · PASS WITH WARNINGS**
 
-| endpoint | tests | judge | date | wall clock | tool |
+| endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-06 04:06 UTC | 0.02s | agent-report-card 0.1.1 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-06 04:30 UTC | 0.01s | agent-report-card 0.1.1 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -41,7 +41,7 @@ Formulas: deterministic accuracy = answerable cases (the ones this test file say
 | `numbers_agree` | code | Right-sounding answers carrying wrong numbers | 6/6 passed |
 | `regex_match` | code | Format contracts such as dates, ids, and codes | n/a (match is not 'regex') |
 | `cites_expected_source` | code | The right answer attributed to the wrong place, or to nothing | 10/10 passed |
-| `no_phantom_citation` | code | Citations to documents that do not exist in your corpus | 10/10 passed |
+| `no_phantom_citation` | code | Citations to documents that are not in the corpus_manifest this test file declares | 10/10 passed |
 | `retrieval_hit` | code | Localization: whether a wrong answer is a retrieval fault or a generation fault | 10/10 passed |
 | `no_error_leak` | code | Stack traces and plumbing served to users as answers | 12/12 passed |
 | `refuses_when_required` | code | The bot answering a question it must decline | 1/1 passed |

@@ -2,9 +2,9 @@
 
 **accuracy 84% (16/19) · hallucination n/a (grounding needs the judge; drop --judge none to evaluate it) · 3 failures · NOT READY**
 
-| endpoint | tests | judge | date | wall clock | tool |
+| endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-06 04:06 UTC | 0.32s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-06 04:30 UTC | 0.33s | agent-report-card 0.1.1 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -12,7 +12,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 
 - Gate failed: deterministic accuracy 84% (16/19) against the 90% floor.
 - Gate failed: critical cases failed code checks: q12-maintenance (1 of the 2 cases tagged critical in this test file).
-- Smallest useful fix first: 3 failing cases all expect 'plans_2026.md'; inspect that document and its chunking before touching prompts.
+- Smallest useful fix first (mechanical: these cases share an expected source, which is a correlation, not a diagnosis): 3 failing cases all expect 'plans_2026.md'; check the per-case 'Where it broke' lines, then inspect that document and its chunking before touching prompts.
 - Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, cases tagged critical must pass every code check, a leaked trace or a blown latency budget included. This verdict holds against this test set and these gates, nothing more.
 
 - Warning: the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; drop --judge none to evaluate it).
@@ -26,7 +26,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 | hallucination (ungrounded vs retrieval, not untrue) | n/a (grounding needs the judge; drop --judge none to evaluate it) | judge-fed |
 | citation validity | 88% (29/33) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
 | refusal handling | 50% (1/2) | per check, not per case: 2 refusal cases, plus judge_refusal on a judged run |
-| latency p50 / p95 / slowest | 0.00s / 0.00s / 0.31s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
+| latency p50 / p95 / slowest | 0.00s / 0.00s / 0.30s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 0 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -42,7 +42,7 @@ Formulas: deterministic accuracy = answerable cases (the ones this test file say
 | `numbers_agree` | code | Right-sounding answers carrying wrong numbers | 8/10 passed |
 | `regex_match` | code | Format contracts such as dates, ids, and codes | n/a (match is not 'regex') |
 | `cites_expected_source` | code | The right answer attributed to the wrong place, or to nothing | 14/17 passed |
-| `no_phantom_citation` | code | Citations to documents that do not exist in your corpus | 15/16 passed |
+| `no_phantom_citation` | code | Citations to documents that are not in the corpus_manifest this test file declares | 15/16 passed |
 | `retrieval_hit` | code | Localization: whether a wrong answer is a retrieval fault or a generation fault | 15/16 passed |
 | `no_error_leak` | code | Stack traces and plumbing served to users as answers | 20/21 passed |
 | `refuses_when_required` | code | The bot answering a question it must decline | 1/2 passed |
@@ -59,7 +59,7 @@ An n/a row means no case in this test file exercised that check, so the failure 
 
 ## Failures, quoted
 
-8 cases failed at least one check. The banner's failure count (3) is narrower on purpose: it counts answerable cases whose correctness verdict failed, while this section quotes every case that failed anything.
+8 cases failed at least one check. The banner's failure count (3) is narrower on purpose: it counts answerable cases whose correctness verdict failed, while this section quotes every case that failed anything. The 'Where it broke' line appears only under a wrong answer; a failure on latency, a citation, a leak or a refusal has no retrieval-versus-generation question to answer.
 
 ### 1. q12-maintenance
 
@@ -171,7 +171,7 @@ An n/a row means no case in this test file exercised that check, so the failure 
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
-- latency_under: 0.31s against a 0.15s budget
+- latency_under: 0.30s against a 0.15s budget
 
 ## Needs human review
 
@@ -213,7 +213,7 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 | q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit | 0.00s |
 | q05-arpu | pass | none | 0.00s |
 | q06-stores | pass | none | 0.00s |
-| q07-coverage | pass | latency_under | 0.31s |
+| q07-coverage | pass | latency_under | 0.30s |
 | q08-parental | pass | none | 0.00s |
 | q09-dividend | pass | cites_expected_source | 0.00s |
 | q10-founded | pass | no_phantom_citation | 0.00s |

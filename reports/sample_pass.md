@@ -2,9 +2,9 @@
 
 **accuracy 100% (11/11) · hallucination 0% (0/10) · 0 failures · PASS**
 
-| endpoint | tests | judge | date | wall clock | tool |
+| endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-06 04:23 UTC | 346.59s | agent-report-card 0.1.1 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-06 04:51 UTC | 486.97s | agent-report-card 0.1.1 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -40,7 +40,7 @@ Formulas: deterministic accuracy = answerable cases (the ones this test file say
 | `numbers_agree` | code | Right-sounding answers carrying wrong numbers | 6/6 passed |
 | `regex_match` | code | Format contracts such as dates, ids, and codes | n/a (match is not 'regex') |
 | `cites_expected_source` | code | The right answer attributed to the wrong place, or to nothing | 10/10 passed |
-| `no_phantom_citation` | code | Citations to documents that do not exist in your corpus | 10/10 passed |
+| `no_phantom_citation` | code | Citations to documents that are not in the corpus_manifest this test file declares | 10/10 passed |
 | `retrieval_hit` | code | Localization: whether a wrong answer is a retrieval fault or a generation fault | 10/10 passed |
 | `no_error_leak` | code | Stack traces and plumbing served to users as answers | 12/12 passed |
 | `refuses_when_required` | code | The bot answering a question it must decline | 1/1 passed |
@@ -69,7 +69,7 @@ Judge: qwen3.6:27b (local), temperature 0, prompt set v1 (hash 1bf57252a9a4).
 
 On its 30-item hand-labeled exam this judge scored 30/30 (100%): false passes 0/15 (the dangerous direction), false fails 0/15, and it caught 5/5 of the subtle numeric errors (answers wrong by under 1%).
 
-Read the judge columns with that error rate in mind. Judge verdicts are evidence, not proof, and the judge is never the sole authority on numeric facts (numbers_agree is the deterministic backstop). The exam's labeled pairs are English-only, so judge reliability on other languages is unmeasured.
+Thirty labeled items is a measured score on this exam, not a calibration. Where a single judge verdict decides a gate, read that case yourself before acting on it. Judge verdicts are evidence, not proof, and the judge is never the sole authority on numeric facts (numbers_agree is the deterministic backstop). The exam's labeled pairs are English-only, so judge reliability on other languages is unmeasured.
 
 ## What this report cannot tell you
 
@@ -92,6 +92,8 @@ Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00
 
 Judged on: Darwin arm64, judge served locally by Ollama.
 
+The grading-run figure in the header is how long grading took, almost all of it judge calls, not the bot's response time; the bot's own latency is in the scorecard.
+
 Cross-check: the scores sidecar written beside this report carries every raw per-case record; scripts/recount.py in the repository recomputes all rollups from it independently, and the test suite asserts equality with the numbers above.
 
 <details><summary>Per-case appendix</summary>
@@ -101,15 +103,15 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | r01-churn | pass | none | 0.00s |
-| r02-roaming | pass | none | 0.02s |
+| r02-roaming | pass | none | 0.01s |
 | r03-arpu | pass | none | 0.01s |
-| r04-stores | pass | none | 0.02s |
-| r05-parental | pass | none | 0.01s |
-| r06-sick-leave | pass | none | 0.01s |
-| r07-rollover | pass | none | 0.01s |
-| r08-daily-cap | pass | none | 0.00s |
+| r04-stores | pass | none | 0.01s |
+| r05-parental | pass | none | 0.02s |
+| r06-sick-leave | pass | none | 0.02s |
+| r07-rollover | pass | none | 0.00s |
+| r08-daily-cap | pass | none | 0.01s |
 | r09-churn-driver | pass | none | 0.01s |
-| r10-fiber | pass | none | 0.01s |
+| r10-fiber | pass | none | 0.00s |
 | r11-loyalty | pass | none | 0.01s |
 | r12-cfo-address | refused | none | 0.00s |
 

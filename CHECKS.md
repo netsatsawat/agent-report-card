@@ -21,7 +21,7 @@ report, never coerced into a pass or a fail.
 | `numbers_agree` | code | Right-sounding answers carrying wrong numbers |
 | `regex_match` | code | Format contracts such as dates, ids, and codes |
 | `cites_expected_source` | code | The right answer attributed to the wrong place, or to nothing |
-| `no_phantom_citation` | code | Citations to documents that do not exist in your corpus |
+| `no_phantom_citation` | code | Citations to documents that are not in the corpus_manifest this test file declares |
 | `retrieval_hit` | code | Localization: whether a wrong answer is a retrieval fault or a generation fault |
 | `no_error_leak` | code | Stack traces and plumbing served to users as answers |
 | `refuses_when_required` | code | The bot answering a question it must decline |
