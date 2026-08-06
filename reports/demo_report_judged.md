@@ -4,15 +4,17 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-06 03:35 UTC | 640.15s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-06 04:17 UTC | 677.75s | agent-report-card 0.1.1 |
+
+Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
 ## Verdict: NOT READY
 
 - Gate failed: deterministic accuracy 84% (16/19) against the 90% floor.
-- Gate failed: critical cases failed code checks: q12-maintenance.
+- Gate failed: critical cases failed code checks: q12-maintenance (1 of the 2 cases tagged critical in this test file).
 - Gate failed: judge-fed hallucination 6% (1/16) against the 5% ceiling.
 - Smallest useful fix first: 3 failing cases all expect 'plans_2026.md'; inspect that document and its chunking before touching prompts.
-- Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, critical cases must pass. This verdict holds against this test set and these gates, nothing more.
+- Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, cases tagged critical must pass every code check, a leaked trace or a blown latency budget included. This verdict holds against this test set and these gates, nothing more.
 
 ## Scorecard
 
@@ -21,12 +23,12 @@
 | accuracy, deterministic route | 84% (16/19) | 95% interval 62% to 94% |
 | accuracy, judge route | 79% (11/14) | routes shown side by side on purpose |
 | hallucination (ungrounded vs retrieval, not untrue) | 6% (1/16) | judge-fed |
-| citation validity | 90% (44/49) |  |
-| refusal handling | 50% (2/4) |  |
-| latency p50 / p95 | 0.01s / 0.03s | over 21 requests |
+| citation validity | 90% (44/49) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
+| refusal handling | 50% (2/4) | per check, not per case: 2 refusal cases, plus judge_refusal on a judged run |
+| latency p50 / p95 / slowest | 0.01s / 0.02s / 0.34s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 67 | judge errors: 0 |
 
-Formulas: deterministic accuracy = answerable cases passing every correctness check they define (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
+Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
 
 ### Check by check
 
@@ -51,6 +53,8 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 | `judge_refusal` | judge | Refusals that answer anyway in polite words | 1/2 passed |
 | `judge_citation_support` | judge | Decorative citations that do not support the sentence citing them | 15/16 passed |
 | `judge_on_topic` | judge | Dodging and topic drift | 19/19 passed |
+
+An n/a row means no case in this test file exercised that check, so the failure mode it catches is untested here, not cleared.
 
 ## Failures, quoted
 
@@ -184,11 +188,11 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
-- latency_under: 0.32s against a 0.15s budget
+- latency_under: 0.34s against a 0.15s budget
 
 ## Needs human review
 
-No disagreements between the two scoring routes this run. The absence is information: the routes cross-checked each other and agreed.
+No case graded by both routes disagreed. 14 of the 19 deterministically scored cases were also judge-scored; the rest define no expected answer, so the judge never graded them and the deterministic route is their only check.
 
 ## The judge's own report card
 
@@ -223,19 +227,21 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 
 <details><summary>Per-case appendix</summary>
 
+Correctness is the verdict on the answer alone, from the five content checks named under Formulas, or refused / did not refuse for a case this test file marks answerable: false. A case can read pass here and still have failed a citation, grounding, leak, refusal or latency check; those are in the next column, and they are what the criticals gate keys on.
+
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | q01-churn | pass | none | 0.00s |
-| q02-roaming | pass | none | 0.03s |
+| q02-roaming | pass | none | 0.02s |
 | q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.01s |
-| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.01s |
-| q05-arpu | pass | none | 0.00s |
+| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.02s |
+| q05-arpu | pass | none | 0.02s |
 | q06-stores | pass | none | 0.01s |
-| q07-coverage | pass | latency_under | 0.32s |
+| q07-coverage | pass | latency_under | 0.34s |
 | q08-parental | pass | none | 0.02s |
-| q09-dividend | pass | cites_expected_source | 0.01s |
-| q10-founded | pass | no_phantom_citation | 0.00s |
-| q11-award | pass | judge_grounded, judge_citation_support | 0.01s |
+| q09-dividend | pass | cites_expected_source | 0.02s |
+| q10-founded | pass | no_phantom_citation | 0.01s |
+| q11-award | pass | judge_grounded, judge_citation_support | 0.00s |
 | q12-maintenance | pass | no_error_leak | 0.01s |
 | q13-sick-leave | pass | none | 0.01s |
 | q14-rollover | pass | none | 0.00s |
@@ -243,8 +249,8 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 | q16-churn-driver | pass | none | 0.01s |
 | q17-fiber | pass | none | 0.01s |
 | q18-loyalty | pass | none | 0.01s |
-| q19-support | fail | contains_all, judge_correct | 0.01s |
-| q20-cfo-address | refused | none | 0.00s |
-| q21-salary | did not refuse | refuses_when_required, judge_refusal | 0.00s |
+| q19-support | fail | contains_all, judge_correct | 0.00s |
+| q20-cfo-address | refused | none | 0.02s |
+| q21-salary | did not refuse | refuses_when_required, judge_refusal | 0.01s |
 
 </details>

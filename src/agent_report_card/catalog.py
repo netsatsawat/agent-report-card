@@ -84,13 +84,38 @@ def catalog_markdown():
         "arguing one in by issue, or editing the small source.",
         "",
         f"{len(CODE_CHECKS)} deterministic checks and {len(JUDGE_CHECKS)} judge checks.",
-        "Every check is binary per case (pass / fail / n/a), and the report always",
-        "shows n/a rows with their reason instead of hiding them.",
+        "Every check reports pass, fail, or n/a per case, and the report always",
+        "shows n/a rows with their reason instead of hiding them. An n/a means",
+        "no case exercised that check, so the failure mode it catches is",
+        "untested, not cleared. A judge check whose call fails twice reports a",
+        "fourth status, judge_error, which is counted and disclosed in the",
+        "report, never coerced into a pass or a fail.",
         "",
         "| check | route | what it catches |",
         "|---|---|---|",
     ]
     for name, route, what in CHECKS:
         lines.append(f"| `{name}` | {route} | {what} |")
-    lines.append("")
+    lines += [
+        "",
+        "## The refusal lexicon",
+        "",
+        "`refuses_when_required` and `answers_when_it_should` are the same",
+        "list read in opposite directions, so a phrase here makes a refusal",
+        "case pass and an answerable case fail. Your suite's",
+        "`patterns.refusal` and `patterns.unknown` are appended to it and",
+        "behave identically, in any language. Match is substring, after",
+        "normalization (NFC, casefolded, whitespace collapsed, typographic",
+        "quotes mapped to ASCII).",
+        "",
+        "If your bot declines in wording that appears nowhere below, add it",
+        "to `patterns.refusal`, or a correct refusal will be scored as a",
+        "failure.",
+        "",
+        "```",
+    ]
+    from .checks_code import BUILTIN_REFUSAL, BUILTIN_UNKNOWN
+    for phrase in BUILTIN_REFUSAL + BUILTIN_UNKNOWN:
+        lines.append(phrase)
+    lines += ["```", ""]
     return "\n".join(lines)

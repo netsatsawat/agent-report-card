@@ -123,8 +123,12 @@ POST {endpoint}/ask          {"question": "..."}
 ```
 
 `contexts` unlocks the grounding and retrieval-localization checks;
-`source` fields unlock the citation checks; without them those checks
-render as n/a with the reason, never as passes. The mappings above are
+`source` fields unlock the citation checks. Without `contexts`, the
+checks that need them render as n/a with the reason, never as passes.
+Sources are the exception: `cites_expected_source` fails, rather than
+rendering n/a, on any case that lists `expected_sources`, because citing
+nothing is a real answer to "did it cite the right document". The
+mappings above are
 the code's actual defaults (set `contexts: null` in the YAML to disable
 one), and different shapes map via dot-paths
 (`answer: choices.0.message.content` covers any OpenAI-compatible
@@ -149,9 +153,15 @@ shown side by side; when they disagree, the case lands in a "needs human
 review" section instead of being averaged away. The deterministic route
 wins the verdict, and the judge is never the sole authority on a number.
 
-The verdict's hard gates come only from the thresholds in your YAML, so
-the exit code gates CI honestly: 0 pass (with or without warnings),
-1 gate failed, 2 tool error. Warnings (route disagreements, judge
+The verdict's hard gates come from your YAML `gates` block, or from this
+tool's stated defaults when you omit it (accuracy at least 80%,
+hallucination at most 5%, critical cases must pass), and every report's
+"Bars used" line says which of the two it applied. So the exit code gates
+CI honestly: 0 pass (with or without warnings), 1 gate failed, 2 tool
+error. One exception, which the report states on the gate line itself:
+when the judge has failed its own exam, a breached hallucination ceiling
+downgrades to a warning rather than a gate failure, so the exit code
+stays 0 and the quoted cases need a human. Warnings (route disagreements, judge
 errors, an unevaluable judge-fed gate) soften PASS to PASS WITH WARNINGS
 without touching the exit code, and the banner's failure count is
 defined as answerable cases whose correctness verdict failed; the report

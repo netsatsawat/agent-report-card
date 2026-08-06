@@ -49,10 +49,12 @@ def generate(suite_path, judge_spec, out_name, command, expect_exit,
         scores = REPO / "reports" / (out.stem + ".scores.json")
         html_path = str(out.with_suffix(".html")) if html else None
         with contextlib.redirect_stdout(buffer):
+            # every gallery entry grades the bundled fixture bot, so every
+            # one of them must say so in the report a reader receives
             code = run_pipeline(load_suite(str(suite_path)), endpoint,
                                 judge_spec, str(out), str(scores),
                                 30.0, 120.0, None, None, True, command,
-                                html_path=html_path)
+                                html_path=html_path, is_demo=True)
     finally:
         server.shutdown()
     # normalize the machine-specific repo prefix out of the committed log:

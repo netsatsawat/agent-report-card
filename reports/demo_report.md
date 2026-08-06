@@ -4,14 +4,16 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-06 03:25 UTC | 0.33s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-06 04:06 UTC | 0.32s | agent-report-card 0.1.1 |
+
+Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
 ## Verdict: NOT READY
 
 - Gate failed: deterministic accuracy 84% (16/19) against the 90% floor.
-- Gate failed: critical cases failed code checks: q12-maintenance.
+- Gate failed: critical cases failed code checks: q12-maintenance (1 of the 2 cases tagged critical in this test file).
 - Smallest useful fix first: 3 failing cases all expect 'plans_2026.md'; inspect that document and its chunking before touching prompts.
-- Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, critical cases must pass. This verdict holds against this test set and these gates, nothing more.
+- Bars used (set by this test file): accuracy at least 90%, hallucination at most 5%, cases tagged critical must pass every code check, a leaked trace or a blown latency budget included. This verdict holds against this test set and these gates, nothing more.
 
 - Warning: the judge-fed max_hallucination gate could not be evaluated (grounding needs the judge; drop --judge none to evaluate it).
 
@@ -22,12 +24,12 @@
 | accuracy, deterministic route | 84% (16/19) | 95% interval 62% to 94% |
 | accuracy, judge route | n/a (judge did not run) | routes shown side by side on purpose |
 | hallucination (ungrounded vs retrieval, not untrue) | n/a (grounding needs the judge; drop --judge none to evaluate it) | judge-fed |
-| citation validity | 88% (29/33) |  |
-| refusal handling | 50% (1/2) |  |
-| latency p50 / p95 | 0.00s / 0.00s | over 21 requests |
+| citation validity | 88% (29/33) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
+| refusal handling | 50% (1/2) | per check, not per case: 2 refusal cases, plus judge_refusal on a judged run |
+| latency p50 / p95 / slowest | 0.00s / 0.00s / 0.31s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 0 | judge errors: 0 |
 
-Formulas: deterministic accuracy = answerable cases passing every correctness check they define (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
+Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
 
 ### Check by check
 
@@ -52,6 +54,8 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 | `judge_refusal` | judge | Refusals that answer anyway in polite words | n/a (judge did not run) |
 | `judge_citation_support` | judge | Decorative citations that do not support the sentence citing them | n/a (judge did not run) |
 | `judge_on_topic` | judge | Dodging and topic drift | n/a (judge did not run) |
+
+An n/a row means no case in this test file exercised that check, so the failure mode it catches is untested here, not cleared.
 
 ## Failures, quoted
 
@@ -171,7 +175,7 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 
 ## Needs human review
 
-No disagreements between the two scoring routes this run. The absence is information: the routes cross-checked each other and agreed.
+Only the deterministic route ran, so nothing was cross-checked. A judged run grades the answerable cases a second way and lists any case the two routes disagree on here.
 
 ## The judge's own report card
 
@@ -198,6 +202,8 @@ Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08f
 Cross-check: the scores sidecar written beside this report carries every raw per-case record; scripts/recount.py in the repository recomputes all rollups from it independently, and the test suite asserts equality with the numbers above.
 
 <details><summary>Per-case appendix</summary>
+
+Correctness is the verdict on the answer alone, from the five content checks named under Formulas, or refused / did not refuse for a case this test file marks answerable: false. A case can read pass here and still have failed a citation, grounding, leak, refusal or latency check; those are in the next column, and they are what the criticals gate keys on.
 
 | case | correctness | failed checks | latency |
 |---|---|---|---|

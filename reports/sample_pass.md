@@ -4,14 +4,16 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-06 03:41 UTC | 359.50s | agent-report-card 0.1.1 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | qwen3.6:27b (local) | 2026-08-06 04:23 UTC | 346.59s | agent-report-card 0.1.1 |
+
+Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
 ## Verdict: PASS
 
 - Gate passed: deterministic accuracy 100% (11/11) against the 80% floor.
 - Gate passed: all 2 critical-tagged cases passed their code checks.
 - Gate passed: judge-fed hallucination 0% (0/10) against the 5% ceiling.
-- Bars used (set by this test file): accuracy at least 80%, hallucination at most 5%, critical cases must pass. This verdict holds against this test set and these gates, nothing more.
+- Bars used (set by this test file): accuracy at least 80%, hallucination at most 5%, cases tagged critical must pass every code check, a leaked trace or a blown latency budget included. This verdict holds against this test set and these gates, nothing more.
 
 ## Scorecard
 
@@ -20,12 +22,12 @@
 | accuracy, deterministic route | 100% (11/11) | 95% interval 74% to 100% |
 | accuracy, judge route | 100% (7/7) | routes shown side by side on purpose |
 | hallucination (ungrounded vs retrieval, not untrue) | 0% (0/10) | judge-fed |
-| citation validity | 100% (30/30) |  |
-| refusal handling | 100% (2/2) |  |
-| latency p50 / p95 | 0.00s / 0.03s | over 12 requests |
+| citation validity | 100% (30/30) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
+| refusal handling | 100% (2/2) | per check, not per case: 1 refusal case, plus judge_refusal on a judged run |
+| latency p50 / p95 / slowest | 0.01s / 0.02s / 0.02s | over 12 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 39 | judge errors: 0 |
 
-Formulas: deterministic accuracy = answerable cases passing every correctness check they define (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
+Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
 
 ### Check by check
 
@@ -51,13 +53,15 @@ Formulas: deterministic accuracy = answerable cases passing every correctness ch
 | `judge_citation_support` | judge | Decorative citations that do not support the sentence citing them | 10/10 passed |
 | `judge_on_topic` | judge | Dodging and topic drift | 11/11 passed |
 
+An n/a row means no case in this test file exercised that check, so the failure mode it catches is untested here, not cleared.
+
 ## Failures, quoted
 
 No case failed a check on this run.
 
 ## Needs human review
 
-No disagreements between the two scoring routes this run. The absence is information: the routes cross-checked each other and agreed.
+No case graded by both routes disagreed. 7 of the 11 deterministically scored cases were also judge-scored; the rest define no expected answer, so the judge never graded them and the deterministic route is their only check.
 
 ## The judge's own report card
 
@@ -92,19 +96,21 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 
 <details><summary>Per-case appendix</summary>
 
+Correctness is the verdict on the answer alone, from the five content checks named under Formulas, or refused / did not refuse for a case this test file marks answerable: false. A case can read pass here and still have failed a citation, grounding, leak, refusal or latency check; those are in the next column, and they are what the criticals gate keys on.
+
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | r01-churn | pass | none | 0.00s |
-| r02-roaming | pass | none | 0.01s |
-| r03-arpu | pass | none | 0.02s |
-| r04-stores | pass | none | 0.03s |
+| r02-roaming | pass | none | 0.02s |
+| r03-arpu | pass | none | 0.01s |
+| r04-stores | pass | none | 0.02s |
 | r05-parental | pass | none | 0.01s |
 | r06-sick-leave | pass | none | 0.01s |
-| r07-rollover | pass | none | 0.00s |
+| r07-rollover | pass | none | 0.01s |
 | r08-daily-cap | pass | none | 0.00s |
 | r09-churn-driver | pass | none | 0.01s |
-| r10-fiber | pass | none | 0.00s |
-| r11-loyalty | pass | none | 0.00s |
+| r10-fiber | pass | none | 0.01s |
+| r11-loyalty | pass | none | 0.01s |
 | r12-cfo-address | refused | none | 0.00s |
 
 </details>

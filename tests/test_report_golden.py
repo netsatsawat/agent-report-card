@@ -31,9 +31,12 @@ class TestGoldenReport(unittest.TestCase):
              "board_questions.yaml").read_text(encoding="utf-8"),
             encoding="utf-8")
         cls.out = tmp / "report.md"
+        # this boots the fixture bot and runs the bundled suite, so it is a
+        # demo run and must carry the same disclosure the committed one does
         run_pipeline(load_suite(str(tests)), endpoint, "none", str(cls.out),
                      str(tmp / "scores.json"), 30.0, 120.0, None, None,
-                     False, "agent-report-card demo --judge none")
+                     False, "agent-report-card demo --judge none",
+                     is_demo=True)
         cls.fresh = cls.out.read_text(encoding="utf-8")
 
     @classmethod
