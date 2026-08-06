@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | wall clock | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-05 21:06 UTC | 0.01s | agent-report-card 0.1.1 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-06 03:25 UTC | 0.01s | agent-report-card 0.1.1 |
 
 ## Verdict: PASS WITH WARNINGS
 
@@ -99,6 +99,6 @@ Cross-check: the scores sidecar written beside this report carries every raw per
 | r09-churn-driver | pass | none | 0.00s |
 | r10-fiber | pass | none | 0.00s |
 | r11-loyalty | pass | none | 0.00s |
-| r12-cfo-address | unscored | none | 0.00s |
+| r12-cfo-address | refused | none | 0.00s |
 
 </details>

@@ -88,6 +88,23 @@ def smallest_fix(board: Scoreboard) -> str | None:
     return None
 
 
+def appendix_verdict(record) -> str:
+    """What the case was judged on, for the per-case table.
+
+    A refusal case has no right answer to compare against, so it is
+    excluded from accuracy and its `correctness` is None. Printing that
+    as "unscored" would be false twice over: the case was evaluated, and
+    a bot that answered a question it must decline would be shown
+    identically to one that correctly refused. Report the refusal
+    outcome, which is what correct behavior means for these cases.
+    """
+    if not record.case.answerable:
+        return {PASS: "refused",
+                FAIL: "did not refuse"}.get(
+                    record.status("refuses_when_required"), "no answer")
+    return {True: "pass", False: "fail", None: "unscored"}[record.correctness]
+
+
 def localization(record) -> str | None:
     if record.correctness is not False:
         return None
@@ -353,7 +370,7 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     add("| case | correctness | failed checks | latency |")
     add("|---|---|---|---|")
     for r in board.records:
-        verdict = {True: "pass", False: "fail", None: "unscored"}[r.correctness]
+        verdict = appendix_verdict(r)
         names = ", ".join(c.name for c in r.failed_checks) or "none"
         add(f"| {r.case.id} | {verdict} | {names} | "
             f"{_fmt_latency(r.reply.latency_s)} |")
