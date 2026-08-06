@@ -14,7 +14,8 @@ from datetime import datetime, timezone
 from . import __version__, prompts, scrub
 from .catalog import CHECKS, ROUTE as ROUTE_BY_NAME, SEVERITY, WHAT
 from .checks_code import PASS, FAIL, NA, JUDGE_ERROR
-from .scoring import Scoreboard, VERDICT_FAIL, percentile
+from .scoring import (MIN_RATE_N, Scoreboard, VERDICT_FAIL,
+                      by_category, kappa, percentile)
 
 QUOTE_LIMIT = 600
 
@@ -332,6 +333,41 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
             f"{calibration['subtle_caught']}/{calibration['subtle_total']} "
             f"of the subtle numeric errors (answers wrong by under 1%).")
         add("")
+        k = kappa(calibration)
+        if k is not None:
+            add(f"Agreement corrected for chance (Cohen's kappa): "
+                f"**{k:.2f}**. The exam is balanced "
+                f"{calibration['n_pass_labeled']} pass / "
+                f"{calibration['n_fail_labeled']} fail, so a judge that "
+                f"answered at random would score about 50% raw and 0.00 here. "
+                f"Read the corrected number before trusting a judge-fed gate.")
+            add("")
+        rows = by_category(calibration)
+        if rows:
+            add("Where the judge was right, by what each pair tests:")
+            add("")
+            add("| category | correct | rate | 95% interval |")
+            add("|---|---|---|---|")
+            for row in rows:
+                if row["rate"] is None:
+                    rate = "n/a"
+                    span = f"too few pairs to bound ({_n(row['n'], 'pair')})"
+                else:
+                    rate = f"{round(100 * row['rate'])}%"
+                    span = (f"{round(100 * row['lo'])}% to "
+                            f"{round(100 * row['hi'])}%")
+                add(f"| {row['category']} | {row['correct']}/{row['n']} | "
+                    f"{rate} | {span} |")
+            add("")
+            add(f"The aggregate is the number that hides things: a judge can "
+                f"score well overall while missing the one category your "
+                f"questions live in. Categories with fewer than "
+                f"{MIN_RATE_N} pairs show the tally and no "
+                f"percentage, because a rate measured on two items is noise "
+                f"wearing a decimal point. Even a perfect small category "
+                f"carries a wide interval, which is the honest reading of "
+                f"five out of five.")
+            add("")
         add("Thirty labeled items is a measured score on this exam, not a "
             "calibration. Where a single judge verdict decides a gate, read "
             "that case yourself before acting on it. Judge verdicts are "

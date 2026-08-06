@@ -5,7 +5,37 @@ artifacts in [`reports/`](reports/), not from memory.
 
 ## Unreleased
 
-Nothing yet.
+Opening the 0.2 line. Judge measurement, per PRD 7.1.
+
+### Added
+
+- **The judge's exam now breaks down by category.** One aggregate hid the
+  failure that matters: a judge scoring 28/30 while missing four of the
+  five subtle-numeric pairs reported as 93% correct and was useless at
+  exactly the job this tool exists for. Every report with a calibrated
+  judge now carries a per-category table.
+- **Cohen's kappa beside raw agreement.** The exam is balanced 15/15, so a
+  judge answering at random scores about 50% raw. Kappa calls that 0.00.
+  Computed from the stored per-pair record, so an exam sat before this
+  release breaks down and scores without being re-run.
+- Every rate carries its denominator and a 95% Wilson interval, and no
+  percentage is printed for a category with fewer than five pairs.
+  `unit_swap` has two and `non_refusal` has one; a rate there is noise
+  wearing a decimal point, so those rows show the tally and say why.
+  Even a perfect small category admits its uncertainty: 5/5 bounds to
+  57% to 100%, not to certainty.
+- `scoring.separable()`: whether two judges' intervals are far enough
+  apart for 30 items to tell them apart at all. Groundwork for judge
+  comparison, which must answer "too close to separate" rather than rank.
+
+### Fixed
+
+- `wilson()` could return a lower bound above the rate it was drawn
+  around. At zero successes the arithmetic landed on 2.8e-17 rather than
+  0, so a 0/5 category produced an interval excluding its own point
+  estimate. Rounding hid it in the report; asserting `lo <= p <= hi`
+  across every k/n found it. Bounds are now clamped to the point estimate
+  as well as to [0, 1].
 
 ## 0.1.2 — 2026-08-06
 

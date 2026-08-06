@@ -87,7 +87,13 @@ def wilson(successes: int, n: int, z: float = 1.959964) -> tuple[float, float]:
     denom = 1 + z * z / n
     center = (p + z * z / (2 * n)) / denom
     half = (z / denom) * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
-    return (max(0.0, center - half), min(1.0, center + half))
+    # Clamp to the point estimate as well as to [0, 1]. At 0 successes the
+    # arithmetic lands on 2.8e-17 rather than 0, so a 0/5 category reported
+    # a lower bound above its own rate: the interval excluded the number it
+    # was drawn around. Rounding hid it in the report and an assertion of
+    # lo <= p <= hi found it.
+    return (max(0.0, min(p, center - half)),
+            min(1.0, max(p, center + half)))
 
 
 def percentile(values: list[float], q: float) -> float:
@@ -324,3 +330,89 @@ def _apply_gates(board: Scoreboard):
 
 from .catalog import CODE_CHECKS  # noqa: E402  (import placed to avoid cycle)
 _CODE_NAMES = {name for name, _r, _w in CODE_CHECKS}
+
+
+# Below this many pairs a percentage is noise wearing a decimal point:
+# unit_swap has two pairs and non_refusal has one, so "50%" and "100%"
+# there would carry the same visual weight as a rate measured on fifteen.
+# Those categories print their tally and no rate at all.
+MIN_RATE_N = 5
+
+
+def by_category(calibration: dict | None) -> list[dict]:
+    """The exam result broken down by what each pair was testing.
+
+    One aggregate number hides the failure that matters. A judge that
+    scores 28/30 while missing four of the five subtle-numeric pairs
+    reports as 93% correct and is useless at exactly the job this tool
+    exists for, which is catching an answer that is wrong by six cents.
+    Same defect as a mean that looks calibrated over a spread that is not.
+
+    Computed from the stored per-pair record, so an exam sat before this
+    existed breaks down without being re-run.
+    """
+    if not calibration or not calibration.get("pairs"):
+        return []
+    buckets: dict[str, dict] = {}
+    for pair in calibration["pairs"]:
+        bucket = buckets.setdefault(pair["category"], {"n": 0, "correct": 0})
+        bucket["n"] += 1
+        bucket["correct"] += pair["judged"] == pair["label"]
+    rows = []
+    for name, bucket in buckets.items():
+        n, correct = bucket["n"], bucket["correct"]
+        row = {"category": name, "n": n, "correct": correct,
+               "rate": None, "lo": None, "hi": None}
+        if n >= MIN_RATE_N:
+            lo, hi = wilson(correct, n)
+            row.update(rate=correct / n, lo=lo, hi=hi)
+        rows.append(row)
+    # biggest first: the categories carrying the most evidence lead, and
+    # the tally-only ones fall to the bottom where they read as caveats
+    return sorted(rows, key=lambda r: (-r["n"], r["category"]))
+
+
+def kappa(calibration: dict | None) -> float | None:
+    """Cohen's kappa: agreement corrected for what chance would give.
+
+    The exam is balanced 15 pass / 15 fail, so a coin flip scores about
+    50% and raw agreement flatters every judge by roughly that much. A
+    reader deciding whether to trust a judge-fed gate needs the corrected
+    number, not the flattering one.
+
+    Judge errors are their own category. They cannot match a label, so
+    they cost observed agreement, and because no label is ever 'error'
+    they add nothing to the chance term. An error is a failure to judge
+    and is scored as one.
+    """
+    if not calibration or not calibration.get("pairs"):
+        return None
+    pairs = calibration["pairs"]
+    n = len(pairs)
+    if not n:
+        return None
+    observed = sum(p["judged"] == p["label"] for p in pairs) / n
+    expected = 0.0
+    for value in {"pass", "fail", "error"}:
+        by_label = sum(p["label"] == value for p in pairs) / n
+        by_judge = sum(p["judged"] == value for p in pairs) / n
+        expected += by_label * by_judge
+    if expected >= 1.0:
+        return None  # both raters used one category; kappa is undefined
+    return (observed - expected) / (1.0 - expected)
+
+
+def separable(a: dict | None, b: dict | None) -> bool:
+    """Whether 30 items can tell two judges apart at all.
+
+    Thirty hand-labeled pairs can establish that a judge is usable. They
+    cannot establish that one judge is two points better than another,
+    and a table implying otherwise is the failure this project spends its
+    time avoiding everywhere else. Overlapping intervals mean the honest
+    answer is 'too close to separate', not a ranking.
+    """
+    if not a or not b:
+        return False
+    a_lo, a_hi = wilson(a["agreement"], a["n"])
+    b_lo, b_hi = wilson(b["agreement"], b["n"])
+    return a_lo > b_hi or b_lo > a_hi

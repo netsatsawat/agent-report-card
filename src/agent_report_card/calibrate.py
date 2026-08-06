@@ -22,6 +22,9 @@ import yaml
 from . import prompts
 from .checks_code import PASS, FAIL
 from .checks_judge import JudgeClient
+# the exam's statistics live with the other statistics; re-exported here
+# because `judge-check` is where a reader looks for them
+from .scoring import MIN_RATE_N, by_category, kappa, separable  # noqa: F401
 
 CACHE_DIR = Path(os.path.expanduser("~/.agent-report-card"))
 
