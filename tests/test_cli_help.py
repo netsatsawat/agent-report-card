@@ -42,7 +42,7 @@ class TestHelp(unittest.TestCase):
     def test_run_help_documents_every_flag(self):
         text = help_text(["run", "--help"])
         for flag in ["--tests", "--endpoint", "--judge", "--out", "--scores",
-                     "--timeout", "--judge-timeout", "--limit", "--tags",
+                     "--html", "--timeout", "--judge-timeout", "--limit", "--tags",
                      "--verbose"]:
             self.assertIn(flag, text, flag)
         # no flag may be listed without a description

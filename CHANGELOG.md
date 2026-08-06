@@ -7,6 +7,58 @@ artifacts in [`reports/`](reports/), not from memory.
 
 Nothing yet.
 
+## 0.1.2 — 2026-08-06
+
+### Added
+
+- `--html PATH` on `run` and `demo`: a self-contained HTML rendering of
+  the same report, for the stakeholder who would rather receive an
+  attachment than a markdown file. Inline CSS, zero JavaScript, no
+  external requests of any kind, a `@media print` stylesheet so it makes
+  a clean PDF, and light/dark via `prefers-color-scheme`. Off by default;
+  the markdown report is still the product.
+
+### How it avoids becoming a second source of truth
+
+The HTML is a projection of the markdown string `render()` already
+returned, never a second reading of the scoreboard, so it cannot contain
+a number the markdown does not. Three tests hold that line: `report_html`
+is parsed to assert it imports nothing from the package (an import of the
+scoreboard would recreate the second surface), every committed report
+must convert with an unrecognized line raising rather than being skipped,
+and the number tokens in the HTML must equal the markdown's exactly.
+
+Because the report quotes answers written by the system under test, the
+converter escapes before applying the report's own markers, passes
+through only two allowlisted raw-HTML lines matched in full, emits no
+attribute carrying text from the run, and ships a Content-Security-Policy
+whose `style-src` is the hash of the stylesheet actually emitted.
+
+### Fixed
+
+- Every tool failure now exits 2 with an actionable message. A missing,
+  unreadable, non-UTF-8 or wrongly-typed suite file previously escaped as
+  a Python traceback and exited 1, which is the code CI reads as "a gate
+  failed", so a typo in `--tests` reported that the bot had regressed. An
+  unwritable `--out` or `--scores` did the same. A catch-all now makes it
+  impossible for any internal error to claim exit 1.
+- The report's cross-check claim is true again: `scripts/recount.py`
+  scored an unanswered case differently from the runner, so the two could
+  disagree while the report asserted they matched.
+- The judge calibration cache is keyed on the host as well as the model,
+  so a report can no longer cite an exam that a different machine's judge
+  sat under the same model name.
+- A duplicated YAML key is refused instead of silently keeping the last
+  one, which could drop an entire `cases:` block without a word.
+- An endpoint URL carrying a query string no longer has the suite's path
+  appended inside the query, which sent every request to `/`.
+- Reports now say what each number is not: the appendix explains what
+  `correctness` covers, the latency row prints the slowest request
+  alongside a nearest-rank p95 that can sit below it, refusal cases read
+  `refused` or `did not refuse` rather than `unscored`, `n/a` is labelled
+  untested rather than cleared, and a demo run says the graded company is
+  fictional.
+
 ## 0.1.1 — 2026-08-06
 
 First release on PyPI: `pip install agent-report-card`. No change to the

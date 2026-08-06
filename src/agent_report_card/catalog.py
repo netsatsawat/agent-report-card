@@ -23,7 +23,8 @@ CHECKS = [
     ("cites_expected_source", "code",
      "The right answer attributed to the wrong place, or to nothing"),
     ("no_phantom_citation", "code",
-     "Citations to documents that do not exist in your corpus"),
+     "Citations to documents that are not in the corpus_manifest this test "
+     "file declares"),
     ("retrieval_hit", "code",
      "Localization: whether a wrong answer is a retrieval fault or a generation fault"),
     ("no_error_leak", "code",
@@ -57,6 +58,13 @@ ROUTE = {name: route for name, route, _what in CHECKS}
 CORRECTNESS_CODE = ("exact_match", "contains_all", "contains_none",
                     "numbers_agree", "regex_match")
 
+# The subset that actually verifies the expected answer. contains_none is
+# absent on purpose: it proves a forbidden string is missing, never that
+# the right answer is present, so a case carrying only must_not_contain
+# has an unverified expected answer even though it is "scored".
+EXPECTED_VERIFYING_CODE = ("exact_match", "contains_all", "numbers_agree",
+                           "regex_match")
+
 # Severity order for the report's failure section (lower sorts first).
 SEVERITY = {
     "answered": 0, "no_error_leak": 0,                      # plumbing
@@ -84,13 +92,38 @@ def catalog_markdown():
         "arguing one in by issue, or editing the small source.",
         "",
         f"{len(CODE_CHECKS)} deterministic checks and {len(JUDGE_CHECKS)} judge checks.",
-        "Every check is binary per case (pass / fail / n/a), and the report always",
-        "shows n/a rows with their reason instead of hiding them.",
+        "Every check reports pass, fail, or n/a per case, and the report always",
+        "shows n/a rows with their reason instead of hiding them. An n/a means",
+        "no case exercised that check, so the failure mode it catches is",
+        "untested, not cleared. A judge check whose call fails twice reports a",
+        "fourth status, judge_error, which is counted and disclosed in the",
+        "report, never coerced into a pass or a fail.",
         "",
         "| check | route | what it catches |",
         "|---|---|---|",
     ]
     for name, route, what in CHECKS:
         lines.append(f"| `{name}` | {route} | {what} |")
-    lines.append("")
+    lines += [
+        "",
+        "## The refusal lexicon",
+        "",
+        "`refuses_when_required` and `answers_when_it_should` are the same",
+        "list read in opposite directions, so a phrase here makes a refusal",
+        "case pass and an answerable case fail. Your suite's",
+        "`patterns.refusal` and `patterns.unknown` are appended to it and",
+        "behave identically, in any language. Match is substring, after",
+        "normalization (NFC, casefolded, whitespace collapsed, typographic",
+        "quotes mapped to ASCII).",
+        "",
+        "If your bot declines in wording that appears nowhere below, add it",
+        "to `patterns.refusal`, or a correct refusal will be scored as a",
+        "failure.",
+        "",
+        "```",
+    ]
+    from .checks_code import BUILTIN_REFUSAL, BUILTIN_UNKNOWN
+    for phrase in BUILTIN_REFUSAL + BUILTIN_UNKNOWN:
+        lines.append(phrase)
+    lines += ["```", ""]
     return "\n".join(lines)

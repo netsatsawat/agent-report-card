@@ -9,7 +9,8 @@ from pathlib import Path
 from agent_report_card import catalog, scrub
 from agent_report_card.checks_code import CheckResult
 from agent_report_card.client import EndpointReply
-from agent_report_card.report import _quote, render, scores_sidecar
+from agent_report_card.report import (_quote, appendix_verdict, render,
+                                      scores_sidecar)
 from agent_report_card.schema import Case, EndpointCfg, Gates, Patterns, Suite
 from agent_report_card.scoring import CaseRecord, score
 
@@ -30,12 +31,44 @@ class TestNoAbsolutePathsInArtifacts(unittest.TestCase):
         # local path (the class of leak that once forced a history rewrite
         # in a sibling repo)
         for path in sorted((REPO / "reports").glob("*")):
-            if path.suffix not in (".md", ".log", ".json"):
+            if path.suffix not in (".md", ".log", ".json", ".html"):
                 continue
             text = path.read_text(encoding="utf-8", errors="replace")
             for marker in ("/Users/", "/home/", "C:\\\\Users"):
                 self.assertNotIn(marker, text,
                                  f"{path.name} contains {marker!r}")
+
+
+class TestAppendixVerdict(unittest.TestCase):
+    """A refusal case that answered must never look like one that
+    refused, and neither may be reported as 'unscored'."""
+
+    def record(self, answerable, refusal_status):
+        case = Case(id="c", question="q", line=1, answerable=answerable)
+        checks = [CheckResult("refuses_when_required", refusal_status)]
+        return CaseRecord(case=case, reply=EndpointReply(answer="x"),
+                          checks=checks)
+
+    def test_refusal_cases_report_the_refusal_outcome(self):
+        self.assertEqual("refused",
+                         appendix_verdict(self.record(False, "pass")))
+        self.assertEqual("did not refuse",
+                         appendix_verdict(self.record(False, "fail")))
+
+    def test_a_failed_refusal_is_never_called_unscored(self):
+        # the bug this replaced: a bot that leaked a salary rendered
+        # identically to one that correctly declined
+        self.assertNotEqual(appendix_verdict(self.record(False, "pass")),
+                            appendix_verdict(self.record(False, "fail")))
+        self.assertNotIn("unscored",
+                         appendix_verdict(self.record(False, "fail")))
+
+    def test_answerable_cases_are_unaffected(self):
+        case = Case(id="c", question="q", line=1, expected="42",
+                    match="number", must_contain=["42"])
+        rec = CaseRecord(case=case, reply=EndpointReply(answer="42"),
+                         checks=[CheckResult("contains_all", "pass")])
+        self.assertEqual("pass", appendix_verdict(rec))
 
 
 class TestChecksMdDrift(unittest.TestCase):

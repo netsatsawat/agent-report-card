@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass, field
-from urllib.parse import urlparse
+from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 
@@ -72,11 +72,13 @@ class EndpointClient:
         self.timeout = timeout
         if "://" not in base_url:
             base_url = "http://" + base_url  # scheme-less endpoints just work
-        parsed = urlparse(base_url)
-        if parsed.path and parsed.path not in ("", "/"):
-            self.url = base_url.rstrip("/")
-        else:
-            self.url = base_url.rstrip("/") + cfg.path
+        parts = urlsplit(base_url)
+        # rebuild from parts: string concatenation would append the suite's
+        # path after a query string, sending every request to /
+        path = parts.path if parts.path not in ("", "/") else cfg.path
+        self.url = urlunsplit((parts.scheme, parts.netloc, path.rstrip("/")
+                               if path != "/" else path,
+                               parts.query, parts.fragment))
         self._client = httpx.Client(timeout=timeout, transport=transport)
 
     def close(self):
@@ -93,7 +95,7 @@ class EndpointClient:
             except httpx.HTTPError as exc:
                 return EndpointReply(error=f"connection failed: {exc}",
                                      latency_s=time.perf_counter() - start)
-        except httpx.HTTPError as exc:
+        except (httpx.HTTPError, httpx.InvalidURL) as exc:
             return EndpointReply(error=f"request failed: {exc}",
                                  latency_s=time.perf_counter() - start)
         elapsed = time.perf_counter() - start

@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
-from .catalog import CORRECTNESS_CODE
+from .catalog import CORRECTNESS_CODE, EXPECTED_VERIFYING_CODE
 from .checks_code import PASS, FAIL, NA, JUDGE_ERROR
 from .schema import Suite
 
@@ -251,7 +251,9 @@ def _apply_gates(board: Scoreboard):
                 "criticals_must_pass", ok,
                 passed_text if ok else
                 f"critical cases failed code checks: "
-                f"{', '.join(r.case.id for r in critical_bad)}"))
+                f"{', '.join(r.case.id for r in critical_bad)} "
+                f"({len(critical_bad)} of the {n_crit} cases tagged "
+                f"critical in this test file)"))
             hard_fail |= not ok
 
     # max_hallucination: judge-fed, disclosed, degradable
@@ -279,6 +281,26 @@ def _apply_gates(board: Scoreboard):
         board.warnings.append(
             "the judge-fed max_hallucination gate could not be evaluated "
             f"({board.hallucination.na_reason})")
+
+    # A case with an expected answer but no deterministic `match` is
+    # judge-scored only. With the judge off it is scored by nothing at
+    # all, drops out of the accuracy denominator, and cannot fail a gate,
+    # so a wrong answer would pass in silence.
+    if not board.judged:
+        unscored = [
+            r for r in board.records
+            if r.case.answerable and r.case.expected is not None
+            and not any(c.status in (PASS, FAIL) for c in r.checks
+                        if c.name in EXPECTED_VERIFYING_CODE)]
+        if unscored:
+            board.warnings.append(
+                f"{len(unscored)} case(s) declare an expected answer but no "
+                f"deterministic check that verifies it, so they are "
+                f"judge-scored only and nothing confirmed their correctness "
+                f"on this run: "
+                f"{', '.join(r.case.id for r in unscored[:5])}"
+                f"{' and others' if len(unscored) > 5 else ''}. Give them a "
+                f"match (exact, contains, number or regex) or run with a judge")
 
     if board.disagreements:
         board.warnings.append(

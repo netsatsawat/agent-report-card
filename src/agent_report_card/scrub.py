@@ -18,6 +18,8 @@ MIN_LENGTH = 6  # a 2-char "secret" would rewrite digits all over the report
 def register(value: str, var_name: str) -> None:
     if not value or len(value) < MIN_LENGTH:
         return
+    if any(v == value for v, _ in _SECRETS):
+        return  # idempotent: repeated loads must not grow the registry
     _SECRETS.append((value, var_name))
     _SECRETS.sort(key=lambda pair: len(pair[0]), reverse=True)
 

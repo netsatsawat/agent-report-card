@@ -78,14 +78,34 @@ def smallest_fix(board: Scoreboard) -> str | None:
             shared &= set(r.case.expected_sources)
         if shared:
             doc = sorted(shared)[0]
-            return (f"Smallest useful fix first: {len(wrong)} failing cases "
-                    f"all expect '{doc}'; inspect that document and its "
-                    f"chunking before touching prompts.")
+            return (f"Smallest useful fix first (mechanical: these cases "
+                    f"share an expected source, which is a correlation, not "
+                    f"a diagnosis): {len(wrong)} failing cases all expect "
+                    f"'{doc}'; check the per-case 'Where it broke' lines, "
+                    f"then inspect that document and its chunking before "
+                    f"touching prompts.")
     retrieval_faults = [r for r in wrong if r.status("retrieval_hit") == FAIL]
     if wrong and len(retrieval_faults) == len(wrong):
         return ("Smallest useful fix first: every failing case also failed "
                 "retrieval_hit, so fix retrieval before touching generation.")
     return None
+
+
+def appendix_verdict(record) -> str:
+    """What the case was judged on, for the per-case table.
+
+    A refusal case has no right answer to compare against, so it is
+    excluded from accuracy and its `correctness` is None. Printing that
+    as "unscored" would be false twice over: the case was evaluated, and
+    a bot that answered a question it must decline would be shown
+    identically to one that correctly refused. Report the refusal
+    outcome, which is what correct behavior means for these cases.
+    """
+    if not record.case.answerable:
+        return {PASS: "refused",
+                FAIL: "did not refuse"}.get(
+                    record.status("refuses_when_required"), "no answer")
+    return {True: "pass", False: "fail", None: "unscored"}[record.correctness]
 
 
 def localization(record) -> str | None:
@@ -108,7 +128,8 @@ def localization(record) -> str | None:
 
 def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
            command: str, calibration: dict | None,
-           wall_clock_s: float, judge_calls: int) -> str:
+           wall_clock_s: float, judge_calls: int,
+           is_demo: bool = False) -> str:
     suite = board.suite
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = []
@@ -118,12 +139,18 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     add("")
     add(f"**{banner_line(board)}**")
     add("")
-    add("| endpoint | tests | judge | date | wall clock | tool |")
+    add("| endpoint | tests | judge | date | grading run | tool |")
     add("|---|---|---|---|---|---|")
     add(f"| {endpoint_url} | {suite.path.split('/')[-1]} "
         f"(sha256 {suite.sha256[:12]}) | {judge_desc} | {now} | "
         f"{_fmt_latency(wall_clock_s)} | agent-report-card {__version__} |")
     add("")
+    if is_demo:
+        add("Demo run. The graded system is the fixture bot bundled with "
+            "this tool, a fictional Northstar Telecom support bot with "
+            "flaws planted on purpose so the report has something to find. "
+            "Every company, document, figure and failure below is synthetic.")
+        add("")
 
     # ---- Verdict ----
     unreliable_note = (" (judge unreliable this run, trust the "
@@ -146,7 +173,8 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     gates = suite.gates
     origin = "set by this test file" if gates.explicit else \
         "this tool's default opinions; override them in the YAML gates block"
-    criticals_clause = ("critical cases must pass"
+    criticals_clause = ("cases tagged critical must pass every code check, "
+                        "a leaked trace or a blown latency budget included"
                         if gates.criticals_must_pass
                         else "the criticals gate is disabled by this test file")
     add(f"- Bars used ({origin}): accuracy at least "
@@ -173,18 +201,31 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
         f"routes shown side by side on purpose |")
     add(f"| hallucination (ungrounded vs retrieval, not untrue) | "
         f"{board.hallucination.pct()} | judge-fed |")
-    add(f"| citation validity | {board.citations.pct()} |  |")
-    add(f"| refusal handling | {board.refusals.pct()} |  |")
+    n_refusal_cases = sum(1 for r in board.records if not r.case.answerable)
+    add(f"| citation validity | {board.citations.pct()} | per check, not per "
+        f"citation; judge_citation_support joins this denominator on a "
+        f"judged run |")
+    add(f"| refusal handling | {board.refusals.pct()} | per check, not per "
+        f"case: {_n(n_refusal_cases, 'refusal case')}, plus judge_refusal "
+        f"on a judged run |")
     if board.latencies:
-        add(f"| latency p50 / p95 | {_fmt_latency(percentile(board.latencies, 50))}"
-            f" / {_fmt_latency(percentile(board.latencies, 95))} | "
-            f"over {len(board.latencies)} requests |")
+        add(f"| latency p50 / p95 / slowest | "
+            f"{_fmt_latency(percentile(board.latencies, 50))}"
+            f" / {_fmt_latency(percentile(board.latencies, 95))}"
+            f" / {_fmt_latency(max(board.latencies))} | "
+            f"over {len(board.latencies)} requests; p95 is nearest-rank, so "
+            f"on a suite this small it can sit below the slowest request |")
     add(f"| judge calls | {judge_calls} | judge errors: {board.judge_error_count} |")
     add("")
-    add("Formulas: deterministic accuracy = answerable cases passing every "
-        "correctness check they define (an unanswered case counts as "
-        "wrong), over cases with at least one applicable. "
-        "Judge accuracy = judge_correct passes over judge-scored answerable "
+    add("Formulas: deterministic accuracy = answerable cases (the ones this "
+        "test file says the bot should answer rather than decline) passing "
+        "every correctness check they define, which means exact_match, "
+        "contains_all, contains_none, numbers_agree and regex_match (an "
+        "unanswered case counts as wrong), over cases with at least one "
+        "applicable. Judge accuracy = judge_correct passes over judge-scored "
+        "answerable cases; only a case that declares an expected answer is "
+        "judge-scored, so this denominator is usually smaller than the "
+        "deterministic one and the two percentages are not over the same "
         "cases. Hallucination = judge_grounded failures over cases where "
         "grounding was evaluated. Citation validity = passes over applicable "
         "citation checks. Refusal handling = passes over applicable refusal "
@@ -195,6 +236,9 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     add("### Check by check")
     add("")
     _check_table(add, board)
+    add("An n/a row means no case in this test file exercised that check, "
+        "so the failure mode it catches is untested here, not cleared.")
+    add("")
 
     # ---- Failures ----
     add("## Failures, quoted")
@@ -210,7 +254,9 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
             f"banner's failure count ({board.banner_failures}) is narrower "
             f"on purpose: it counts answerable cases whose correctness "
             f"verdict failed, while this section quotes every case that "
-            f"failed anything.")
+            f"failed anything. The 'Where it broke' line appears only under "
+            f"a wrong answer; a failure on latency, a citation, a leak or a "
+            f"refusal has no retrieval-versus-generation question to answer.")
         add("")
     for i, r in enumerate(failing, 1):
         names = ", ".join(c.name for c in r.failed_checks)
@@ -251,10 +297,18 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
             reason = r.detail("judge_correct")
             add(f"- {r.case.id}: deterministic route says {det}, judge says "
                 f"{jud}. Judge's reason: {reason or '(none given)'}")
+    elif not board.judged:
+        add("Only the deterministic route ran, so nothing was cross-checked. "
+            "A judged run grades the answerable cases a second way and lists "
+            "any case the two routes disagree on here.")
     else:
-        add("No disagreements between the two scoring routes this run. "
-            "The absence is information: the routes cross-checked each other "
-            "and agreed.")
+        both = [r for r in board.records if r.case.answerable
+                and r.det_correct is not None and r.judge_correct is not None]
+        add(f"No case graded by both routes disagreed. {len(both)} of the "
+            f"{board.accuracy_det.den} deterministically scored cases were "
+            f"also judge-scored; the rest define no expected answer, so the "
+            f"judge never graded them and the deterministic route is their "
+            f"only check.")
     add("")
 
     # ---- Judge's own report card ----
@@ -278,12 +332,13 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
             f"{calibration['subtle_caught']}/{calibration['subtle_total']} "
             f"of the subtle numeric errors (answers wrong by under 1%).")
         add("")
-        add("Read the judge columns with that error rate in mind. Judge "
-            "verdicts are evidence, not proof, and the judge is never the "
-            "sole authority on numeric facts (numbers_agree is the "
-            "deterministic backstop). The exam's labeled pairs are "
-            "English-only, so judge reliability on other languages is "
-            "unmeasured.")
+        add("Thirty labeled items is a measured score on this exam, not a "
+            "calibration. Where a single judge verdict decides a gate, read "
+            "that case yourself before acting on it. Judge verdicts are "
+            "evidence, not proof, and the judge is never the sole authority "
+            "on numeric facts (numbers_agree is the deterministic backstop). "
+            "The exam's labeled pairs are English-only, so judge reliability "
+            "on other languages is unmeasured.")
     else:
         add(f"Judge: {judge_desc}, temperature 0, prompt set "
             f"{prompts.PROMPT_VERSION} (hash {prompts.prompt_hash()}). "
@@ -342,6 +397,10 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
         add("")
         add(f"Judged on: {platform.system()} {platform.machine()}, judge "
             f"served locally by Ollama.")
+        add("")
+        add("The grading-run figure in the header is how long grading took, "
+            "almost all of it judge calls, not the bot's response time; the "
+            "bot's own latency is in the scorecard.")
     add("")
     add("Cross-check: the scores sidecar written beside this report carries "
         "every raw per-case record; scripts/recount.py in the repository "
@@ -350,10 +409,17 @@ def render(board: Scoreboard, endpoint_url: str, judge_desc: str,
     add("")
     add("<details><summary>Per-case appendix</summary>")
     add("")
+    add("Correctness is the verdict on the answer alone, from the five "
+        "content checks named under Formulas, or refused / did not refuse "
+        "for a case this test file marks answerable: false. A case can read "
+        "pass here and still have failed a citation, grounding, leak, "
+        "refusal or latency check; those are in the next column, and they "
+        "are what the criticals gate keys on.")
+    add("")
     add("| case | correctness | failed checks | latency |")
     add("|---|---|---|---|")
     for r in board.records:
-        verdict = {True: "pass", False: "fail", None: "unscored"}[r.correctness]
+        verdict = appendix_verdict(r)
         names = ", ".join(c.name for c in r.failed_checks) or "none"
         add(f"| {r.case.id} | {verdict} | {names} | "
             f"{_fmt_latency(r.reply.latency_s)} |")
