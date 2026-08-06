@@ -216,16 +216,39 @@ drift from a fresh run or from the committed artifact behind them.
 
 ## 🗺️ Roadmap
 
-- v0.1.2 (this, on PyPI): the self-contained HTML export (`--html PATH`),
-  every tool failure exiting 2 instead of impersonating a failed gate, and
-  a report that explains what each of its numbers is and is not.
-- v0.1.1: RAG QA mode, the report, the judge's own report card,
-  documented `--help`, and trusted publishing.
-- Next, if users ask: OpenAI-compatible judge URLs, a multi-part
-  completeness check, per-category calibration breakdown.
-- v0.2: agent-trace mode, per-step scoring of multi-step agent runs
-  (see [agent-failure-lab](https://github.com/netsatsawat/agent-failure-lab)).
-- v0.3: CI mode, baseline diffing, fail-the-build on regression.
+**Today (v0.1.2)** you can grade a RAG endpoint against a YAML suite and
+get a markdown or HTML verdict, with a local judge that reports its own
+error rate. Per-release detail lives in
+[CHANGELOG.md](https://github.com/netsatsawat/agent-report-card/blob/main/CHANGELOG.md);
+this section is only about what comes next.
+
+**v0.2 · agent-trace mode.** Today the tool grades one question and one
+answer. A multi-step agent fails differently: step four goes wrong and
+steps five through ten inherit it, so a single end-to-end score tells you
+nothing about where to look. This ingests a run log and scores per step,
+surfacing the compound-failure profile that
+[agent-failure-lab](https://github.com/netsatsawat/agent-failure-lab)
+measures. **Blocked on** that repo versioning its JSONL format, because
+building against an unversioned schema would just move the breakage here.
+
+**v0.3 · regression gating.** Right now a run tells you where you stand,
+not whether you slipped. This diffs a run against a stored baseline, so
+CI can fail on "worse than last week" rather than only on an absolute
+floor. The scores sidecar already carries everything needed; it is
+marked unstable precisely so this can shape it. **Wanted for**
+[sovereign-rag](https://github.com/netsatsawat/sovereign-rag), which
+needs a regression gate rather than a threshold.
+
+**Small things, if someone asks.** An OpenAI-compatible judge URL so LM
+Studio and vLLM work without a wrapper; a completeness check for
+multi-part questions; a per-category breakdown of the judge's exam. None
+of these are blocking anyone I know of, so they wait for a real request.
+
+**Deliberately not coming**, so you can plan around it: no dashboard, no
+hosted service, no plugin API, no model-versus-prompt comparison
+matrices, no synthetic test generation, no red-teaming. Those exist
+elsewhere and are mostly why this tool is small. If the report ever needs
+a server to read it, this project has failed.
 
 ---
 
