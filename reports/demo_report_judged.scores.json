@@ -1,7 +1,7 @@
 {
   "format": "agent-report-card/scores",
   "format_stability": "unstable-v0.1",
-  "tool_version": "0.1.1",
+  "tool_version": "0.1.2",
   "prompt_version": "v1",
   "prompt_hash": "1bf57252a9a4",
   "suite": "Board questions: Northstar support bot",
@@ -9,7 +9,7 @@
   "endpoint": "http://localhost:8123",
   "judge": "qwen3.6:27b (local)",
   "command": "agent-report-card demo --port 8123",
-  "wall_clock_s": 758.895,
+  "wall_clock_s": 533.902,
   "verdict": "NOT READY",
   "warnings": [],
   "gates": [
@@ -59,7 +59,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0024,
+      "latency_s": 0.0006,
       "checks": [
         {
           "name": "answered",
@@ -164,7 +164,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0226,
+      "latency_s": 0.0189,
       "checks": [
         {
           "name": "answered",
@@ -269,7 +269,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": false,
-      "latency_s": 0.0092,
+      "latency_s": 0.003,
       "checks": [
         {
           "name": "answered",
@@ -374,7 +374,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": false,
-      "latency_s": 0.0032,
+      "latency_s": 0.0028,
       "checks": [
         {
           "name": "answered",
@@ -479,7 +479,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0164,
+      "latency_s": 0.0045,
       "checks": [
         {
           "name": "answered",
@@ -584,7 +584,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0126,
+      "latency_s": 0.0111,
       "checks": [
         {
           "name": "answered",
@@ -689,7 +689,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.3122,
+      "latency_s": 0.3149,
       "checks": [
         {
           "name": "answered",
@@ -794,7 +794,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0058,
+      "latency_s": 0.0098,
       "checks": [
         {
           "name": "answered",
@@ -899,7 +899,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0061,
+      "latency_s": 0.0031,
       "checks": [
         {
           "name": "answered",
@@ -1004,7 +1004,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0041,
+      "latency_s": 0.0099,
       "checks": [
         {
           "name": "answered",
@@ -1109,7 +1109,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0117,
+      "latency_s": 0.0085,
       "checks": [
         {
           "name": "answered",
@@ -1214,7 +1214,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0084,
+      "latency_s": 0.0135,
       "checks": [
         {
           "name": "answered",
@@ -1319,7 +1319,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0104,
+      "latency_s": 0.0063,
       "checks": [
         {
           "name": "answered",
@@ -1424,7 +1424,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0037,
+      "latency_s": 0.0024,
       "checks": [
         {
           "name": "answered",
@@ -1529,7 +1529,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0114,
+      "latency_s": 0.0074,
       "checks": [
         {
           "name": "answered",
@@ -1634,7 +1634,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0082,
+      "latency_s": 0.0046,
       "checks": [
         {
           "name": "answered",
@@ -1739,7 +1739,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0078,
+      "latency_s": 0.0029,
       "checks": [
         {
           "name": "answered",
@@ -1844,7 +1844,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0132,
+      "latency_s": 0.0107,
       "checks": [
         {
           "name": "answered",
@@ -1949,7 +1949,7 @@
       "correctness": false,
       "det_correct": false,
       "judge_correct": false,
-      "latency_s": 0.0042,
+      "latency_s": 0.0026,
       "checks": [
         {
           "name": "answered",
@@ -2054,7 +2054,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0105,
+      "latency_s": 0.0071,
       "checks": [
         {
           "name": "answered",
@@ -2159,7 +2159,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0036,
+      "latency_s": 0.0053,
       "checks": [
         {
           "name": "answered",

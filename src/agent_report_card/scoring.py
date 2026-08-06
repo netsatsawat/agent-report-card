@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
-from .catalog import CORRECTNESS_CODE
+from .catalog import CORRECTNESS_CODE, EXPECTED_VERIFYING_CODE
 from .checks_code import PASS, FAIL, NA, JUDGE_ERROR
 from .schema import Suite
 
@@ -287,14 +287,17 @@ def _apply_gates(board: Scoreboard):
     # all, drops out of the accuracy denominator, and cannot fail a gate,
     # so a wrong answer would pass in silence.
     if not board.judged:
-        unscored = [r for r in board.records
-                    if r.case.answerable and r.det_correct is None
-                    and r.case.expected is not None]
+        unscored = [
+            r for r in board.records
+            if r.case.answerable and r.case.expected is not None
+            and not any(c.status in (PASS, FAIL) for c in r.checks
+                        if c.name in EXPECTED_VERIFYING_CODE)]
         if unscored:
             board.warnings.append(
                 f"{len(unscored)} case(s) declare an expected answer but no "
-                f"deterministic match, so they are judge-scored only and "
-                f"nothing checked their correctness on this run: "
+                f"deterministic check that verifies it, so they are "
+                f"judge-scored only and nothing confirmed their correctness "
+                f"on this run: "
                 f"{', '.join(r.case.id for r in unscored[:5])}"
                 f"{' and others' if len(unscored) > 5 else ''}. Give them a "
                 f"match (exact, contains, number or regex) or run with a judge")

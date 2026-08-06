@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-06 04:30 UTC | 0.33s | agent-report-card 0.1.1 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | none (deterministic only) | 2026-08-06 05:07 UTC | 0.33s | agent-report-card 0.1.2 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -26,7 +26,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 | hallucination (ungrounded vs retrieval, not untrue) | n/a (grounding needs the judge; drop --judge none to evaluate it) | judge-fed |
 | citation validity | 88% (29/33) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
 | refusal handling | 50% (1/2) | per check, not per case: 2 refusal cases, plus judge_refusal on a judged run |
-| latency p50 / p95 / slowest | 0.00s / 0.00s / 0.30s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
+| latency p50 / p95 / slowest | 0.00s / 0.00s / 0.31s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 0 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -171,7 +171,7 @@ An n/a row means no case in this test file exercised that check, so the failure 
 > The 5G network covered 87% of the population as of Q3 2025.
 
 **Failed:** latency_under
-- latency_under: 0.30s against a 0.15s budget
+- latency_under: 0.31s against a 0.15s budget
 
 ## Needs human review
 
@@ -197,7 +197,7 @@ The judge did not run (--judge none). Every number above comes from the determin
 agent-report-card demo --port 8123 --judge none --html report.html
 ```
 
-Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2. Tool version 0.1.1, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2. Tool version 0.1.2, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Cross-check: the scores sidecar written beside this report carries every raw per-case record; scripts/recount.py in the repository recomputes all rollups from it independently, and the test suite asserts equality with the numbers above.
 
@@ -213,7 +213,7 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 | q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit | 0.00s |
 | q05-arpu | pass | none | 0.00s |
 | q06-stores | pass | none | 0.00s |
-| q07-coverage | pass | latency_under | 0.30s |
+| q07-coverage | pass | latency_under | 0.31s |
 | q08-parental | pass | none | 0.00s |
 | q09-dividend | pass | cites_expected_source | 0.00s |
 | q10-founded | pass | no_phantom_citation | 0.00s |

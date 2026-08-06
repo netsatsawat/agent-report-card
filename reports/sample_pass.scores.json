@@ -1,7 +1,7 @@
 {
   "format": "agent-report-card/scores",
   "format_stability": "unstable-v0.1",
-  "tool_version": "0.1.1",
+  "tool_version": "0.1.2",
   "prompt_version": "v1",
   "prompt_hash": "1bf57252a9a4",
   "suite": "Release regression: Northstar support bot, flaw-free subset",
@@ -9,7 +9,7 @@
   "endpoint": "http://localhost:8123",
   "judge": "qwen3.6:27b (local)",
   "command": "agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123",
-  "wall_clock_s": 486.969,
+  "wall_clock_s": 302.743,
   "verdict": "PASS",
   "warnings": [],
   "gates": [
@@ -59,7 +59,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0019,
+      "latency_s": 0.0008,
       "checks": [
         {
           "name": "answered",
@@ -164,7 +164,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0147,
+      "latency_s": 0.007,
       "checks": [
         {
           "name": "answered",
@@ -269,7 +269,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.009,
+      "latency_s": 0.0155,
       "checks": [
         {
           "name": "answered",
@@ -374,7 +374,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0097,
+      "latency_s": 0.0065,
       "checks": [
         {
           "name": "answered",
@@ -479,7 +479,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0192,
+      "latency_s": 0.0037,
       "checks": [
         {
           "name": "answered",
@@ -584,7 +584,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0207,
+      "latency_s": 0.0029,
       "checks": [
         {
           "name": "answered",
@@ -689,7 +689,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0031,
+      "latency_s": 0.0116,
       "checks": [
         {
           "name": "answered",
@@ -794,7 +794,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0147,
+      "latency_s": 0.0042,
       "checks": [
         {
           "name": "answered",
@@ -899,7 +899,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0085,
+      "latency_s": 0.015,
       "checks": [
         {
           "name": "answered",
@@ -1004,7 +1004,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": true,
-      "latency_s": 0.0036,
+      "latency_s": 0.0048,
       "checks": [
         {
           "name": "answered",
@@ -1109,7 +1109,7 @@
       "correctness": true,
       "det_correct": true,
       "judge_correct": null,
-      "latency_s": 0.0095,
+      "latency_s": 0.0042,
       "checks": [
         {
           "name": "answered",
@@ -1214,7 +1214,7 @@
       "correctness": null,
       "det_correct": null,
       "judge_correct": null,
-      "latency_s": 0.0025,
+      "latency_s": 0.0027,
       "checks": [
         {
           "name": "answered",

@@ -27,9 +27,16 @@ def recount(scores: dict) -> dict:
 
     for case in cases:
         answerable = case["answerable"]
-        det = [s for s in statuses(case, CORRECTNESS_CODE)
-               if s in ("pass", "fail")]
-        det_ok = all(s == "pass" for s in det) if det else None
+        # An unanswered case is a deterministic wrong answer, not an
+        # unscored one. This mirrors scoring.CaseRecord.det_correct; if the
+        # two ever diverge the report's cross-check claim becomes false.
+        answered = statuses(case, ("answered",))
+        if answered and answered[0] == "fail":
+            det_ok = False
+        else:
+            det = [s for s in statuses(case, CORRECTNESS_CODE)
+                   if s in ("pass", "fail")]
+            det_ok = all(s == "pass" for s in det) if det else None
         judge = statuses(case, ("judge_correct",))
         judge_ok = {True: True, False: False}.get(
             judge[0] == "pass" if judge and judge[0] in ("pass", "fail")

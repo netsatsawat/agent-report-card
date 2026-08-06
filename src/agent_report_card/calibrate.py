@@ -9,6 +9,7 @@ numbers or says the judge is not calibrated.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -25,9 +26,16 @@ from .checks_judge import JudgeClient
 CACHE_DIR = Path(os.path.expanduser("~/.agent-report-card"))
 
 
-def _cache_path(model: str) -> Path:
+def _cache_path(model: str, base_url: str = "") -> Path:
+    """Keyed on the model AND the host that served it.
+
+    Two hosts can serve the same model name with different weights or
+    quantization, so a name-only key would let a report certify a judge
+    that was never examined.
+    """
     safe = re.sub(r"[^\w.-]+", "_", model)
-    return CACHE_DIR / f"calibration_{safe}_{prompts.prompt_hash()}.json"
+    host = hashlib.sha256(base_url.encode("utf-8")).hexdigest()[:8]
+    return CACHE_DIR / f"calibration_{safe}_{host}_{prompts.prompt_hash()}.json"
 
 
 def load_pairs() -> list[dict]:
@@ -36,13 +44,18 @@ def load_pairs() -> list[dict]:
     return yaml.safe_load(text)["pairs"]
 
 
-def cached(model: str) -> dict | None:
-    path = _cache_path(model)
+def cached(model: str, base_url: str = "") -> dict | None:
+    path = _cache_path(model, base_url)
     if path.exists():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return None
+        # refuse an entry that does not describe the judge being asked about
+        if (data.get("model") != model
+                or data.get("prompt_hash") != prompts.prompt_hash()):
+            return None
+        return data
     return None
 
 
@@ -102,7 +115,8 @@ def run_exam(judge: JudgeClient, progress=None) -> dict:
         "pairs": per_pair,
     }
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    _cache_path(judge.model).write_text(
+    result["base_url"] = judge.base_url
+    _cache_path(judge.model, judge.base_url).write_text(
         json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     return result
 

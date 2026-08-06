@@ -5,7 +5,7 @@ $ agent-report-card demo --port 8123 --judge none --html report.html -v
 [4/21] q04-5g-price: FAIL contains_none,numbers_agree,cites_expected_source,retrieval_hit (0.00s)
 [5/21] q05-arpu: ok (0.00s)
 [6/21] q06-stores: ok (0.00s)
-[7/21] q07-coverage: FAIL latency_under (0.30s)
+[7/21] q07-coverage: FAIL latency_under (0.31s)
 [8/21] q08-parental: ok (0.00s)
 [9/21] q09-dividend: FAIL cites_expected_source (0.00s)
 [10/21] q10-founded: FAIL no_phantom_citation (0.00s)

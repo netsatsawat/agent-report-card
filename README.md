@@ -1,7 +1,7 @@
 <h1 align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.png">
-    <img src="assets/banner-light.png" alt="agent-report-card" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/netsatsawat/agent-report-card/main/assets/banner-dark.png">
+    <img src="https://raw.githubusercontent.com/netsatsawat/agent-report-card/main/assets/banner-light.png" alt="agent-report-card" width="100%">
   </picture>
 </h1>
 
@@ -12,10 +12,10 @@
 <p align="center">
   <a href="https://pypi.org/project/agent-report-card/"><img src="https://img.shields.io/pypi/v/agent-report-card?style=for-the-badge&logo=pypi&logoColor=white&color=2a78d6" alt="PyPI version"></a>
   <a href="https://github.com/netsatsawat/agent-report-card/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/netsatsawat/agent-report-card/ci.yml?style=for-the-badge&label=CI" alt="CI status"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://github.com/netsatsawat/agent-report-card/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License: MIT"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+"></a>
   <img src="https://img.shields.io/badge/API%20keys-none-1baf7a?style=for-the-badge" alt="No API keys">
-  <a href="reports/"><img src="https://img.shields.io/badge/judge%20exam-30%2F30-8a5cf6?style=for-the-badge" alt="Judge exam: 30/30"></a>
+  <a href="https://github.com/netsatsawat/agent-report-card/blob/main/reports/"><img src="https://img.shields.io/badge/judge%20exam-30%2F30-8a5cf6?style=for-the-badge" alt="Judge exam: 30/30"></a>
   <a href="https://satsawat.ai"><img src="https://img.shields.io/badge/author-satsawat.ai-e8a112?style=for-the-badge" alt="Author: satsawat.ai"></a>
 </p>
 
@@ -39,10 +39,10 @@ agent-report-card run --tests board_questions.yaml --endpoint http://localhost:8
 Those numbers are real output from the bundled demo (a fixture bot with
 deliberately planted flaws; see below). CI re-runs the deterministic
 numbers (the accuracy and the failure count) on every push; the judged 6%
-is pinned to the committed judged report in [reports/](reports/), which
+is pinned to the committed judged report in [reports/](https://github.com/netsatsawat/agent-report-card/blob/main/reports/), which
 CI checks this README against.
 
-![agent-report-card demo, the real terminal output](assets/demo.gif)
+![agent-report-card demo, the real terminal output](https://raw.githubusercontent.com/netsatsawat/agent-report-card/main/assets/demo.gif)
 
 ## 🧭 Why this exists
 
@@ -95,17 +95,17 @@ verdict, all real runs against the bundled bot:
 
 | verdict | report | terminal output | how it happened |
 |---|---|---|---|
-| NOT READY | [demo_report_judged.md](reports/demo_report_judged.md) | [log](reports/demo_report_judged.log) | the flawed demo suite, judged by a local qwen3.6:27b; gates fail on accuracy, hallucination, and a critical leak |
-| NOT READY, no judge | [demo_report.md](reports/demo_report.md) | [log](reports/demo_report.log) | same suite deterministically; hallucination honestly renders n/a |
-| PASS | [sample_pass.md](reports/sample_pass.md) | [log](reports/sample_pass.log) | the flaw-free subset ([examples/release_questions.yaml](examples/release_questions.yaml)), judged; every gate green, no warnings |
-| PASS WITH WARNINGS | [sample_pass_with_warnings.md](reports/sample_pass_with_warnings.md) | [log](reports/sample_pass_with_warnings.log) | the same clean suite without a judge: the judge-fed hallucination gate cannot be evaluated, and that is a warning, never a silent pass |
+| NOT READY | [demo_report_judged.md](https://github.com/netsatsawat/agent-report-card/blob/main/reports/demo_report_judged.md) | [log](https://github.com/netsatsawat/agent-report-card/blob/main/reports/demo_report_judged.log) | the flawed demo suite, judged by a local qwen3.6:27b; gates fail on accuracy, hallucination, and a critical leak |
+| NOT READY, no judge | [demo_report.md](https://github.com/netsatsawat/agent-report-card/blob/main/reports/demo_report.md) | [log](https://github.com/netsatsawat/agent-report-card/blob/main/reports/demo_report.log) | same suite deterministically; hallucination honestly renders n/a |
+| PASS | [sample_pass.md](https://github.com/netsatsawat/agent-report-card/blob/main/reports/sample_pass.md) | [log](https://github.com/netsatsawat/agent-report-card/blob/main/reports/sample_pass.log) | the flaw-free subset ([examples/release_questions.yaml](https://github.com/netsatsawat/agent-report-card/blob/main/examples/release_questions.yaml)), judged; every gate green, no warnings |
+| PASS WITH WARNINGS | [sample_pass_with_warnings.md](https://github.com/netsatsawat/agent-report-card/blob/main/reports/sample_pass_with_warnings.md) | [log](https://github.com/netsatsawat/agent-report-card/blob/main/reports/sample_pass_with_warnings.log) | the same clean suite without a judge: the judge-fed hallucination gate cannot be evaluated, and that is a warning, never a silent pass |
 
 Each log is the exact command and per-case console stream that produced
 its report, ending with the exit code (0 for both PASS levels, 1 for
 NOT READY: what CI keys on). `scripts/make_gallery.py` regenerates them.
 
 Pass `--html report.html` and you also get
-[the same report as one self-contained HTML file](reports/demo_report.html)
+[the same report as one self-contained HTML file](https://github.com/netsatsawat/agent-report-card/blob/main/reports/demo_report.html)
 for the stakeholder who would rather receive an attachment than a
 markdown file: inline CSS, zero JavaScript, no external requests, and a
 print stylesheet so it becomes a clean PDF. GitHub shows `.html` as
@@ -149,7 +149,7 @@ the same validation.
 14 deterministic checks (pure Python) and 5 judge checks (local LLM,
 binary verdicts only), fixed by design: no plugin API, no 50-metric
 buffet. The full catalog with what each check catches is in
-[CHECKS.md](CHECKS.md), generated from the same table the code runs.
+[CHECKS.md](https://github.com/netsatsawat/agent-report-card/blob/main/CHECKS.md), generated from the same table the code runs.
 Accuracy is always computed by both routes, deterministic and judge, and
 shown side by side; when they disagree, the case lands in a "needs human
 review" section instead of being averaged away. The deterministic route
@@ -169,7 +169,7 @@ without touching the exit code, and the banner's failure count is
 defined as answerable cases whose correctness verdict failed; the report
 spells that out next to the full quoted-failure list.
 
-## ⚖️ The judge takes the exam it grades
+## ⚖ The judge takes the exam it grades
 
 Every report names its judge, its temperature, and its prompt hash, and
 embeds the judge's score on a 30-pair hand-labeled exam
@@ -177,14 +177,14 @@ embeds the judge's score on a 30-pair hand-labeled exam
 by less than 1%, the kind of error judges miss most. On this machine,
 qwen3.6:27b scored 30/30 (zero false passes, zero false fails, 5/5 on
 the subtle numerics); the committed result is in
-[reports/](reports/). Thirty items supports "measured error rate on this
+[reports/](https://github.com/netsatsawat/agent-report-card/blob/main/reports/). Thirty items supports "measured error rate on this
 labeled set", not "calibrated", and below 80% agreement the verdict line
 itself tells you to trust the deterministic column.
 
 One honest war story from building this: the first exam run used the
 judge's default thinking mode, and 12 of 30 calls blew the per-call
 timeout
-([reports/calibration_first_run_thinking_enabled.log](reports/calibration_first_run_thinking_enabled.log),
+([reports/calibration_first_run_thinking_enabled.log](https://github.com/netsatsawat/agent-report-card/blob/main/reports/calibration_first_run_thinking_enabled.log),
 the captured output: agreement 18/30, 4824s). The tool recorded every
 timeout as `judge_error` rather than guessing, exactly as designed, and
 the fix (judge calls now ask Ollama to skip thinking, with an automatic
@@ -216,10 +216,13 @@ drift from a fresh run or from the committed artifact behind them.
 
 ## 🗺️ Roadmap
 
-- v0.1.1 (this, on PyPI): RAG QA mode, the report, the judge's own
-  report card, documented `--help`, and trusted publishing.
-- Next, if users ask: static single-file HTML export of the same report,
-  OpenAI-compatible judge URLs, multi-part completeness check.
+- v0.1.2 (this, on PyPI): the self-contained HTML export (`--html PATH`),
+  every tool failure exiting 2 instead of impersonating a failed gate, and
+  a report that explains what each of its numbers is and is not.
+- v0.1.1: RAG QA mode, the report, the judge's own report card,
+  documented `--help`, and trusted publishing.
+- Next, if users ask: OpenAI-compatible judge URLs, a multi-part
+  completeness check, per-category calibration breakdown.
 - v0.2: agent-trace mode, per-step scoring of multi-step agent runs
   (see [agent-failure-lab](https://github.com/netsatsawat/agent-failure-lab)).
 - v0.3: CI mode, baseline diffing, fail-the-build on regression.

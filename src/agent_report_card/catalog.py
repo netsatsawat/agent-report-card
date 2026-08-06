@@ -58,6 +58,13 @@ ROUTE = {name: route for name, route, _what in CHECKS}
 CORRECTNESS_CODE = ("exact_match", "contains_all", "contains_none",
                     "numbers_agree", "regex_match")
 
+# The subset that actually verifies the expected answer. contains_none is
+# absent on purpose: it proves a forbidden string is missing, never that
+# the right answer is present, so a case carrying only must_not_contain
+# has an unverified expected answer even though it is "scored".
+EXPECTED_VERIFYING_CODE = ("exact_match", "contains_all", "numbers_agree",
+                           "regex_match")
+
 # Severity order for the report's failure section (lower sorts first).
 SEVERITY = {
     "answered": 0, "no_error_leak": 0,                      # plumbing

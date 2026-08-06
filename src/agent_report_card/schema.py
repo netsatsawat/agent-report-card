@@ -26,6 +26,18 @@ class _LineLoader(yaml.SafeLoader):
 
 
 def _construct_mapping(loader, node, deep=False):
+    # YAML silently keeps the last of a duplicated key, so a suite with two
+    # `cases:` blocks loses an entire list without a word. Refuse instead.
+    seen = {}
+    for key_node, _ in node.value:
+        key = getattr(key_node, "value", None)
+        if isinstance(key, str):
+            if key in seen:
+                raise SchemaError(
+                    f"line {key_node.start_mark.line + 1}: duplicate key "
+                    f"'{key}' (first set on line {seen[key]}). Fix: remove "
+                    f"one of them; YAML silently keeps only the last")
+            seen[key] = key_node.start_mark.line + 1
     mapping = yaml.SafeLoader.construct_mapping(loader, node, deep=deep)
     mapping[LINE_KEY] = node.start_mark.line + 1
     return mapping
@@ -162,9 +174,32 @@ def expand_headers(raw: dict, line: int) -> dict:
     return expanded
 
 
+def _num(value, cast, line, case_id, field):
+    """Coerce through the same error channel as every other validation.
+
+    A bare float()/int() on user YAML raises ValueError with none of the
+    line number, case id, or fix this module promises, and it escapes as
+    a traceback that exits 1, the code CI reads as a failed gate.
+    """
+    try:
+        return cast(value)
+    except (TypeError, ValueError):
+        _err(line, case_id, f"{field} must be a number, got {value!r}",
+             "give it a number, or remove the key to take the default")
+
+
 def load_suite(path: str) -> Suite:
-    with open(path, encoding="utf-8") as fh:
-        raw_text = fh.read()
+    try:
+        with open(path, encoding="utf-8") as fh:
+            raw_text = fh.read()
+    except OSError as exc:
+        raise SchemaError(
+            f"cannot read {path}: {exc.strerror}. "
+            f"Fix: check the path, or that it is a readable file") from exc
+    except UnicodeDecodeError as exc:
+        raise SchemaError(
+            f"{path} is not UTF-8 text ({exc}). "
+            f"Fix: test suites are UTF-8 YAML or JSON") from exc
     sha = hashlib.sha256(raw_text.encode("utf-8")).hexdigest()
     try:
         data = yaml.load(raw_text, Loader=_LineLoader)
@@ -204,13 +239,16 @@ def load_suite(path: str) -> Suite:
 
     # gates
     gates_raw = data.get("gates")
+    g_line = gates_raw.get(LINE_KEY, 1) if gates_raw else 1
     gates = Gates()
     if gates_raw:
         _check_keys(gates_raw, GATE_KEYS, gates_raw.get(LINE_KEY, 1), None, "gates")
         gates = Gates(
-            min_accuracy=float(gates_raw.get("min_accuracy", gates.min_accuracy)),
-            max_hallucination=float(
-                gates_raw.get("max_hallucination", gates.max_hallucination)),
+            min_accuracy=_num(gates_raw.get("min_accuracy", gates.min_accuracy),
+                              float, g_line, None, "gates.min_accuracy"),
+            max_hallucination=_num(
+                gates_raw.get("max_hallucination", gates.max_hallucination),
+                float, g_line, None, "gates.max_hallucination"),
             criticals_must_pass=bool(
                 gates_raw.get("criticals_must_pass", gates.criticals_must_pass)),
             explicit=True,
@@ -229,8 +267,11 @@ def load_suite(path: str) -> Suite:
     def_raw = data.get("defaults") or {}
     _check_keys(def_raw, DEFAULTS_KEYS, def_raw.get(LINE_KEY, 1), None, "defaults")
     d_budget = def_raw.get("budget_seconds")
-    d_max_chars = int(def_raw.get("max_chars", 4000))
-    d_tol = float(def_raw.get("tolerance", 0.0))
+    d_line = def_raw.get(LINE_KEY, 1)
+    d_max_chars = _num(def_raw.get("max_chars", 4000), int, d_line, None,
+                       "defaults.max_chars")
+    d_tol = _num(def_raw.get("tolerance", 0.0), float, d_line, None,
+                 "defaults.tolerance")
 
     # judge block
     judge_raw = data.get("judge") or {}
@@ -301,15 +342,20 @@ def load_suite(path: str) -> Suite:
             line=line,
             expected=None if expected is None else str(expected),
             match=match,
-            tolerance=float(entry.get("tolerance", d_tol)),
+            tolerance=_num(entry.get("tolerance", d_tol), float, line, cid,
+                           "tolerance"),
             must_contain=_as_list(entry.get("must_contain")),
             must_not_contain=_as_list(entry.get("must_not_contain")),
             expected_sources=_as_list(entry.get("expected_sources")),
             answerable=answerable,
-            max_chars=int(entry.get("max_chars", d_max_chars)),
-            budget_seconds=(float(entry["budget_seconds"])
+            max_chars=_num(entry.get("max_chars", d_max_chars), int, line,
+                           cid, "max_chars"),
+            budget_seconds=(_num(entry["budget_seconds"], float, line, cid,
+                                 "budget_seconds")
                             if entry.get("budget_seconds") is not None
-                            else (float(d_budget) if d_budget is not None else None)),
+                            else (_num(d_budget, float, d_line, None,
+                                       "defaults.budget_seconds")
+                                  if d_budget is not None else None)),
             tags=_as_list(entry.get("tags")),
             notes=entry.get("notes"),
         ))

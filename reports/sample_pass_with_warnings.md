@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-06 04:30 UTC | 0.01s | agent-report-card 0.1.1 |
+| http://localhost:8123 | release_questions.yaml (sha256 92fcf23338ba) | none (deterministic only) | 2026-08-06 05:07 UTC | 0.01s | agent-report-card 0.1.2 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -84,7 +84,7 @@ The judge did not run (--judge none). Every number above comes from the determin
 agent-report-card run --tests examples/release_questions.yaml --endpoint http://localhost:8123 --judge none
 ```
 
-Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00ae. Tool version 0.1.1, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 92fcf23338ba8d383989feb107359339d1ff9ca6ef95244fabcc4d6fda4b00ae. Tool version 0.1.2, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Cross-check: the scores sidecar written beside this report carries every raw per-case record; scripts/recount.py in the repository recomputes all rollups from it independently, and the test suite asserts equality with the numbers above.
 

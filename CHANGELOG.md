@@ -5,6 +5,10 @@ artifacts in [`reports/`](reports/), not from memory.
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.1.2 — 2026-08-06
+
 ### Added
 
 - `--html PATH` on `run` and `demo`: a self-contained HTML rendering of
@@ -29,6 +33,31 @@ converter escapes before applying the report's own markers, passes
 through only two allowlisted raw-HTML lines matched in full, emits no
 attribute carrying text from the run, and ships a Content-Security-Policy
 whose `style-src` is the hash of the stylesheet actually emitted.
+
+### Fixed
+
+- Every tool failure now exits 2 with an actionable message. A missing,
+  unreadable, non-UTF-8 or wrongly-typed suite file previously escaped as
+  a Python traceback and exited 1, which is the code CI reads as "a gate
+  failed", so a typo in `--tests` reported that the bot had regressed. An
+  unwritable `--out` or `--scores` did the same. A catch-all now makes it
+  impossible for any internal error to claim exit 1.
+- The report's cross-check claim is true again: `scripts/recount.py`
+  scored an unanswered case differently from the runner, so the two could
+  disagree while the report asserted they matched.
+- The judge calibration cache is keyed on the host as well as the model,
+  so a report can no longer cite an exam that a different machine's judge
+  sat under the same model name.
+- A duplicated YAML key is refused instead of silently keeping the last
+  one, which could drop an entire `cases:` block without a word.
+- An endpoint URL carrying a query string no longer has the suite's path
+  appended inside the query, which sent every request to `/`.
+- Reports now say what each number is not: the appendix explains what
+  `correctness` covers, the latency row prints the slowest request
+  alongside a nearest-rank p95 that can sit below it, refusal cases read
+  `refused` or `did not refuse` rather than `unscored`, `n/a` is labelled
+  untested rather than cleared, and a demo run says the graded company is
+  fictional.
 
 ## 0.1.1 — 2026-08-06
 

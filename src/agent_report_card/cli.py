@@ -21,6 +21,12 @@ from .scoring import CaseRecord, score
 
 EXIT_OK, EXIT_GATE_FAILED, EXIT_ERROR = 0, 1, 2
 
+# Query parameters worth scrubbing. Redacting every parameter would make
+# the Reproduce command unrunnable for no security gain.
+CREDENTIAL_PARAMS = {"key", "api_key", "apikey", "api-key", "token",
+                     "access_token", "secret", "password", "passwd", "pwd",
+                     "sig", "signature", "auth", "authorization", "code"}
+
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
@@ -56,7 +62,8 @@ Docs: https://github.com/netsatsawat/agent-report-card""")
         epilog="""\
 exit codes (this is the CI contract):
   0   PASS or PASS WITH WARNINGS
-  1   at least one gate in the suite's `gates` block failed
+  1   at least one gate failed (from the suite's `gates` block, or
+      this tool's defaults when it omits one)
   2   tool error: bad suite file, unreachable endpoint, or a judge was
       requested but is unavailable (run never downgrades silently)
 
@@ -158,11 +165,22 @@ example:
     except SchemaError as exc:
         scrub.sprint(f"error: {exc}")
         return EXIT_ERROR
+    except KeyboardInterrupt:
+        scrub.sprint("\ninterrupted; nothing was written")
+        return EXIT_ERROR
+    except Exception as exc:  # noqa: BLE001
+        # Exit 1 is the CI signal for "a gate failed". An uncaught error
+        # must never claim that, and a traceback would also bypass the
+        # secret scrubbing every other output path goes through.
+        scrub.sprint(f"error: {type(exc).__name__}: {exc}")
+        scrub.sprint("this is a bug in agent-report-card, not a verdict on "
+                     "your bot; please report it with the command you ran")
+        return EXIT_ERROR
 
 
 # ---------------------------------------------------------------- pipeline
 
-def _colliding_outputs(out_path, scores_path, html_path):
+def _colliding_outputs(out_path, scores_path, html_path, tests_path=None):
     """The name of a clash between two output paths, or None.
 
     Checked in run_pipeline rather than in one subcommand, so every
@@ -170,8 +188,8 @@ def _colliding_outputs(out_path, scores_path, html_path):
     markdown and then silently overwrite it with HTML, and --out defaults
     to report.md, so that is a single plausible typo away.
     """
-    named = [("--out", out_path), ("--scores", scores_path),
-             ("--html", html_path)]
+    named = [("--tests", tests_path), ("--out", out_path),
+             ("--scores", scores_path), ("--html", html_path)]
     seen = {}
     for flag, path in named:
         if not path:
@@ -186,38 +204,44 @@ def _colliding_outputs(out_path, scores_path, html_path):
     return None
 
 
-def _register_url_secrets(url: str) -> None:
+def _register_url_secrets(url: str, prefix: str = "ENDPOINT") -> None:
     """Anything credential-shaped in the endpoint URL gets scrubbed from
     every output surface: userinfo, and the values of query parameters."""
     from urllib.parse import parse_qsl, urlsplit
 
     parts = urlsplit(url if "://" in url else "http://" + url)
     if parts.username:
-        scrub.register(parts.username, "ENDPOINT_USER")
+        scrub.register(parts.username, f"{prefix}_USER")
     if parts.password:
-        scrub.register(parts.password, "ENDPOINT_PASSWORD")
+        scrub.register(parts.password, f"{prefix}_PASSWORD")
     # Register the decoded value AND the raw wire form. Scrubbing is
     # exact-substring, and what gets printed is the URL as given, so a
     # percent-encoded secret would otherwise never match its own decoding.
     for key, value in parse_qsl(parts.query):
-        scrub.register(value, f"ENDPOINT_QUERY_{key.upper()}")
+        if key.lower() in CREDENTIAL_PARAMS:
+            scrub.register(value, f"{prefix}_QUERY_{key.upper()}")
     for pair in parts.query.split("&"):
         if "=" in pair:
             key, raw = pair.split("=", 1)
-            scrub.register(raw, f"ENDPOINT_QUERY_{key.upper()}")
+            if key.lower() in CREDENTIAL_PARAMS:
+                scrub.register(raw, f"{prefix}_QUERY_{key.upper()}")
 
 def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
                  timeout, judge_timeout, limit, tags, verbose, command,
                  html_path=None, demo_fallback=False, is_demo=False):
-    clash = _colliding_outputs(out_path, scores_path, html_path)
+    clash = _colliding_outputs(out_path, scores_path, html_path,
+                               tests_path=suite.path)
     if clash:
         scrub.sprint(f"error: {clash}; the markdown report is the product, "
                      f"pick a different path")
         return EXIT_ERROR
+    scrub.reset()  # a second run in one process starts with a clean registry
     _register_url_secrets(endpoint_url)
     if judge_spec == DEFAULT_JUDGE and suite.judge_model:
         judge_spec = f"ollama:{suite.judge_model}"  # the suite's judge block
     model, judge_url = parse_judge_spec(judge_spec)
+    if model:
+        _register_url_secrets(judge_url, prefix="JUDGE")
     judge = None
     if model:
         judge = JudgeClient(model, judge_url, timeout=judge_timeout)
@@ -269,7 +293,24 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
                          f"({reply.latency_s:.2f}s)")
     client.close()
 
-    calibration = calibrate.cached(judge.model) if judge else None
+    # An endpoint that died partway through would otherwise produce a
+    # confident low score and exit 1, telling CI the bot regressed when
+    # the truth is that most questions never got an answer.
+    unanswered = [r for r in records if r.reply.error]
+    if unanswered and len(unanswered) == len(records):
+        scrub.sprint(f"error: none of the {len(records)} cases got a usable "
+                     f"answer from {endpoint_url} (last: "
+                     f"{unanswered[-1].reply.error}); nothing was scored")
+        if judge:
+            judge.close()
+        return EXIT_ERROR
+    if len(unanswered) > len(records) // 2:
+        scrub.sprint(f"warning: {len(unanswered)} of {len(records)} cases got "
+                     f"no usable answer from the endpoint; the verdict below "
+                     f"reflects a partly unreachable system under test")
+
+    calibration = (calibrate.cached(judge.model, judge.base_url)
+                   if judge else None)
     board = score(records, suite, judged=judge is not None,
                   judge_unreliable=calibrate.unreliable(calibration))
     wall = time.perf_counter() - start
@@ -285,10 +326,26 @@ def run_pipeline(suite, endpoint_url, judge_spec, out_path, scores_path,
 
     markdown = render(board, endpoint_url, judge_desc, command, calibration,
                       wall, judge_calls, is_demo=is_demo)
-    Path(out_path).write_text(markdown, encoding="utf-8")
-    Path(scores_path).write_text(
-        scores_sidecar(board, endpoint_url, judge_desc, command, wall),
-        encoding="utf-8")
+    # Every output write is a tool error when it fails, never a gate
+    # failure: exiting 1 would tell CI the bot regressed when the disk
+    # was full or the directory was not writable.
+    try:
+        Path(out_path).write_text(markdown, encoding="utf-8")
+    except OSError as exc:
+        scrub.sprint(f"error: could not write {out_path}: {exc.strerror}. "
+                     f"The run completed; only writing the report failed.")
+        if judge:
+            judge.close()
+        return EXIT_ERROR
+    try:
+        Path(scores_path).write_text(
+            scores_sidecar(board, endpoint_url, judge_desc, command, wall),
+            encoding="utf-8")
+    except OSError as exc:
+        scrub.sprint(f"error: could not write {scores_path}: {exc.strerror}")
+        if judge:
+            judge.close()
+        return EXIT_ERROR
     if html_path:
         # a projection of the markdown just written, never a second render.
         # A failure here is a tool error, not a failed gate: exiting 1
@@ -386,7 +443,9 @@ def cmd_demo(args) -> int:
             scrub.sprint("bot still serving (Ctrl-C to stop); try the README "
                          "command in another terminal:")
             scrub.sprint(f"  agent-report-card run --tests board_questions.yaml "
-                         f"--endpoint {endpoint}")
+                         f"--endpoint {endpoint}"
+                         + (f" --judge {args.judge}"
+                            if args.judge != DEFAULT_JUDGE else ""))
             try:
                 while True:
                     time.sleep(3600)
@@ -402,7 +461,11 @@ def cmd_init(args) -> int:
     if target.exists():
         scrub.sprint(f"error: {target} already exists; refusing to overwrite")
         return EXIT_ERROR
-    target.write_text(STARTER_YAML, encoding="utf-8")
+    try:
+        target.write_text(STARTER_YAML, encoding="utf-8")
+    except OSError as exc:
+        scrub.sprint(f"error: could not write {target}: {exc.strerror}")
+        return EXIT_ERROR
     scrub.sprint(f"wrote {target}. Edit it, then: agent-report-card run "
                  f"--tests {target} --endpoint http://localhost:8000")
     return EXIT_OK
