@@ -222,14 +222,28 @@ error rate. Per-release detail lives in
 [CHANGELOG.md](https://github.com/netsatsawat/agent-report-card/blob/main/CHANGELOG.md);
 this section is only about what comes next.
 
-**v0.2 · agent-trace mode.** Today the tool grades one question and one
-answer. A multi-step agent fails differently: step four goes wrong and
-steps five through ten inherit it, so a single end-to-end score tells you
-nothing about where to look. This ingests a run log and scores per step,
-surfacing the compound-failure profile that
-[agent-failure-lab](https://github.com/netsatsawat/agent-failure-lab)
-measures. **Blocked on** that repo versioning its JSONL format, because
-building against an unversioned schema would just move the breakage here.
+**v0.2.0 · the judge's exam, reported properly.** Every report already
+prints how the judge scored on 30 hand-labeled pairs. One number hides
+the failure that matters: a judge that gets 28 of 30 right while missing
+four of the five subtle-numeric pairs reads as 93% correct and is
+useless at exactly the job this tool exists for. So the exam result
+breaks down by category, agreement is corrected for chance (a coin flip
+scores about 50% on a balanced set), every rate carries its denominator
+and an interval, and no percentage is printed for a category with two
+examples in it. A comparison between two judges says "too close to
+separate on 30 items" rather than ranking them, because 30 pairs can
+show a judge is usable and cannot show one is two points better than
+another.
+
+**v0.2.x · any judge you want to run.** Pluggable judge providers:
+OpenAI-compatible servers so LM Studio and vLLM work without a wrapper,
+and hosted APIs for anyone who would rather not run a 27B model locally.
+Your key, your environment, read from one variable you set and never
+from a flag. Local stays the default, always. This is catch-up work
+rather than a reason to switch: other tools already judge with whatever
+model you like. What stays different here is which way the default
+points, and that the report tells you which judge graded the run and
+whether anything left your machine.
 
 **v0.3 · regression gating.** Right now a run tells you where you stand,
 not whether you slipped. This diffs a run against a stored baseline, so
@@ -239,10 +253,20 @@ marked unstable precisely so this can shape it. **Wanted for**
 [sovereign-rag](https://github.com/netsatsawat/sovereign-rag), which
 needs a regression gate rather than a threshold.
 
-**Small things, if someone asks.** An OpenAI-compatible judge URL so LM
-Studio and vLLM work without a wrapper; a completeness check for
-multi-part questions; a per-category breakdown of the judge's exam. None
-of these are blocking anyone I know of, so they wait for a real request.
+**When it is unblocked · agent-trace mode.** Today the tool grades one
+question and one answer. A multi-step agent fails differently: step four
+goes wrong and steps five through ten inherit it, so a single end-to-end
+score tells you nothing about where to look. This ingests a run log and
+scores per step, surfacing the compound-failure profile that
+[agent-failure-lab](https://github.com/netsatsawat/agent-failure-lab)
+measures. **Blocked on** that repo versioning its JSONL format, because
+building against an unversioned schema would just move the breakage here.
+
+**Small things, if someone asks.** A completeness check for multi-part
+questions, and grading a bare model endpoint directly. Nobody is blocked
+on either, so they wait for a real request. The second one comes with a
+warning: a bare model returns no retrieved context, so most of the
+checks would render n/a and the report would grade generation only.
 
 **Deliberately not coming**, so you can plan around it: no dashboard, no
 hosted service, no plugin API, no model-versus-prompt comparison
