@@ -1,0 +1,163 @@
+id: rag_quality_gate
+namespace: company.ai
+
+# An AI quality gate as a Kestra task.
+#
+# The whole design turns on one property of the orchestrator: Kestra's retry
+# strategies are constant, exponential or random, and none of them can be made
+# conditional on a task's exit code. A script task either failed or it did not.
+#
+# agent-report-card draws a distinction the orchestrator cannot see:
+#
+#   exit 0  every gate passed
+#   exit 1  a gate failed — the suite ran fine, the bot is not good enough
+#   exit 2  the tool could not run — bad config, unreachable endpoint, judge
+#           transport failure. Nothing was measured.
+#
+# Retrying exit 1 is worse than useless. It is deterministic, so three attempts
+# reproduce it three times, burn three lots of compute, and leave a real,
+# reproducible regression looking like a flaky test. Exit 2 is the opposite: it
+# is exactly what backoff is for, because the endpoint may simply be slow to
+# come up.
+#
+# So this flow translates at the boundary. The `evaluate` task reports failure
+# to Kestra *only* on exit 2, which is the only thing here worth retrying. A
+# failed gate is not a crash, it is a result, so it leaves the task as data and
+# a second task — deliberately without a retry policy — stops the release.
+
+inputs:
+  - id: endpoint
+    type: STRING
+    # host.docker.internal reaches a bot running on the host from inside the
+    # task container. Point this at the real service in a deployed namespace.
+    defaults: http://host.docker.internal:8123
+
+  - id: judge
+    type: STRING
+    # "none" runs the deterministic checks only and is honest about it: the
+    # hallucination gate reports "could not evaluate" rather than passing by
+    # default. See the note on tri-state gates in gate.py.
+    defaults: none
+
+tasks:
+  - id: evaluate
+    type: io.kestra.plugin.scripts.python.Commands
+    containerImage: python:3.12-slim
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    dependencies:
+      - agent-report-card==0.2.0
+
+    # Retries apply to this task alone, and by the logic above they can only
+    # ever fire for exit 2 — a run that never happened.
+    retry:
+      type: exponential
+      interval: PT30S
+      maxInterval: PT5M
+      maxAttempts: 3
+      warningOnRetry: true
+
+    inputFiles:
+      tests.yaml: |
+        suite: Support bot release check
+        gates:
+          min_accuracy: 0.90
+          max_hallucination: 0.05
+          criticals_must_pass: true
+        cases:
+          # `match` is always explicit. Leaving it off turns `expected` into
+          # match: judge silently, which with --judge none scores as a pass
+          # and quietly hands you a green gate nobody graded.
+          - id: roaming-addons
+            question: Which roaming add-on packages does Northstar offer?
+            match: contains
+            must_contain: [Asia Pass, Global Pass, Business Roam]
+            tags: [critical]
+
+          - id: arpu-q3
+            question: What was blended ARPU in Q3 2025?
+            expected: Blended ARPU was THB 412.
+            match: number
+
+      gate.py: |
+        """Run the suite, then tell Kestra only what Kestra can act on."""
+        import json
+        import os
+        import subprocess
+        import sys
+
+        EXIT_OK, EXIT_GATE_FAILED, EXIT_ERROR = 0, 1, 2
+
+        code = subprocess.call([
+            "agent-report-card", "run",
+            "--tests", "tests.yaml",
+            "--endpoint", os.environ["ENDPOINT"],
+            "--judge", os.environ["JUDGE"],
+            "--out", "report.md",
+            "--scores", "report.scores.json",
+            "--html", "report.html",
+        ])
+
+        # The only retryable outcome. Exiting non-zero here is what hands the
+        # decision back to the retry policy above.
+        if code == EXIT_ERROR:
+            print("agent-report-card could not run. Failing so Kestra retries.",
+                  file=sys.stderr)
+            sys.exit(1)
+
+        # Exit 0 and exit 1 both mean the suite ran to completion, so from here
+        # the verdict is data rather than a crash.
+        with open("report.scores.json") as fh:
+            scores = json.load(fh)
+
+        # gates[].ok is tri-state and the third state matters. True passed,
+        # False failed, and None means the gate could not be evaluated at all —
+        # max_hallucination does this whenever the judge is off, because
+        # grounding needs a judge. Treating None as a failure would block every
+        # release run without a judge; treating it as a pass would report
+        # coverage the run never had. It is neither, so it is carried out
+        # separately and named.
+        failed = [g["name"] for g in scores["gates"] if g["ok"] is False]
+        unevaluated = [g["name"] for g in scores["gates"] if g["ok"] is None]
+
+        correct, total = scores["rollups"]["accuracy_det"]
+
+        print("::" + json.dumps({"outputs": {
+            "verdict": scores["verdict"],
+            "passed": code == EXIT_OK,
+            "accuracy": round(correct / total, 4) if total else None,
+            "failures": scores["banner_failures"],
+            "failed_gates": failed,
+            "unevaluated_gates": unevaluated,
+            "judge": scores["judge"],
+            "tool_version": scores["tool_version"],
+        }}) + "::")
+
+    env:
+      ENDPOINT: "{{ inputs.endpoint }}"
+      JUDGE: "{{ inputs.judge }}"
+
+    commands:
+      - python gate.py
+
+    # The report is the artifact a human actually reads. Keeping all three
+    # means the run is reviewable after the fact: markdown to read, HTML to
+    # send to someone who wants an attachment, JSON for whatever comes next.
+    outputFiles:
+      - report.md
+      - report.html
+      - report.scores.json
+
+  # No retry block here, on purpose. This task is a decision about a result
+  # that has already been measured, so re-running it could only produce the
+  # same answer more slowly.
+  - id: block_release
+    type: io.kestra.plugin.core.execution.Fail
+    condition: "{{ outputs.evaluate.vars.passed == false }}"
+    errorMessage: |
+      {{ outputs.evaluate.vars.verdict }} — release blocked.
+      Failed gates: {{ outputs.evaluate.vars.failed_gates }}
+      Deterministic accuracy: {{ outputs.evaluate.vars.accuracy }}
+      Judge: {{ outputs.evaluate.vars.judge }}
+      Not evaluated: {{ outputs.evaluate.vars.unevaluated_gates }}
+      Report: {{ outputs.evaluate.outputFiles['report.md'] }}

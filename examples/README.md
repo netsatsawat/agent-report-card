@@ -178,6 +178,21 @@ its reader whether the thresholds came from your file or from this tool's
 opinions, and "this tool's opinions" is not something you want to defend
 in a release meeting.
 
+### Running it inside an orchestrator
+
+**[kestra/](kestra/)**: the same gate as a task in a [Kestra](https://kestra.io)
+flow, with its own walkthrough.
+
+Worth reading even if you use a different orchestrator, because the problem
+it solves is not Kestra-specific. Retry policies are not conditional on exit
+code — in Kestra, Airflow and most others, a script task either failed or it
+did not. Hand all three codes above to a retry policy and exit 1 gets retried
+like exit 2: a deterministic regression reproduces three times, costs three
+runs, and ends up looking like a flaky test.
+
+The fix is to do the branching before the orchestrator sees it. Fail the task
+only for exit 2, and let the verdict leave as data.
+
 ---
 
 ## 6. Pointing it at your own bot
