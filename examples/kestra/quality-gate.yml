@@ -10,8 +10,8 @@ namespace: company.ai
 # agent-report-card draws a distinction the orchestrator cannot see:
 #
 #   exit 0  every gate passed
-#   exit 1  a gate failed — the suite ran fine, the bot is not good enough
-#   exit 2  the tool could not run — bad config, unreachable endpoint, judge
+#   exit 1  a gate failed. The suite ran fine, the bot is not good enough
+#   exit 2  the tool could not run: bad config, unreachable endpoint, judge
 #           transport failure. Nothing was measured.
 #
 # Retrying exit 1 is worse than useless. It is deterministic, so three attempts
@@ -23,7 +23,7 @@ namespace: company.ai
 # So this flow translates at the boundary. The `evaluate` task reports failure
 # to Kestra *only* on exit 2, which is the only thing here worth retrying. A
 # failed gate is not a crash, it is a result, so it leaves the task as data and
-# a second task — deliberately without a retry policy — stops the release.
+# a second task, without a retry policy of its own, stops the release.
 
 inputs:
   - id: endpoint
@@ -49,7 +49,7 @@ tasks:
       - agent-report-card==0.2.0
 
     # Retries apply to this task alone, and by the logic above they can only
-    # ever fire for exit 2 — a run that never happened.
+    # ever fire for exit 2, a run that never happened.
     retry:
       type: exponential
       interval: PT30S
@@ -111,7 +111,7 @@ tasks:
             scores = json.load(fh)
 
         # gates[].ok is tri-state and the third state matters. True passed,
-        # False failed, and None means the gate could not be evaluated at all —
+        # False failed, and None means the gate could not be evaluated at all.
         # max_hallucination does this whenever the judge is off, because
         # grounding needs a judge. Treating None as a failure would block every
         # release run without a judge; treating it as a pass would report
@@ -155,7 +155,7 @@ tasks:
     type: io.kestra.plugin.core.execution.Fail
     condition: "{{ outputs.evaluate.vars.passed == false }}"
     errorMessage: |
-      {{ outputs.evaluate.vars.verdict }} — release blocked.
+      {{ outputs.evaluate.vars.verdict }}: release blocked.
       Failed gates: {{ outputs.evaluate.vars.failed_gates }}
       Deterministic accuracy: {{ outputs.evaluate.vars.accuracy }}
       Judge: {{ outputs.evaluate.vars.judge }}

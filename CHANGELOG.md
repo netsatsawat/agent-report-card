@@ -7,7 +7,7 @@ artifacts in [`reports/`](reports/), not from memory.
 
 Nothing yet.
 
-## 0.2.0 — 2026-08-07
+## 0.2.0 (2026-08-07)
 
 Opens the 0.2 line. Judge measurement, per PRD 7.1.
 
@@ -41,7 +41,7 @@ Opens the 0.2 line. Judge measurement, per PRD 7.1.
   across every k/n found it. Bounds are now clamped to the point estimate
   as well as to [0, 1].
 
-## 0.1.2 — 2026-08-06
+## 0.1.2 (2026-08-06)
 
 ### Added
 
@@ -93,7 +93,7 @@ whose `style-src` is the hash of the stylesheet actually emitted.
   untested rather than cleared, and a demo run says the graded company is
   fictional.
 
-## 0.1.1 — 2026-08-06
+## 0.1.1 (2026-08-06)
 
 First release on PyPI: `pip install agent-report-card`. No change to the
 check catalog, the scoring, or the report format.
@@ -123,7 +123,7 @@ re-uploading a version, so the mismatch would have been permanent and
 invisible. The rule is now in the PRD as FR-1a and RC-11: the tagged tree
 is the tree that gets built.
 
-## 0.1.0 — 2026-08-06
+## 0.1.0 (2026-08-06)
 
 The initial build, tagged and released on GitHub but never published to
 PyPI (see above).

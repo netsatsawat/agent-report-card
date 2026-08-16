@@ -185,7 +185,7 @@ flow, with its own walkthrough.
 
 Worth reading even if you use a different orchestrator, because the problem
 it solves is not Kestra-specific. Retry policies are not conditional on exit
-code — in Kestra, Airflow and most others, a script task either failed or it
+code. In Kestra, Airflow and most others, a script task either failed or it
 did not. Hand all three codes above to a retry policy and exit 1 gets retried
 like exit 2: a deterministic regression reproduces three times, costs three
 runs, and ends up looking like a flaky test.

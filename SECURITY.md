@@ -35,7 +35,7 @@ Worth knowing before you point it at a production endpoint.
 - **The bundled fixture bot binds loopback only** (`127.0.0.1`) and serves
   invented data about a fictional company.
 
-## Known limitations, stated rather than hidden
+## Known limitations
 
 The judge is an LLM reading text produced by the system under test, so a
 sufficiently adversarial answer could attempt to influence its verdict.

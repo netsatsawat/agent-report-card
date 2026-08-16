@@ -89,6 +89,16 @@ class TestChecks(unittest.TestCase):
         self.assertEqual(status(run(case, EndpointReply(answer="THB 649")),
                                 "contains_none"), "pass")
 
+    def test_regex_needle_is_case_insensitive(self):
+        # The text searched has been casefolded, so an uppercase pattern
+        # would never fire and a forbidden phrase would pass silently.
+        case = make_case(must_not_contain=["/THB\\s*1,500/"])
+        self.assertEqual(status(run(case, EndpointReply(answer="THB 1,500")),
+                                "contains_none"), "fail")
+        case = make_case(must_contain=["/THB\\s*1,500/"])
+        self.assertEqual(status(run(case, EndpointReply(answer="the fee is THB 1,500")),
+                                "contains_all"), "pass")
+
     def test_numbers_agree_currency_and_thousands(self):
         case = make_case(expected="1,500 THB", match="number")
         for good in ["1500 baht", "THB1,500", "the fee is 1,500"]:

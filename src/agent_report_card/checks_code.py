@@ -80,11 +80,17 @@ def extract_numbers(text: str) -> list[float]:
 
 def _contains(haystack_norm: str, needle: str) -> bool:
     """Substring containment; /.../ needles are treated as regex.
+    The haystack arrives normalized, so it is already casefolded; the regex
+    is matched case-insensitively to suit, or an uppercase letter in the
+    pattern could never match and a must_not_contain rule would silently
+    fail open. The separate `match: regex` check runs against the raw
+    answer instead; CHECKS.md states both.
     Patterns are validated at suite load time, so re.error here would be a
     bug; guard anyway rather than crash mid-run."""
     if len(needle) > 2 and needle.startswith("/") and needle.endswith("/"):
         try:
-            return re.search(needle[1:-1], haystack_norm) is not None
+            return re.search(needle[1:-1], haystack_norm,
+                             re.IGNORECASE) is not None
         except re.error:
             return False
     return normalize(needle) in haystack_norm

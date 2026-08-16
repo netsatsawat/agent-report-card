@@ -37,8 +37,8 @@ agent-report-card run --tests board_questions.yaml --endpoint http://localhost:8
 ```
 
 Those numbers are real output from the bundled demo (a fixture bot with
-deliberately planted flaws; see below). CI re-runs the deterministic
-numbers (the accuracy and the failure count) on every push; the judged 6%
+planted flaws; see below). CI re-runs the deterministic numbers (the
+accuracy and the failure count) on every push; the judged 6%
 is pinned to the committed judged report in [reports/](https://github.com/netsatsawat/agent-report-card/blob/main/reports/), which
 CI checks this README against.
 
@@ -97,7 +97,7 @@ the flag, `demo` falls back to a free port and tells you. Drop
 `--judge none` when Ollama is up; without Ollama the run exits 2 with a
 message naming the fallback, because `run` never silently downgrades.)
 
-See a report before installing anything — one committed example per
+See a report before installing anything. One committed example per
 verdict, all real runs against the bundled bot:
 
 | verdict | report | terminal output | how it happened |
@@ -193,11 +193,11 @@ judge's default thinking mode, and 12 of 30 calls blew the per-call
 timeout
 ([reports/calibration_first_run_thinking_enabled.log](https://github.com/netsatsawat/agent-report-card/blob/main/reports/calibration_first_run_thinking_enabled.log),
 the captured output: agreement 18/30, 4824s). The tool recorded every
-timeout as `judge_error` rather than guessing, exactly as designed, and
-the fix (judge calls now ask Ollama to skip thinking, with an automatic
-fallback for models that reject the field) took the same exam to 233.6s
-at 30/30, per the committed calibration JSON. The judge's own report card
-caught the judge's own failure before it graded anything real.
+timeout as `judge_error` rather than guessing, and the fix (judge calls
+now ask Ollama to skip thinking, with an automatic fallback for models
+that reject the field) took the same exam to 233.6s at 30/30, per the
+committed calibration JSON. The judge's own report card caught the
+judge's own failure before it graded anything real.
 
 ## 🌏 Languages
 

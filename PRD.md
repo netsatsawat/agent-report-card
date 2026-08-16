@@ -643,7 +643,7 @@ milestone M4):
 2. M2 deterministic checks (14) + normalization + tests (4.5h)
 3. M3 scoring, gates, verdict levels, Wilson (3h)
 4. M4 fixture bot + tuned demo suite + e2e and contract-command tests
-   (3.5h) — demoable
+   (3.5h), demoable
 5. M5 report renderer + golden test (4h)
 6. M6 recount + README-claims verifier + CI (1.5h)
 7. M7 judge client + prompts + transport discipline (4h)

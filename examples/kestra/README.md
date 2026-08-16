@@ -17,7 +17,7 @@ not. This tool draws a distinction underneath that:
 
 | Exit | Meaning | Should Kestra retry? |
 |---|---|---|
-| 0 | every gate passed | — |
+| 0 | every gate passed | n/a |
 | 1 | a gate failed; the suite ran fine, the bot is not good enough | **No** |
 | 2 | the tool could not run; nothing was measured | **Yes** |
 
@@ -47,7 +47,7 @@ what backoff is for.
  "text": "could not evaluate: grounding needs the judge; drop --judge none to evaluate it"}
 ```
 
-`null` means the gate could not be evaluated at all — `max_hallucination` does this whenever the
+`null` means the gate could not be evaluated at all. `max_hallucination` does this whenever the
 judge is off, because grounding needs a judge. Treating `null` as a failure blocks every run
 without a judge. Treating it as a pass reports coverage the run never had. It is neither, so the
 flow carries it out separately as `unevaluated_gates` and names it in the failure message.
@@ -67,11 +67,11 @@ Consume it downstream with `{{ outputs.evaluate.vars.accuracy }}`, and the repor
 
 ## Pointing it at a real bot
 
-Two changes. Set `endpoint` to the service — `host.docker.internal` only reaches a bot running on
+Two changes. Set `endpoint` to the service: `host.docker.internal` only reaches a bot running on
 the host from inside the task container. Then replace the inline `tests.yaml` with your own
 suite; `inputFiles` accepts a path or `{{ read('tests.yaml') }}` if you would rather keep the
 suite in version control beside the flow.
 
 Turning the judge on (`judge: ollama/qwen3:8b` or any supported spec) is what makes
-`max_hallucination` evaluable. Run `agent-report-card judge-check` first — a judge that has not
+`max_hallucination` evaluable. Run `agent-report-card judge-check` first. A judge that has not
 sat its own exam should not be gating your releases.
