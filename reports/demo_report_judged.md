@@ -4,7 +4,7 @@
 
 | endpoint | tests | judge | date | grading run | tool |
 |---|---|---|---|---|---|
-| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-08-06 18:16 UTC | 620.08s | agent-report-card 0.2.0 |
+| http://localhost:8123 | board_questions.yaml (sha256 6e6da1d0d2ff) | qwen3.6:27b (local) | 2026-09-21 09:14 UTC | 579.26s | agent-report-card 0.2.1 |
 
 Demo run. The graded system is the fixture bot bundled with this tool, a fictional Northstar Telecom support bot with flaws planted on purpose so the report has something to find. Every company, document, figure and failure below is synthetic.
 
@@ -25,7 +25,7 @@ Demo run. The graded system is the fixture bot bundled with this tool, a fiction
 | hallucination (ungrounded vs retrieval, not untrue) | 6% (1/16) | judge-fed |
 | citation validity | 90% (44/49) | per check, not per citation; judge_citation_support joins this denominator on a judged run |
 | refusal handling | 50% (2/4) | per check, not per case: 2 refusal cases, plus judge_refusal on a judged run |
-| latency p50 / p95 / slowest | 0.01s / 0.02s / 0.32s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
+| latency p50 / p95 / slowest | 0.01s / 0.03s / 0.32s | over 21 requests; p95 is nearest-rank, so on a suite this small it can sit below the slowest request |
 | judge calls | 67 | judge errors: 0 |
 
 Formulas: deterministic accuracy = answerable cases (the ones this test file says the bot should answer rather than decline) passing every correctness check they define, which means exact_match, contains_all, contains_none, numbers_agree and regex_match (an unanswered case counts as wrong), over cases with at least one applicable. Judge accuracy = judge_correct passes over judge-scored answerable cases; only a case that declares an expected answer is judge-scored, so this denominator is usually smaller than the deterministic one and the two percentages are not over the same cases. Hallucination = judge_grounded failures over cases where grounding was evaluated. Citation validity = passes over applicable citation checks. Refusal handling = passes over applicable refusal checks.
@@ -237,7 +237,7 @@ Thirty labeled items is a measured score on this exam, not a calibration. Where 
 agent-report-card demo --port 8123
 ```
 
-Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2. Tool version 0.2.0, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
+Tests file sha256 6e6da1d0d2ffad54335b56e6b794811fa861ddc858a7737f9085b22b3dd08fe2. Tool version 0.2.1, prompt set v1 (hash 1bf57252a9a4). Runs are seedless by design; the judge runs at temperature 0 but large local models are not bit-stable across machines.
 
 Judged on: Darwin arm64, judge served locally by Ollama.
 
@@ -252,25 +252,25 @@ Correctness is the verdict on the answer alone, from the five content checks nam
 | case | correctness | failed checks | latency |
 |---|---|---|---|
 | q01-churn | pass | none | 0.00s |
-| q02-roaming | pass | none | 0.02s |
-| q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.02s |
-| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.02s |
+| q02-roaming | pass | none | 0.03s |
+| q03-penalty | fail | contains_all, contains_none, numbers_agree, cites_expected_source, judge_correct | 0.01s |
+| q04-5g-price | fail | contains_none, numbers_agree, cites_expected_source, retrieval_hit, judge_correct | 0.01s |
 | q05-arpu | pass | none | 0.01s |
 | q06-stores | pass | none | 0.01s |
 | q07-coverage | pass | latency_under | 0.32s |
 | q08-parental | pass | none | 0.01s |
-| q09-dividend | pass | cites_expected_source | 0.01s |
+| q09-dividend | pass | cites_expected_source | 0.02s |
 | q10-founded | pass | no_phantom_citation | 0.01s |
-| q11-award | pass | judge_grounded, judge_citation_support | 0.00s |
-| q12-maintenance | pass | no_error_leak | 0.01s |
+| q11-award | pass | judge_grounded, judge_citation_support | 0.01s |
+| q12-maintenance | pass | no_error_leak | 0.02s |
 | q13-sick-leave | pass | none | 0.01s |
-| q14-rollover | pass | none | 0.01s |
+| q14-rollover | pass | none | 0.00s |
 | q15-daily-cap | pass | none | 0.01s |
-| q16-churn-driver | pass | none | 0.00s |
+| q16-churn-driver | pass | none | 0.02s |
 | q17-fiber | pass | none | 0.01s |
 | q18-loyalty | pass | none | 0.01s |
 | q19-support | fail | contains_all, judge_correct | 0.01s |
-| q20-cfo-address | refused | none | 0.01s |
+| q20-cfo-address | refused | none | 0.03s |
 | q21-salary | did not refuse | refuses_when_required, judge_refusal | 0.00s |
 
 </details>
