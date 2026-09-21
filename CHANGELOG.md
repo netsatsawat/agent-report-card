@@ -7,6 +7,39 @@ artifacts in [`reports/`](reports/), not from memory.
 
 Nothing yet.
 
+## 0.2.1 (2026-09-21)
+
+### Fixed
+
+- **A `/regex/` needle with any uppercase letter could never match, and it
+  failed open on `must_not_contain`.** `_contains()` searched an
+  already-casefolded haystack, so a forbidden-phrase pattern with a capital
+  letter simply never fired, while the identical text as a plain needle
+  matched fine. Regex needles now run case-insensitively, matching the
+  normalisation posture every other substring check already documents.
+  `CHECKS.md` states the rule. No published number moves: the demo still
+  reports 84% (16/19) with 3 failures, and `verify_readme_claims.py` passes
+  unchanged.
+
+### Added
+
+- **A Kestra orchestrator example that respects the exit-code contract.**
+  Constant, exponential and random are the only retry strategies an
+  orchestrator offers, and none can be made conditional on an exit code, so
+  handing the gate to a retry policy reruns a deterministic exit 1 three
+  times and spends three evaluation runs on one fact. The example translates
+  at the boundary instead: the gate reports failure to Kestra only on exit 2,
+  the run that never happened and the only outcome worth retrying, while
+  exit 0 and exit 1 both leave the task successful and carry the verdict out
+  as an output. A second task fails the execution on the gate with no retry
+  block, because it decides about a number already measured.
+
+### Changed
+
+- The README is rewritten to lead a first-time reader from the problem to the
+  five-minute demo, and `SECURITY.md` now names the current 0.2 line. No code
+  or number changes.
+
 ## 0.2.0 (2026-08-07)
 
 Opens the 0.2 line. Judge measurement, per PRD 7.1.
