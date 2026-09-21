@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-v0.1.x is the current line. Fixes land on `main` and ship in the next tag.
+v0.2.x is the current line. Fixes land on `main` and ship in the next tag.
 
 ## What this tool does with your data
 
@@ -39,7 +39,7 @@ Worth knowing before you point it at a production endpoint.
 
 The judge is an LLM reading text produced by the system under test, so a
 sufficiently adversarial answer could attempt to influence its verdict.
-This is inherent to LLM-as-judge and is not defended against in v0.1. It
+This is inherent to LLM-as-judge and is not defended against in v0.2. It
 is one reason the deterministic route wins the verdict, the judge is never
 the sole authority on a number, and every judge-only failure is labeled
 as such in the report.
