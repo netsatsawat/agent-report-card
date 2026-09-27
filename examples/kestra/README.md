@@ -54,12 +54,12 @@ flow carries it out separately as `unevaluated_gates` and names it in the failur
 
 ## What it emits
 
-Verified against the published 0.2.0 wheel and the bundled fixture bot:
+Verified against the published 0.2.1 wheel and the bundled fixture bot:
 
 ```
 ::{"outputs": {"verdict": "PASS WITH WARNINGS", "passed": true, "accuracy": 1.0,
    "failures": 0, "failed_gates": [], "unevaluated_gates": ["max_hallucination"],
-   "judge": "none (deterministic only)", "tool_version": "0.2.0"}}::
+   "judge": "none (deterministic only)", "tool_version": "0.2.1"}}::
 ```
 
 Consume it downstream with `{{ outputs.evaluate.vars.accuracy }}`, and the report itself with
@@ -72,6 +72,8 @@ the host from inside the task container. Then replace the inline `tests.yaml` wi
 suite; `inputFiles` accepts a path or `{{ read('tests.yaml') }}` if you would rather keep the
 suite in version control beside the flow.
 
-Turning the judge on (`judge: ollama/qwen3:8b` or any supported spec) is what makes
-`max_hallucination` evaluable. Run `agent-report-card judge-check` first. A judge that has not
-sat its own exam should not be gating your releases.
+Turning the judge on (`judge: ollama:qwen3:8b@http://host.docker.internal:11434` or any supported
+spec) is what makes `max_hallucination` evaluable. The judge needs the host address for the same
+reason the endpoint does: without the `@URL`, the spec points at `localhost:11434`, which inside
+the task container is the container itself. Run `agent-report-card judge-check` first. A judge
+that has not sat its own exam should not be gating your releases.

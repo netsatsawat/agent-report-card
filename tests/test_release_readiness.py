@@ -52,6 +52,82 @@ class TestVersionConsistency(unittest.TestCase):
             "and retitle it before tagging")
 
 
+class TestShippedFilesNameThisVersion(unittest.TestCase):
+    """Every place that tells a reader which version they are getting must
+    name this one.
+
+    0.2.1 went to PyPI while the Kestra example still pinned 0.2.0, the
+    version with the regex bug 0.2.1 fixed, so copying the example installed
+    the bug. The README (the PyPI page) and the tutorial said 0.2.0 as well,
+    and two judged reports once shipped with a stale tool_version. Each check
+    below is a claim about the current version. History, such as CHANGELOG
+    sections or "the groundwork shipped in 0.2.0", is deliberately not
+    checked.
+    """
+
+    def version(self) -> str:
+        return agent_report_card.__version__
+
+    def read(self, rel: str) -> str:
+        return (REPO / rel).read_text(encoding="utf-8")
+
+    def test_kestra_example_installs_this_version(self):
+        pins = re.findall(r"agent-report-card==(\S+)",
+                          self.read("examples/kestra/quality-gate.yml"))
+        self.assertTrue(pins, "the Kestra flow no longer pins a version")
+        self.assertEqual(
+            set(pins), {self.version()},
+            "examples/kestra/quality-gate.yml pins a different version, so "
+            "anyone who copies the quality gate installs that one")
+
+    def test_kestra_guide_shows_a_run_of_this_version(self):
+        guide = self.read("examples/kestra/README.md")
+        verified = re.search(r"Verified against the (?:published )?(\S+) wheel",
+                             guide)
+        shown = re.findall(r'"tool_version": "([^"]+)"', guide)
+        self.assertTrue(verified and shown,
+                        "the Kestra guide no longer shows a verified run")
+        self.assertEqual(
+            {verified.group(1), *shown}, {self.version()},
+            "examples/kestra/README.md shows a run of another version; re-run "
+            "the flow's gate.py against this version's wheel and the fixture "
+            "bot, then paste the real output")
+
+    def test_readme_roadmap_names_this_version(self):
+        today = re.search(r"^Today \(([^)]+)\)", self.read("README.md"), re.M)
+        self.assertIsNotNone(today, "the README roadmap no longer says "
+                                    "'Today (version)'")
+        self.assertEqual(
+            today.group(1), self.version(),
+            "README.md, which is also the PyPI page, calls another version "
+            "'today'")
+
+    def test_tutorial_was_run_on_this_version(self):
+        import json
+        nb = json.loads(self.read("examples/tutorial.ipynb"))
+        printed = "".join("".join(o.get("text", []))
+                          for c in nb["cells"] if c["cell_type"] == "code"
+                          for o in c.get("outputs", []))
+        seen = set(re.findall(r"^agent-report-card (\S+)$", printed, re.M))
+        self.assertEqual(
+            seen, {self.version()},
+            "examples/tutorial.ipynb printed another version; rebuild it with "
+            ".venv-docs/bin/python scripts/build_tutorial.py so its outputs "
+            "are real")
+
+    def test_every_committed_report_was_made_by_this_version(self):
+        import json
+        stale = {p.name: json.loads(p.read_text(encoding="utf-8"))
+                 .get("tool_version")
+                 for p in sorted((REPO / "reports").glob("*.scores.json"))}
+        self.assertTrue(stale, "no committed reports found")
+        stale = {name: v for name, v in stale.items() if v != self.version()}
+        self.assertEqual(
+            stale, {},
+            "these committed reports were made by another version; regenerate "
+            "them with `make gallery` (the judged ones need the judge model)")
+
+
 class TestPackagingMetadata(unittest.TestCase):
     def test_license_is_machine_detectable(self):
         text = (REPO / "pyproject.toml").read_text(encoding="utf-8")

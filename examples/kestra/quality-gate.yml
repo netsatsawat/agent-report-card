@@ -46,7 +46,7 @@ tasks:
     taskRunner:
       type: io.kestra.plugin.scripts.runner.docker.Docker
     dependencies:
-      - agent-report-card==0.2.0
+      - agent-report-card==0.2.1
 
     # Retries apply to this task alone, and by the logic above they can only
     # ever fire for exit 2, a run that never happened.

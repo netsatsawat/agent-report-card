@@ -404,7 +404,7 @@ numbers the judge caught.
 
 ## 🗺 Roadmap
 
-Today (0.2.0) you can grade a RAG bot's endpoint against a YAML test
+Today (0.2.1) you can grade a RAG bot's endpoint against a YAML test
 file and get a markdown or HTML report, with a local judge that reports
 its own error rate broken down by category. Per-release detail lives in
 [CHANGELOG.md](https://github.com/netsatsawat/agent-report-card/blob/main/CHANGELOG.md).
